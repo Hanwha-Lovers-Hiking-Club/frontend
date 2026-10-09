@@ -2,6 +2,9 @@
   "name": "test-front",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,10 +21,15 @@
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "cn": "^0.4.0",
+    "docx-preview": "^0.4.1",
+    "exceljs": "^4.4.0",
     "framer-motion": "^14.0.0",
+    "html-to-image": "^1.11.13",
+    "jszip": "^3.10.2",
     "lucide-react": "^1.52.0",
     "nanoid": "^5.1.16",
     "next": "16.3.8",
+    "pdfjs-dist": "^6.2.108",
     "radix-ui": "^1.6.7",
     "react": "19.2.8",
     "react-dom": "19.2.8",
