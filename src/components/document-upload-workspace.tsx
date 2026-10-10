@@ -2,16 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { UploadCompleteState } from "@/components/document-upload-complete-state";
 import { UploadInitialState } from "@/components/document-upload-initial-state";
 import { UploadProcessingState } from "@/components/document-upload-processing-state";
 import { UploadReviewState } from "@/components/document-upload-review-state";
 import {
-  processingSteps,
   getDocumentId,
   type SelectedDocument,
   type UploadPhase,
 } from "@/components/document-upload-types";
+import { processingSteps } from "@/components/document-upload-processing-config";
 import { canGenerateDocumentPreview, generateDocumentPreview } from "@/lib/document-preview";
 
 const DEVELOPMENT_PROCESSING_START_DELAY = 1_500;
@@ -153,7 +152,15 @@ export function DocumentUploadWorkspace() {
         />
       );
     case "complete":
-      return <UploadCompleteState documentCount={documents.length} onReset={resetUpload} />;
+      return (
+        <UploadProcessingState
+          activeStep={activeStep}
+          documentCount={documents.length}
+          progress={progress}
+          status="complete"
+          onReset={resetUpload}
+        />
+      );
     default:
       return <UploadInitialState onAddDocuments={addDocuments} />;
   }

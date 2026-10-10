@@ -10,12 +10,11 @@ import {
   hexToRgb,
   orbVars,
   type OrbProps,
-  type OrbState,
 } from './orb-state';
 import { mixRgb, rgba, type Rgb } from './orb-color';
+import { DEFAULT_PARTICLE_COUNT, ORB_MOTION_PRESETS } from './orb-motion';
 import { useOrbAnimator, type OrbFrame } from './use-orb-animator';
 
-const PARTICLE_COUNT = 720;
 const TWO_PI = Math.PI * 2;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const TIME_OFFSET = 1.7;
@@ -26,35 +25,6 @@ const ANGLE_X = 0.32;
 
 const ERROR_FROM_RGB = hexToRgb(ERROR_COLOR_FROM);
 const ERROR_TO_RGB = hexToRgb(ERROR_COLOR_TO);
-
-type StateParams = {
-  tempo: number;
-  scale: number;
-  spin: number;
-  breathe: number;
-  drift: number;
-  ripple: number;
-  swell: number;
-  flow: number;
-  swirl: number;
-  pulse: number;
-  pulseRate: number;
-  ring: number;
-  jitter: number;
-  shake: number;
-  alpha: number;
-  rest: number;
-};
-
-const STATES: Record<OrbState, StateParams> = {
-  idle: { tempo: 1, scale: 1, spin: 0.14, breathe: 0.05, drift: 1, ripple: 0, swell: 0.04, flow: 0, swirl: 0, pulse: 0, pulseRate: 1, ring: 0, jitter: 0, shake: 0, alpha: 0.72, rest: 0 },
-  connecting: { tempo: 1, scale: 1, spin: 0.3, breathe: 0.02, drift: 0.2, ripple: 0, swell: 0, flow: 0, swirl: 0, pulse: 0.06, pulseRate: 0.5, ring: 1, jitter: 0, shake: 0, alpha: 0.8, rest: 0.12 },
-  listening: { tempo: 1, scale: 0.9, spin: 0.55, breathe: 0.012, drift: 0, ripple: 1, swell: 0.06, flow: 0, swirl: 0, pulse: 0, pulseRate: 1, ring: 0, jitter: 0, shake: 0, alpha: 0.92, rest: 0.55 },
-  thinking: { tempo: 1, scale: 1, spin: 0.32, breathe: 0.01, drift: 0, ripple: 0, swell: 0, flow: 0, swirl: 0, pulse: 1, pulseRate: 1, ring: 0, jitter: 0, shake: 0, alpha: 0.78, rest: 0.3 },
-  speaking: { tempo: 1, scale: 1, spin: 0.24, breathe: 0.01, drift: 0, ripple: 0, swell: 0.06, flow: 1, swirl: 1, pulse: 0, pulseRate: 1, ring: 0, jitter: 0.6, shake: 0, alpha: 0.94, rest: 0.55 },
-  error: { tempo: 1, scale: 1, spin: 0.08, breathe: 0, drift: 0, ripple: 0, swell: 0, flow: 0, swirl: 0, pulse: 0, pulseRate: 1, ring: 0, jitter: 0.7, shake: 1, alpha: 0.85, rest: 0.2 },
-  disabled: { tempo: 0.04, scale: 1, spin: 0, breathe: 0, drift: 0, ripple: 0, swell: 0, flow: 0, swirl: 0, pulse: 0, pulseRate: 1, ring: 0, jitter: 0, shake: 0, alpha: 0.45, rest: 0 },
-};
 
 interface Sphere {
   x: Float32Array;
@@ -92,7 +62,16 @@ const buildSphere = (count: number): Sphere => {
   return sphere;
 };
 
-const SPHERE = buildSphere(PARTICLE_COUNT);
+const sphereCache = new Map<number, Sphere>();
+
+const getSphere = (count: number): Sphere => {
+  const existing = sphereCache.get(count);
+  if (existing) return existing;
+
+  const sphere = buildSphere(count);
+  sphereCache.set(count, sphere);
+  return sphere;
+};
 
 export const ParticlesOrb = ({
   state = 'idle',
@@ -100,6 +79,8 @@ export const ParticlesOrb = ({
   speed = 1,
   colorFrom = '#f0abfc',
   colorTo = '#818cf8',
+  particleCount = DEFAULT_PARTICLE_COUNT,
+  motion,
   levelRef,
   label = 'Assistant orb',
   className,
@@ -108,6 +89,7 @@ export const ParticlesOrb = ({
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const colorRef = useRef({ from: colorFrom, to: colorTo });
+  const motionRef = useRef(motion);
   const drawRef = useRef<((frame: OrbFrame) => void) | null>(null);
 
   const setHostRef = useCallback(
@@ -131,6 +113,11 @@ export const ParticlesOrb = ({
   }, [colorFrom, colorTo, frameRef]);
 
   useEffect(() => {
+    motionRef.current = motion;
+    drawRef.current?.({ ...frameRef.current, dt: 0 });
+  }, [motion, frameRef]);
+
+  useEffect(() => {
     const host = hostRef.current;
     const canvas = canvasRef.current;
     if (!host || !canvas) return;
@@ -147,7 +134,8 @@ export const ParticlesOrb = ({
     const dotScale = 0.55 + 0.45 * smallness;
     const alphaScale = smallness * smallness;
     const baseRadius = center * 0.62;
-    const n = PARTICLE_COUNT;
+    const n = Math.max(2, Math.round(particleCount));
+    const sphere = getSphere(n);
     const px = new Float32Array(n);
     const py = new Float32Array(n);
     const pr = new Float32Array(n);
@@ -185,7 +173,7 @@ export const ParticlesOrb = ({
 
     const draw = (frame: OrbFrame) => {
       const w = frame.weights;
-      const p = blendStates(w, STATES);
+      const p = { ...blendStates(w, ORB_MOTION_PRESETS), ...motionRef.current };
       const dPhase = Math.max(0, frame.phase - lastPhase);
       lastPhase = frame.phase;
       const level = frame.reduced ? p.rest : frame.level;
@@ -204,7 +192,7 @@ export const ParticlesOrb = ({
 
       const beat = Math.sin(pt * 2.6) * 0.5 + 0.5;
       const beatSharp = beat * beat * beat;
-      const breathe = p.breathe * Math.sin(t * 1.1);
+      const breathe = p.breathe * Math.sin(t * 1.1 * p.breatheRate);
       const conv = p.pulse * (0.06 + 0.12 * beatSharp);
       const radius = baseRadius * p.scale * (1 + breathe + level * p.swell - conv);
 
@@ -226,11 +214,11 @@ export const ParticlesOrb = ({
       counts.fill(0);
 
       for (let i = 0; i < n; i += 1) {
-        const sx = SPHERE.x[i];
-        const sy = SPHERE.y[i];
-        const sz = SPHERE.z[i];
-        const seed = SPHERE.seed[i];
-        const ringFrac = SPHERE.ringFrac[i];
+        const sx = sphere.x[i];
+        const sy = sphere.y[i];
+        const sz = sphere.z[i];
+        const seed = sphere.seed[i];
+        const ringFrac = sphere.ringFrac[i];
 
         const twist = swirlAmp > 0.002 ? angleY + swirlAmp * Math.sin(sy * 2.4 + t * 1.6) : angleY;
         const cy = Math.cos(twist);
@@ -272,10 +260,10 @@ export const ParticlesOrb = ({
         let dot = 0.6 + depth * 1.5;
 
         if (ringW > 0.004) {
-          const tone = SPHERE.tone[i];
+          const tone = sphere.tone[i];
           const ringAngle = (i / n) * TWO_PI + ringPhase + 0.05 * Math.sin(t * 1.3 + seed);
           const ringR =
-            center * (0.58 + 0.13 * ringFrac) * (1 + 0.05 * Math.sin(t + seed * 1.7)) * ringBreath;
+            center * (0.58 + p.ringWidth * ringFrac) * (1 + 0.05 * Math.sin(t + seed * 1.7)) * ringBreath;
           const circleX = center + Math.cos(ringAngle) * ringR;
           const circleY = center + Math.sin(ringAngle) * ringR;
           screenX += (circleX - screenX) * ringW;
@@ -289,7 +277,7 @@ export const ParticlesOrb = ({
         pr[i] = dot * dotScale;
         alpha *= alphaScale;
         const ab = Math.min(ALPHA_BUCKETS - 1, Math.floor(alpha * ALPHA_BUCKETS));
-        const b = SPHERE.toneBucket[i] * ALPHA_BUCKETS + ab;
+        const b = sphere.toneBucket[i] * ALPHA_BUCKETS + ab;
         bucketOf[i] = b;
         counts[b] += 1;
       }
@@ -337,7 +325,7 @@ export const ParticlesOrb = ({
     return () => {
       drawRef.current = null;
     };
-  }, [size, frameRef]);
+  }, [size, particleCount, frameRef]);
 
   return (
     <div

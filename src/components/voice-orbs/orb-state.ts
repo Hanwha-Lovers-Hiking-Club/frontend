@@ -10,6 +10,29 @@ export type OrbState =
   | 'error'
   | 'disabled';
 
+export type OrbMotionSettings = {
+  tempo: number;
+  scale: number;
+  spin: number;
+  breathe: number;
+  breatheRate: number;
+  drift: number;
+  ripple: number;
+  swell: number;
+  flow: number;
+  swirl: number;
+  pulse: number;
+  pulseRate: number;
+  ring: number;
+  ringWidth: number;
+  jitter: number;
+  shake: number;
+  alpha: number;
+  rest: number;
+};
+
+export type OrbMotionOverrides = Partial<OrbMotionSettings>;
+
 export const ORB_STATES = [
   'idle',
   'connecting',
@@ -24,6 +47,8 @@ export interface OrbProps {
   speed?: number;
   colorFrom?: string;
   colorTo?: string;
+  particleCount?: number;
+  motion?: OrbMotionOverrides;
   levelRef?: RefObject<number>;
   label?: string;
   className?: string;
