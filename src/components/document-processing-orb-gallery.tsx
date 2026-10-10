@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export function DocumentProcessingOrbGallery() {
   return (
-    <main className="min-h-[calc(100dvh-1.5rem)] px-5 py-7 sm:min-h-[calc(100dvh-2rem)] sm:px-8 sm:py-9 lg:px-12">
+    <main className="app-page px-5 py-7 sm:px-8 sm:py-9 lg:px-12">
       <section className="mx-auto max-w-7xl">
         <header className="flex flex-col gap-5 border-b border-zinc-200 pb-7 sm:flex-row sm:items-end sm:justify-between">
           <div>

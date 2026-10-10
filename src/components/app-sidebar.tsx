@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ComponentType } from "react";
+import { type ComponentType, type CSSProperties } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Bot,
@@ -17,6 +17,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/stores/use-sidebar-store";
+import { ChatAmbientGlow } from "@/components/chat/chat-ambient-glow";
 import {
   Tooltip,
   TooltipContent,
@@ -109,9 +110,25 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const collapsed = useSidebarStore((state) => state.collapsed);
   const setCollapsed = useSidebarStore((state) => state.setCollapsed);
   const reducedMotion = useReducedMotion();
+  const isChatRoute = pathname === "/";
+  const usesAmbientGlow = pathname === "/" || pathname.startsWith("/upload");
 
   return (
-    <div className="flex min-h-dvh bg-[#f6f6f3] p-3 text-zinc-950 sm:p-4">
+    <div
+      style={
+        {
+          "--sidebar-collapsed-width": `${SIDEBAR_WIDTH.collapsed}px`,
+        } as CSSProperties
+      }
+      className={cn(
+        "app-shell relative flex bg-[#f6f6f3] p-3 text-zinc-950 sm:p-4",
+        isChatRoute
+          ? "h-dvh overflow-hidden pr-0 sm:pr-0"
+          : "min-h-dvh",
+        usesAmbientGlow && "isolate",
+      )}
+    >
+      {usesAmbientGlow && <ChatAmbientGlow />}
       <motion.aside
         initial={false}
         animate={{
@@ -123,8 +140,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             : { duration: 0.42, ease: [0.22, 1, 0.36, 1] }
         }
         className={cn(
-          "sticky top-3 flex h-[calc(100dvh-1.5rem)] shrink-0 flex-col overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/90 p-3 shadow-[0_18px_45px_-34px_rgba(24,36,31,0.45)] backdrop-blur-sm sm:top-4 sm:h-[calc(100dvh-2rem)]",
-          "max-md:!w-[4.5rem]",
+          "relative z-10 flex shrink-0 flex-col overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/90 p-3 shadow-[0_18px_45px_-34px_rgba(24,36,31,0.45)] backdrop-blur-sm",
+          isChatRoute
+            ? "h-full"
+            : "sticky top-3 h-[calc(100dvh-1.5rem)] sm:top-4 sm:h-[calc(100dvh-2rem)]",
+          "max-md:!w-[var(--sidebar-collapsed-width)]",
         )}
       >
         <div className="grid h-11 grid-cols-[3rem_minmax(0,1fr)_2rem] items-center">
@@ -200,7 +220,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         </div>
       </motion.aside>
 
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className={cn("relative z-10 min-w-0 flex-1", isChatRoute && "min-h-0")}>{children}</div>
     </div>
   );
 }

@@ -58,7 +58,7 @@ export function UploadReviewState({
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <main className="min-h-[calc(100dvh-1.5rem)] px-5 py-7 sm:min-h-[calc(100dvh-2rem)] sm:px-8 sm:py-9 lg:px-12">
+    <main className="app-page px-5 py-7 sm:px-8 sm:py-9 lg:px-12">
       <section className="mx-auto w-full max-w-6xl rounded-[2rem] border border-zinc-200/90 bg-white px-6 py-7 shadow-[0_28px_64px_-54px_rgba(24,36,31,0.72)] sm:px-9 sm:py-9">
         <header className="flex flex-col justify-between gap-5 border-b border-zinc-100 pb-7 sm:flex-row sm:items-end">
           <div className="max-w-xl">

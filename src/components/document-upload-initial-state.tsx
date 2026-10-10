@@ -15,7 +15,7 @@ export function UploadInitialState({
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <main className="grid min-h-[calc(100dvh-1.5rem)] place-items-center px-5 py-7 sm:min-h-[calc(100dvh-2rem)] sm:px-8">
+    <main className="app-page grid place-items-center px-5 py-7 sm:px-8">
       <section className="w-full max-w-xl rounded-[2rem] border border-zinc-200/90 bg-white px-7 py-10 text-center shadow-[0_28px_64px_-54px_rgba(24,36,31,0.72)] sm:px-12 sm:py-12">
         <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-zinc-100 text-zinc-700">
           <Upload className="size-5" aria-hidden />

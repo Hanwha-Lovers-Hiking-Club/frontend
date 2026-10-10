@@ -33,7 +33,7 @@ export function UploadProcessingState({
   const currentStep = processingSteps[activeStep] ?? processingSteps[0];
 
   return (
-    <main className="grid min-h-[calc(100dvh-1.5rem)] place-items-center px-5 py-7 sm:min-h-[calc(100dvh-2rem)] sm:px-8 sm:py-9 lg:px-12">
+    <main className="app-page grid place-items-center px-5 py-7 sm:px-8 sm:py-9 lg:px-12">
       <section className="w-full max-w-4xl overflow-hidden rounded-[2rem] border border-zinc-200/90 bg-white shadow-[0_28px_64px_-54px_rgba(24,36,31,0.72)]">
         <header className="flex items-start justify-between gap-5 border-b border-zinc-100 px-6 py-6 sm:px-9">
           <div>

@@ -24,7 +24,7 @@ export default function KnowledgePage() {
   const sortLabel = sortOptions.find((option) => option.value === filters.sort)?.label;
 
   return (
-    <main className="min-h-[calc(100dvh-1.5rem)] px-5 py-8 sm:min-h-[calc(100dvh-2rem)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+    <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
       <div className="mx-auto w-full max-w-7xl">
         <header className="flex flex-col gap-6 border-b border-zinc-200 pb-9 sm:flex-row sm:items-end sm:justify-between">
           <div className="border-l-[3px] border-brand py-1 pl-5 sm:pl-6">
