@@ -1,9 +1,9 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { AlignLeft, Building2, CalendarDays, CheckCircle2, Clock3, ExternalLink, FileText, FolderKanban, Lightbulb, ListChecks, Layers3, Tag, type LucideIcon, Wrench, X } from "lucide-react";
-import { useEffect, useRef, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { cardTypeConfig, formatKnowledgeDate } from "@/lib/knowledge/config";
 import type { KnowledgeCard } from "@/lib/knowledge/types";
 import { cn } from "@/lib/utils";
@@ -69,39 +69,14 @@ function RecordMetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: 
 }
 
 export function KnowledgeCardDetailPanel({ card, onClose }: { card: KnowledgeCard | null; onClose: () => void }) {
-  useEffect(() => {
-    if (!card) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const previousPaddingRight = document.body.style.paddingRight;
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    document.body.style.overflow = "hidden";
-    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
-    window.addEventListener("keydown", closeOnEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.body.style.paddingRight = previousPaddingRight;
-      window.removeEventListener("keydown", closeOnEscape);
-      if (previouslyFocused?.isConnected) previouslyFocused.focus();
-    };
-  }, [card, onClose]);
-
   return (
-    <AnimatePresence>
-      {card && <DetailPanelContent card={card} onClose={onClose} />}
-    </AnimatePresence>
+    <Sheet open={Boolean(card)} onOpenChange={(open) => !open && onClose()}>
+      {card && <DetailPanelContent card={card} />}
+    </Sheet>
   );
 }
 
-function DetailPanelContent({ card, onClose }: { card: KnowledgeCard; onClose: () => void }) {
-  const panelRef = useRef<HTMLElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
+function DetailPanelContent({ card }: { card: KnowledgeCard }) {
   const { label, icon: Icon, badgeClassName } = cardTypeConfig[card.type];
   const detail = card.detail ?? {
     situation: card.summary,
@@ -123,83 +98,42 @@ function DetailPanelContent({ card, onClose }: { card: KnowledgeCard; onClose: (
     { title: "재사용 포인트", description: detail.lesson, icon: Lightbulb, className: "bg-violet-50 text-violet-600" },
   ];
 
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-
-    const trapFocus = (event: KeyboardEvent) => {
-      if (event.key !== "Tab" || !panelRef.current) return;
-
-      const focusable = Array.from(
-        panelRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
-      );
-      const first = focusable[0];
-      const last = focusable.at(-1);
-      if (!first || !last) {
-        event.preventDefault();
-        return;
-      }
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    window.addEventListener("keydown", trapFocus);
-    return () => window.removeEventListener("keydown", trapFocus);
-  }, []);
-
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex justify-end"
-      initial="closed"
-      animate="open"
-      exit="closed"
+    <SheetContent
+      side="right"
+      overlayClassName="bg-zinc-950/25 backdrop-blur-[1px]"
+      style={{
+        top: "0.75rem",
+        right: "0.75rem",
+        bottom: "auto",
+        height: "calc(100% - 1.5rem)",
+        width: "calc(100% - 1.5rem)",
+        maxWidth: "39rem",
+      }}
+      className="gap-0 overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white p-0 shadow-[-24px_24px_70px_-32px_rgba(24,36,31,0.5)]"
     >
-      <motion.button
-        type="button"
-        aria-label="지식카드 상세 닫기"
-        className="absolute inset-0 bg-zinc-950/25 backdrop-blur-[1px]"
-        variants={{ closed: { opacity: 0 }, open: { opacity: 1 } }}
-        transition={{ duration: 0.2 }}
-        onClick={onClose}
-      />
-
-      <motion.aside
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="knowledge-card-detail-title"
-        className="relative m-3 flex h-[calc(100%-1.5rem)] w-full max-w-[39rem] flex-col overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white shadow-[-24px_24px_70px_-32px_rgba(24,36,31,0.5)] sm:m-4 sm:h-[calc(100%-2rem)]"
-        variants={{ closed: { x: "100%" }, open: { x: 0 } }}
-        transition={{ type: "spring", stiffness: 330, damping: 34, mass: 0.9 }}
-      >
-        <header className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 sm:px-6">
-          <p className="text-xs font-semibold tracking-[0.1em] text-zinc-500">KNOWLEDGE CARD DETAILS</p>
+      <header className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 sm:px-6">
+        <p className="text-xs font-semibold tracking-[0.1em] text-zinc-500">KNOWLEDGE CARD DETAILS</p>
+        <SheetClose asChild>
           <button
-            ref={closeButtonRef}
             type="button"
-            onClick={onClose}
             aria-label="닫기"
-            className="grid size-10 place-items-center rounded-xl text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+            className="grid size-10 cursor-pointer place-items-center rounded-xl text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
           >
             <X className="size-5" aria-hidden />
           </button>
-        </header>
+        </SheetClose>
+      </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-7 pt-6 sm:px-8 sm:pb-9 sm:pt-7">
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-7 pt-6 sm:px-8 sm:pb-9 sm:pt-7">
+        <SheetDescription className="sr-only">{card.title} 지식카드의 상세 정보입니다.</SheetDescription>
           <div className="flex items-start gap-3">
             <span className={cn("mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl", badgeClassName)}>
               <Icon className="size-[18px]" aria-hidden />
             </span>
-            <h2 id="knowledge-card-detail-title" className="min-w-0 text-[1.7rem] font-semibold leading-[1.22] tracking-[-0.045em] text-zinc-950">
-              {card.title}
-            </h2>
+            <SheetTitle asChild>
+              <h2 className="min-w-0 text-[1.7rem] font-semibold leading-[1.22] tracking-[-0.045em] text-zinc-950">{card.title}</h2>
+            </SheetTitle>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -236,8 +170,7 @@ function DetailPanelContent({ card, onClose }: { card: KnowledgeCard; onClose: (
               ) : null}
             </div>
           </DetailPanelSection>
-        </div>
-      </motion.aside>
-    </motion.div>
+      </div>
+    </SheetContent>
   );
 }

@@ -1,8 +1,15 @@
 "use client";
 
-import { ChevronDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cardTypeConfig, sortOptions } from "@/lib/knowledge/config";
 import {
   KNOWLEDGE_CARD_TYPES,
@@ -11,7 +18,7 @@ import {
 } from "@/lib/knowledge/types";
 
 const selectClassName =
-  "h-12 w-fit min-w-0 max-w-full cursor-pointer appearance-none whitespace-nowrap rounded-xl border border-zinc-200 bg-white py-2 pl-3.5 pr-10 text-sm font-medium text-zinc-700 outline-none transition-[border-color,box-shadow] focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "h-12 w-fit min-w-0 max-w-full cursor-pointer whitespace-nowrap rounded-xl border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 shadow-none transition-[border-color,box-shadow] hover:bg-white focus:border-brand focus:ring-2 focus:ring-brand/20";
 
 export function KnowledgeToolbar({
   type,
@@ -34,7 +41,7 @@ export function KnowledgeToolbar({
       className="mt-7 rounded-3xl border border-zinc-200/90 bg-white p-4 shadow-[0_18px_45px_-34px_rgba(24,36,31,0.45)] sm:p-5"
     >
       <form
-        className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]"
+        className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
         onSubmit={(event) => {
           event.preventDefault();
           onSearch(draft.trim());
@@ -63,49 +70,40 @@ export function KnowledgeToolbar({
           </button>
         </label>
 
-        <div className="flex flex-wrap gap-3 lg:justify-end">
-          <SelectField label="카드 유형">
-            <select
-              className={selectClassName}
-              value={type}
-              onChange={(event) => onTypeChange(event.target.value as KnowledgeCardTypeFilter)}
-            >
-              <option value="all">모든 유형</option>
+        <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+          <Select
+            value={type}
+            onValueChange={(value) => onTypeChange(value as KnowledgeCardTypeFilter)}
+          >
+            <SelectTrigger className={selectClassName} aria-label="카드 유형">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position="popper" className="rounded-xl border-zinc-200 p-1.5 shadow-lg">
+              <SelectItem value="all" className="cursor-pointer rounded-lg py-2">모든 유형</SelectItem>
               {KNOWLEDGE_CARD_TYPES.map((value) => (
-                <option key={value} value={value}>
+                <SelectItem key={value} value={value} className="cursor-pointer rounded-lg py-2">
                   {cardTypeConfig[value].label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </SelectField>
-          <SelectField label="정렬 기준">
-            <select
-              className={selectClassName}
-              value={sort}
-              onChange={(event) => onSortChange(event.target.value as KnowledgeSort)}
-            >
+            </SelectContent>
+          </Select>
+          <Select
+            value={sort}
+            onValueChange={(value) => onSortChange(value as KnowledgeSort)}
+          >
+            <SelectTrigger className={selectClassName} aria-label="정렬 기준">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position="popper" className="rounded-xl border-zinc-200 p-1.5 shadow-lg">
               {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value} className="cursor-pointer rounded-lg py-2">
                   {option.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </SelectField>
+            </SelectContent>
+          </Select>
         </div>
       </form>
     </section>
-  );
-}
-
-function SelectField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="relative inline-flex max-w-full">
-      <span className="sr-only">{label}</span>
-      {children}
-      <ChevronDown
-        className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-zinc-400"
-        aria-hidden
-      />
-    </label>
   );
 }
