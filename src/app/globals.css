@@ -48,6 +48,13 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* 포인트 색상. 지식카드 화면은 emerald 를 직접 쓰지 않고 이 토큰만 참조한다. */
+@theme {
+  --color-brand: var(--color-emerald-500);
+  --color-brand-soft: var(--color-emerald-200);
+  --color-brand-strong: var(--color-emerald-700);
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
