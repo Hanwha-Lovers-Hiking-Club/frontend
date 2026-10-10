@@ -14,6 +14,10 @@ import {
 } from "@/components/document-upload-types";
 import { canGenerateDocumentPreview, generateDocumentPreview } from "@/lib/document-preview";
 
+const DEVELOPMENT_PROCESSING_START_DELAY = 1_500;
+const DEVELOPMENT_PROCESSING_STEP_DURATION = 10_000;
+const DEVELOPMENT_PROCESSING_COMPLETE_DELAY = 10_000;
+
 export function DocumentUploadWorkspace() {
   const [phase, setPhase] = useState<UploadPhase>("initial");
   const [documents, setDocuments] = useState<SelectedDocument[]>([]);
@@ -49,15 +53,15 @@ export function DocumentUploadWorkspace() {
       setProgress(step.progress);
 
       if (stepIndex === processingSteps.length - 1) {
-        timer = setTimeout(() => setPhase("complete"), 650);
+        timer = setTimeout(() => setPhase("complete"), DEVELOPMENT_PROCESSING_COMPLETE_DELAY);
         return;
       }
 
       stepIndex += 1;
-      timer = setTimeout(advance, 900);
+      timer = setTimeout(advance, DEVELOPMENT_PROCESSING_STEP_DURATION);
     };
 
-    timer = setTimeout(advance, 700);
+    timer = setTimeout(advance, DEVELOPMENT_PROCESSING_START_DELAY);
     return () => clearTimeout(timer);
   }, [phase]);
 
