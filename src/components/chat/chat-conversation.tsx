@@ -144,9 +144,9 @@ export function ChatConversation({
         </ScrollAreaPrimitive.Viewport>
         <ScrollAreaPrimitive.Scrollbar
           orientation="vertical"
-          className="flex w-2.5 touch-none select-none p-0.5"
+          className="app-scrollbar-rail flex touch-none select-none"
         >
-          <ScrollAreaPrimitive.Thumb className="relative flex-1 rounded-full bg-zinc-300/90" />
+          <ScrollAreaPrimitive.Thumb className="app-scrollbar-thumb relative flex-1 rounded-full" />
         </ScrollAreaPrimitive.Scrollbar>
       </ScrollAreaPrimitive.Root>
       <div ref={composerAreaRef} className="absolute inset-x-0 bottom-0 z-20 px-5 pb-3 pt-4 sm:px-8 sm:pb-4">

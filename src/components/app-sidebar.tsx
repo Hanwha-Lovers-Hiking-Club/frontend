@@ -121,7 +121,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         } as CSSProperties
       }
       className={cn(
-        "app-shell relative flex bg-[#f6f6f3] p-3 text-zinc-950 sm:p-4",
+        "app-shell relative flex bg-[var(--app-canvas)] p-3 text-zinc-950 sm:p-4",
         isChatRoute
           ? "h-dvh overflow-hidden pr-0 sm:pr-0"
           : "min-h-dvh",

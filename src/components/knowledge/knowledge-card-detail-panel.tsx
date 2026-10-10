@@ -125,7 +125,7 @@ function DetailPanelContent({ card }: { card: KnowledgeCard }) {
         </SheetClose>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-7 pt-6 sm:px-8 sm:pb-9 sm:pt-7">
+      <div className="app-scrollbar min-h-0 flex-1 overflow-y-auto px-6 pb-7 pt-6 sm:px-8 sm:pb-9 sm:pt-7">
         <SheetDescription className="sr-only">{card.title} 지식카드의 상세 정보입니다.</SheetDescription>
           <div className="flex items-start gap-3">
             <span className={cn("mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl", badgeClassName)}>

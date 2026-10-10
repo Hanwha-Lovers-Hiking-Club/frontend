@@ -38,10 +38,10 @@ export function ChatComposer({
           value={value}
           onChange={(event) => onValueChange(event.target.value)}
           placeholder="문서와 프로젝트에 대해 무엇이든 물어보세요"
-          className={compact ? "min-h-11 px-5 py-2.5 text-[15px] leading-6 sm:text-base" : "min-h-[7.5rem] px-5 pt-5 text-[15px] leading-7 sm:text-base"}
+          className={compact ? "min-h-[3.25rem] px-5 py-3.5 text-[15px] leading-6 sm:text-base" : "min-h-[7.5rem] px-5 pt-5 text-[15px] leading-7 sm:text-base"}
         />
       </PromptInputBody>
-      <PromptInputFooter className={compact ? "border-t border-zinc-100 px-3.5 pb-2 pt-2" : "border-t border-zinc-100 px-3.5 pb-3.5 pt-3"}>
+      <PromptInputFooter className={compact ? "border-t border-zinc-100 px-3.5 py-2" : "border-t border-zinc-100 px-3.5 pb-3.5 pt-3"}>
         <div className="flex min-w-0 items-center gap-3">
           {onNewConversation && (
             <button

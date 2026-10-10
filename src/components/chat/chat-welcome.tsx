@@ -54,7 +54,7 @@ export function ChatWelcome({
   const welcome = welcomeMessages[messageIndex];
 
   return (
-    <main className="flex h-full min-h-0 overflow-y-auto px-5 py-7 sm:px-8 sm:py-8">
+    <main className="app-scrollbar flex h-full min-h-0 overflow-y-auto px-5 py-7 sm:px-8 sm:py-8">
       <section className="mx-auto flex w-full max-w-5xl flex-col justify-center">
         <div className="w-full text-center">
           <p className="text-xs font-semibold tracking-[0.14em] text-zinc-400">KNOWLEDGE ASSISTANT</p>
