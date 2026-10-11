@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 
 const baseButton = "grid size-10 place-items-center rounded-xl transition-colors";
 const outlineButton = "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50";

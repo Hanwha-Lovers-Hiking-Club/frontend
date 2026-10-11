@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { KNOWLEDGE_PAGE_SIZE } from "@/lib/knowledge/config";
-import { fetchKnowledgeCards } from "@/lib/knowledge/api";
+import { fetchKnowledgeCards } from "@/features/knowledge/api";
+import { KNOWLEDGE_PAGE_SIZE } from "@/features/knowledge/config";
 import type {
   KnowledgeCardPage,
   KnowledgeCardQuery,
   KnowledgeCardTypeFilter,
   KnowledgeSort,
-} from "@/lib/knowledge/types";
+} from "@/features/knowledge/types";
 
 type Filters = Pick<KnowledgeCardQuery, "query" | "type" | "sort">;
 type Result = { key: string; data?: KnowledgeCardPage; error?: Error };

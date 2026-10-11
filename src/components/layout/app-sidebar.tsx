@@ -15,9 +15,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { useSidebarStore } from "@/stores/use-sidebar-store";
-import { ChatAmbientGlow } from "@/components/chat/chat-ambient-glow";
+import { ChatAmbientGlow } from "@/features/chat/components/chat-ambient-glow";
 import {
   Tooltip,
   TooltipContent,

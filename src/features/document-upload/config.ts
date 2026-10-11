@@ -1,5 +1,5 @@
-import { DEFAULT_PARTICLE_COUNT } from "@/components/voice-orbs/orb-motion";
-import type { ProcessingOrbScenario, ProcessingStep } from "@/components/document-upload-types";
+import { DEFAULT_PARTICLE_COUNT } from "@/features/document-upload/components/voice-orbs/orb-motion";
+import type { ProcessingOrbScenario, ProcessingStep } from "@/features/document-upload/types";
 
 const GREEN_ORB_COLORS = { colorFrom: "#34d399", colorTo: "#0f766e" } as const;
 const COMPLETE_ORB_COLORS = { colorFrom: "#a78bfa", colorTo: "#4f46e5" } as const;

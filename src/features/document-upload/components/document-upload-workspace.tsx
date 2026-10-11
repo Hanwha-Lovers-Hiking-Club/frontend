@@ -2,16 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { UploadInitialState } from "@/components/document-upload-initial-state";
-import { UploadProcessingState } from "@/components/document-upload-processing-state";
-import { UploadReviewState } from "@/components/document-upload-review-state";
-import {
-  getDocumentId,
-  type SelectedDocument,
-  type UploadPhase,
-} from "@/components/document-upload-types";
-import { processingSteps } from "@/components/document-upload-processing-config";
-import { canGenerateDocumentPreview, generateDocumentPreview } from "@/lib/document-preview";
+import { UploadInitialState } from "@/features/document-upload/components/document-upload-initial-state";
+import { UploadProcessingState } from "@/features/document-upload/components/document-upload-processing-state";
+import { UploadReviewState } from "@/features/document-upload/components/document-upload-review-state";
+import { getDocumentId } from "@/features/document-upload/file-utils";
+import type { SelectedDocument, UploadPhase } from "@/features/document-upload/types";
+import { processingSteps } from "@/features/document-upload/config";
+import { canGenerateDocumentPreview, generateDocumentPreview } from "@/features/document-upload/document-preview";
 
 const DEVELOPMENT_PROCESSING_START_DELAY = 1_500;
 const DEVELOPMENT_PROCESSING_STEP_DURATION = 10_000;

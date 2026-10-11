@@ -4,9 +4,10 @@ import { AlignLeft, Building2, CalendarDays, CheckCircle2, Clock3, ExternalLink,
 import { type ReactNode } from "react";
 
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { cardTypeConfig, formatKnowledgeDate } from "@/lib/knowledge/config";
-import type { KnowledgeCard } from "@/lib/knowledge/types";
-import { cn } from "@/lib/utils";
+import { cardTypeConfig } from "@/features/knowledge/config";
+import { formatKnowledgeDate } from "@/features/knowledge/formatters";
+import type { KnowledgeCard } from "@/features/knowledge/types";
+import { cn } from "@/utils/cn";
 
 function DetailRow({
   title,

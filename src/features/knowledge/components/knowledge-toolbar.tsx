@@ -10,12 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cardTypeConfig, sortOptions } from "@/lib/knowledge/config";
+import { cardTypeConfig, sortOptions } from "@/features/knowledge/config";
 import {
   KNOWLEDGE_CARD_TYPES,
   type KnowledgeCardTypeFilter,
   type KnowledgeSort,
-} from "@/lib/knowledge/types";
+} from "@/features/knowledge/types";
 
 const selectClassName =
   "h-12 w-fit min-w-0 max-w-full cursor-pointer whitespace-nowrap rounded-xl border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 shadow-none transition-[border-color,box-shadow] hover:bg-white focus:border-brand focus:ring-2 focus:ring-brand/20";

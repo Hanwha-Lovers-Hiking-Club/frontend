@@ -1,6 +1,6 @@
-import { KNOWLEDGE_PAGE_SIZE } from "@/lib/knowledge/config";
-import type { KnowledgeCard as KnowledgeCardData } from "@/lib/knowledge/types";
-import { cn } from "@/lib/utils";
+import { KNOWLEDGE_PAGE_SIZE } from "@/features/knowledge/config";
+import type { KnowledgeCard as KnowledgeCardData } from "@/features/knowledge/types";
+import { cn } from "@/utils/cn";
 
 import { KnowledgeCard, KnowledgeCardSkeleton } from "./knowledge-card";
 

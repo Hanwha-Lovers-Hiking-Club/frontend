@@ -4,7 +4,7 @@ import { Upload } from "lucide-react";
 import { useId, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
-import { acceptedDocumentFileTypes, acceptedDocumentFileTypesLabel } from "@/components/document-upload-types";
+import { acceptedDocumentFileTypes, acceptedDocumentFileTypesLabel } from "@/features/document-upload/file-utils";
 
 export function UploadInitialState({
   onAddDocuments,

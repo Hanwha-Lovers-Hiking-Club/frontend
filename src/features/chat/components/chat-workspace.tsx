@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { ChatConversation } from "@/components/chat/chat-conversation";
-import type { ChatMessage } from "@/components/chat/chat-types";
-import { ChatWelcome } from "@/components/chat/chat-welcome";
+import { ChatConversation } from "@/features/chat/components/chat-conversation";
+import { ChatWelcome } from "@/features/chat/components/chat-welcome";
+import type { ChatMessage } from "@/features/chat/types";
 
 const demoReply = `업로드된 문서를 기준으로 보면, 현재 흐름은 **문서 수집 → 분석 처리 → 지식카드 생성**으로 정리할 수 있어요.
 

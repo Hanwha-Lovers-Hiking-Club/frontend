@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 
-import { processingSteps } from "@/components/document-upload-processing-config";
-import { ParticlesOrb } from "@/components/voice-orbs/particles-orb";
+import { processingSteps } from "@/features/document-upload/config";
+import { ParticlesOrb } from "@/features/document-upload/components/voice-orbs/particles-orb";
 import { Button } from "@/components/ui/button";
 
 export function DocumentProcessingOrbGallery() {

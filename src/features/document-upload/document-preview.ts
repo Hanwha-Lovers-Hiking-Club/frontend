@@ -1,3 +1,5 @@
+import { getDocumentFileExtension } from "@/features/document-upload/file-utils";
+
 const MAX_PREVIEW_FILE_SIZE = 25 * 1024 * 1024;
 const MAX_PREVIEW_WIDTH = 360;
 const PREVIEW_JPEG_QUALITY = 0.78;
@@ -10,17 +12,13 @@ export type DocumentPreview = {
   isObjectUrl?: boolean;
 };
 
-function getExtension(file: File) {
-  return file.name.split(".").pop()?.toLowerCase();
-}
-
 export function canGenerateDocumentPreview(file: File) {
-  const extension = getExtension(file);
+  const extension = getDocumentFileExtension(file);
   return file.size <= MAX_PREVIEW_FILE_SIZE && ["pdf", "docx", "xlsx", "pptx"].includes(extension ?? "");
 }
 
 export async function generateDocumentPreview(file: File): Promise<DocumentPreview | undefined> {
-  const extension = getExtension(file);
+  const extension = getDocumentFileExtension(file);
 
   if (!canGenerateDocumentPreview(file)) return undefined;
   if (extension === "pdf") return asDataUrl(renderPdfFirstPage(file));

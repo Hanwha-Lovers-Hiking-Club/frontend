@@ -1,6 +1,7 @@
-import { cardTypeConfig, formatKnowledgeDate } from "@/lib/knowledge/config";
-import type { KnowledgeCard as KnowledgeCardData } from "@/lib/knowledge/types";
-import { cn } from "@/lib/utils";
+import { cardTypeConfig } from "@/features/knowledge/config";
+import { formatKnowledgeDate } from "@/features/knowledge/formatters";
+import type { KnowledgeCard as KnowledgeCardData } from "@/features/knowledge/types";
+import { cn } from "@/utils/cn";
 
 export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpen: (card: KnowledgeCardData) => void }) {
   const { label, icon: Icon, badgeClassName } = cardTypeConfig[card.type];

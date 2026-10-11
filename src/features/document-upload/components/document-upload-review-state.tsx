@@ -6,10 +6,11 @@ import { useId, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   acceptedDocumentFileTypes,
+  formatFileSize,
   getDocumentFileType,
-  type SelectedDocument,
-} from "@/components/document-upload-types";
-import { cn } from "@/lib/utils";
+} from "@/features/document-upload/file-utils";
+import type { SelectedDocument } from "@/features/document-upload/types";
+import { cn } from "@/utils/cn";
 
 const fileVisuals = {
   PDF: {
@@ -37,11 +38,6 @@ const fileVisuals = {
     badge: "border-zinc-200 bg-zinc-100 text-zinc-500",
   },
 } as const;
-
-function formatFileSize(size: number) {
-  if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`;
-  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 export function UploadReviewState({
   documents,

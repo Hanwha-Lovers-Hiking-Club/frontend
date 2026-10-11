@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { ChatComposer } from "@/components/chat/chat-composer";
+import { ChatComposer } from "@/features/chat/components/chat-composer";
 import { Button } from "@/components/ui/button";
 
 const welcomeMessages = [

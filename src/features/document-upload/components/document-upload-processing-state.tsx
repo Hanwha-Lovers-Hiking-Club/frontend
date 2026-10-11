@@ -3,10 +3,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 
-import { processingSteps } from "@/components/document-upload-processing-config";
+import { processingSteps } from "@/features/document-upload/config";
 import { Button } from "@/components/ui/button";
-import { ParticlesOrb } from "@/components/voice-orbs/particles-orb";
-import { cn } from "@/lib/utils";
+import { ParticlesOrb } from "@/features/document-upload/components/voice-orbs/particles-orb";
+import { cn } from "@/utils/cn";
 
 const PROCESSING_STEP_QUEUE_CAPACITY = 6;
 const DEFAULT_PROCESSING_ORB_SIZE = 240;

@@ -1,4 +1,4 @@
-import type { OrbMotionOverrides } from "@/components/voice-orbs/orb-state";
+import type { OrbMotionOverrides } from "@/features/document-upload/components/voice-orbs/orb-state";
 
 export type UploadPhase = "initial" | "review" | "processing" | "complete";
 
@@ -25,15 +25,3 @@ export type ProcessingStep = {
   progress: number;
   orb: ProcessingOrbScenario;
 };
-
-export const acceptedDocumentFileTypes = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.md";
-
-export const acceptedDocumentFileTypesLabel = "PDF, Word, Excel, PowerPoint, TXT, MD";
-
-export function getDocumentId(file: File) {
-  return `${file.name}-${file.size}-${file.lastModified}`;
-}
-
-export function getDocumentFileType(file: File) {
-  return file.name.split(".").pop()?.toUpperCase() || "FILE";
-}

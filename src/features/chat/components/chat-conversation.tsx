@@ -4,8 +4,8 @@ import { Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 
-import { ChatComposer } from "@/components/chat/chat-composer";
-import type { ChatMessage } from "@/components/chat/chat-types";
+import { ChatComposer } from "@/features/chat/components/chat-composer";
+import type { ChatMessage } from "@/features/chat/types";
 import {
   Message,
   MessageAction,

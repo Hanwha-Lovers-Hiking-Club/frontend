@@ -1,4 +1,4 @@
-import { ChatWorkspace } from "@/components/chat/chat-workspace";
+import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function Home() {
   return <ChatWorkspace />;
