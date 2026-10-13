@@ -25,36 +25,27 @@ export default function KnowledgePage() {
 
   return (
     <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-      <div className="mx-auto w-full max-w-7xl">
-        <header className="relative overflow-hidden rounded-[2rem] border border-zinc-200/90 bg-white px-6 py-7 shadow-[0_28px_64px_-54px_rgba(24,36,31,0.72)] sm:px-8 sm:py-9 lg:px-10">
-          <div
-            className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-emerald-100/70 blur-3xl"
-            aria-hidden
-          />
-          <div className="relative grid gap-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div className="mx-auto w-full max-w-[90rem]">
+        <header className="border-b border-zinc-200 pb-8 sm:pb-10">
+          <div className="grid gap-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <div>
-              <div className="flex items-center gap-3">
-                <span className="grid size-9 place-items-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-                  <LibraryBig className="size-[18px]" aria-hidden />
-                </span>
-                <p className="text-[11px] font-semibold tracking-[0.18em] text-zinc-500">KNOWLEDGE BASE</p>
+              <div className="flex items-center gap-2.5 text-zinc-500">
+                <LibraryBig className="size-5 text-brand-strong" aria-hidden />
+                <span className="text-sm font-semibold">지식 라이브러리</span>
               </div>
-              <h1 className="mt-6 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">지식카드</h1>
+              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">지식카드</h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-600 sm:text-base">
                 프로젝트 문서에서 정리된 핵심 지식을 찾아보고 연결하세요.
               </p>
             </div>
 
-            <div className="flex items-end justify-between gap-6 sm:flex-col sm:items-end sm:justify-end">
-              <div className="text-left sm:text-right">
-                <p className="text-[11px] font-medium tracking-[0.08em] text-zinc-400">쌓인 지식</p>
-                <p className="mt-1 font-mono text-2xl font-medium tabular-nums tracking-[-0.04em] text-zinc-900">
-                  {total}<span className="ml-1 text-sm font-normal text-zinc-400">개</span>
-                </p>
-              </div>
+            <div className="flex items-center gap-5 sm:justify-end">
+              <p className="text-sm text-zinc-500">
+                전체 지식 <span className="ml-1 font-mono font-semibold tabular-nums text-zinc-950">{total}</span>
+              </p>
               <Link
                 href="/upload"
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-zinc-950 px-4 text-sm font-semibold text-white shadow-sm transition-[background-color,transform] duration-200 hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
               >
                 <FileUp className="size-4" aria-hidden />
                 문서 업로드
@@ -71,17 +62,23 @@ export default function KnowledgePage() {
           onSortChange={knowledge.setSort}
         />
 
-        <section aria-labelledby="knowledge-results-title" className="mt-9">
-          <div className="flex items-center justify-between gap-4">
+        <section aria-labelledby="knowledge-results-title" className="mt-9 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95 shadow-[0_24px_56px_-46px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]">
+          <div className="flex flex-col items-start gap-2 border-b border-zinc-200 bg-zinc-50/65 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
             <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
               <h2 id="knowledge-results-title" className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">
                 전체 지식카드
               </h2>
-              <span className="text-sm text-zinc-400">{sortLabel}</span>
+              <span className="text-sm text-zinc-500">{sortLabel}</span>
             </div>
-            <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-400">
-              {rangeStart} — {rangeEnd}
+            <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-500">
+              {total}개 중 {rangeStart} — {rangeEnd}
             </span>
+          </div>
+
+          <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] gap-x-5 border-b border-zinc-200 px-6 py-2.5 text-[11px] font-semibold tracking-[0.08em] text-zinc-400 sm:grid">
+            <span className="col-start-2">지식카드</span>
+            <span className="col-start-3">키워드</span>
+            <span className="col-start-4 text-right">업데이트</span>
           </div>
 
           <KnowledgeCardGrid

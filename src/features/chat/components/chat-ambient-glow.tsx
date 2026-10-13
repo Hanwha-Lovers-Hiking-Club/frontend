@@ -34,7 +34,7 @@ export function ChatAmbientGlow() {
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[58%]">
         <motion.div
-          className="size-[34rem] rounded-full bg-emerald-100/35 blur-3xl"
+          className="size-[38rem] rounded-full bg-[rgb(226_216_205_/_0.55)] blur-[104px]"
           style={{ x: glowOffsetX, y: glowOffsetY }}
         />
       </div>

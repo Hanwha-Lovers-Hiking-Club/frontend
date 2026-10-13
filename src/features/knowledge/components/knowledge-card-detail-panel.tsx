@@ -1,6 +1,7 @@
 "use client";
 
 import { AlignLeft, Building2, CalendarDays, CheckCircle2, Clock3, ExternalLink, FileText, FolderKanban, Lightbulb, ListChecks, Layers3, Tag, type LucideIcon, Wrench, X } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { type ReactNode } from "react";
 
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -62,22 +63,23 @@ function DetailPanelSection({
 
 function RecordMetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <div className="flex items-start justify-between gap-5 py-3">
-      <dt className="flex min-w-0 items-center gap-2 text-sm text-zinc-500"><Icon className="size-4 shrink-0 text-zinc-400" aria-hidden />{label}</dt>
-      <dd className="min-w-0 max-w-[60%] text-right text-sm font-semibold text-zinc-800">{value}</dd>
+    <div className="min-w-0">
+      <dt className="flex items-center gap-2 text-xs font-medium text-zinc-500"><Icon className="size-3.5 shrink-0 text-zinc-400" aria-hidden />{label}</dt>
+      <dd className="mt-1.5 truncate text-sm font-semibold text-zinc-800">{value}</dd>
     </div>
   );
 }
 
-export function KnowledgeCardDetailPanel({ card, onClose }: { card: KnowledgeCard | null; onClose: () => void }) {
+export function KnowledgeCardDetailPanel({ card, onClose, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard | null; onClose: () => void; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { excerpt: string; location: string } }) {
   return (
     <Sheet open={Boolean(card)} onOpenChange={(open) => !open && onClose()}>
-      {card && <DetailPanelContent card={card} />}
+      {card && <DetailPanelContent card={card} relatedCards={relatedCards} onSelectCard={onSelectCard} sourceContext={sourceContext} />}
     </Sheet>
   );
 }
 
-function DetailPanelContent({ card }: { card: KnowledgeCard }) {
+function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { excerpt: string; location: string } }) {
+  const shouldReduceMotion = useReducedMotion();
   const { label, icon: Icon, badgeClassName } = cardTypeConfig[card.type];
   const detail = card.detail ?? {
     situation: card.summary,
@@ -93,7 +95,7 @@ function DetailPanelContent({ card }: { card: KnowledgeCard }) {
     { icon: Clock3, label: "카드 업데이트", value: formatKnowledgeDate(card.updatedAt) },
   ];
   const recordRows = [
-    { title: "상황", description: detail.situation, icon: FileText, className: "bg-orange-50 text-orange-600" },
+    { title: "상황", description: detail.situation, icon: FileText, className: "bg-stone-100 text-stone-600" },
     { title: "대응 방법", description: detail.resolution, icon: Wrench, className: "bg-sky-50 text-sky-600" },
     { title: "결과", description: detail.outcome, icon: CheckCircle2, className: "bg-emerald-50 text-emerald-600" },
     { title: "재사용 포인트", description: detail.lesson, icon: Lightbulb, className: "bg-violet-50 text-violet-600" },
@@ -103,18 +105,16 @@ function DetailPanelContent({ card }: { card: KnowledgeCard }) {
     <SheetContent
       side="right"
       overlayClassName="bg-zinc-950/25 backdrop-blur-[1px]"
-      style={{
-        top: "0.75rem",
-        right: "0.75rem",
-        bottom: "auto",
-        height: "calc(100% - 1.5rem)",
-        width: "calc(100% - 1.5rem)",
-        maxWidth: "39rem",
-      }}
-      className="gap-0 overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white p-0 shadow-[-24px_24px_70px_-32px_rgba(24,36,31,0.5)]"
+      className="inset-y-3 right-3 h-[calc(100dvh-1.5rem)] w-[min(44rem,calc(100vw-1.5rem))] max-w-none overflow-visible border-0 bg-transparent p-0 shadow-none data-[state=closed]:animate-none data-[state=open]:animate-none sm:inset-y-4 sm:right-4 sm:h-[calc(100dvh-2rem)] sm:w-[min(44rem,calc(100vw-2rem))] sm:max-w-none"
     >
-      <header className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 sm:px-6">
-        <p className="text-xs font-semibold tracking-[0.1em] text-zinc-500">KNOWLEDGE CARD DETAILS</p>
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, x: 80, scale: 0.975 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 280, damping: 28, mass: 0.82 }}
+        className="flex size-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-[-20px_28px_80px_-34px_rgba(35,33,30,0.26),0_1px_0_rgba(255,255,255,0.95)_inset]"
+      >
+      <header className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 sm:px-7">
+        <p className="text-sm font-semibold text-zinc-700">지식 상세</p>
         <SheetClose asChild>
           <button
             type="button"
@@ -126,7 +126,7 @@ function DetailPanelContent({ card }: { card: KnowledgeCard }) {
         </SheetClose>
       </header>
 
-      <div className="app-scrollbar min-h-0 flex-1 overflow-y-auto px-6 pb-7 pt-6 sm:px-8 sm:pb-9 sm:pt-7">
+      <div className="app-scrollbar min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-7 sm:px-9 sm:pt-9">
         <SheetDescription className="sr-only">{card.title} 지식카드의 상세 정보입니다.</SheetDescription>
           <div className="flex items-start gap-3">
             <span className={cn("mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl", badgeClassName)}>
@@ -144,18 +144,14 @@ function DetailPanelContent({ card }: { card: KnowledgeCard }) {
             ))}
           </div>
 
-          <dl className="mt-6 border-y border-zinc-200">
-            {metadataRows.map((row) => <RecordMetaRow key={row.label} {...row} />)}
-          </dl>
-
           <DetailPanelSection title="지식 카드 요약" icon={AlignLeft} labelledBy="knowledge-card-summary-title">
-            <aside className="mt-4 rounded-2xl border border-brand/20 bg-brand/[0.08] px-5 py-4">
+            <aside className="mt-4 border-l-2 border-brand bg-slate-50 px-4 py-3.5">
               <p className="text-[15px] font-medium leading-7 tracking-[-0.01em] text-zinc-800">{card.summary}</p>
             </aside>
           </DetailPanelSection>
 
-          <DetailPanelSection title="처리 기록" icon={ListChecks} labelledBy="knowledge-card-records-title">
-            <ol className="mt-4 space-y-6" aria-label="처리 기록">
+          <DetailPanelSection title="처리 기록" icon={ListChecks} labelledBy="knowledge-card-records-title" className="mt-9">
+            <ol className="mt-5 space-y-6" aria-label="처리 기록">
               {recordRows.map((row, index) => <DetailRow key={row.title} {...row} isLast={index === recordRows.length - 1} />)}
             </ol>
           </DetailPanelSection>
@@ -170,8 +166,18 @@ function DetailPanelContent({ card }: { card: KnowledgeCard }) {
                 <a href={card.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-zinc-700 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"><ExternalLink className="size-4" aria-hidden />열기</a>
               ) : null}
             </div>
+            {sourceContext && <blockquote className="mt-4 border-l-2 border-zinc-200 px-4 text-[15px] leading-7 text-zinc-700">{sourceContext.excerpt}<footer className="mt-2 text-xs font-medium text-zinc-500">{sourceContext.location}</footer></blockquote>}
+          </DetailPanelSection>
+
+          {relatedCards && relatedCards.length > 1 && onSelectCard && <DetailPanelSection title="이 문서에서 생성된 지식카드" icon={Layers3} labelledBy="knowledge-card-related-title" className="mt-9 border-t border-zinc-200 pt-6"><div className="mt-3 flex flex-col gap-1">{relatedCards.map((relatedCard) => { const selected = relatedCard.id === card.id; return <button key={relatedCard.id} type="button" onClick={() => onSelectCard(relatedCard)} aria-pressed={selected} className={cn("flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45", selected ? "bg-zinc-100 text-zinc-950" : "text-zinc-600 hover:bg-zinc-50")}><span className="min-w-0 truncate font-medium">{relatedCard.title}</span></button>; })}</div></DetailPanelSection>}
+
+          <DetailPanelSection title="카드 정보" icon={Layers3} labelledBy="knowledge-card-metadata-title" className="mt-9 border-t border-zinc-200 pt-6">
+            <dl className="mt-3 grid grid-cols-1 gap-x-8 gap-y-5 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 sm:grid-cols-2 sm:p-5">
+              {metadataRows.map((row) => <RecordMetaRow key={row.label} {...row} />)}
+            </dl>
           </DetailPanelSection>
       </div>
+      </motion.div>
     </SheetContent>
   );
 }

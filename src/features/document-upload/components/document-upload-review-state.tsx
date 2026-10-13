@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight, LoaderCircle, Plus, X } from "lucide-react";
-import { useId, useRef } from "react";
+import { useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -50,16 +50,14 @@ export function UploadReviewState({
   onRemoveDocument: (id: string) => void;
   onStartProcessing: () => void;
 }) {
-  const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <main className="app-page px-5 py-7 sm:px-8 sm:py-9 lg:px-12">
-      <section className="mx-auto w-full max-w-6xl rounded-[2rem] border border-zinc-200/90 bg-white px-6 py-7 shadow-[0_28px_64px_-54px_rgba(24,36,31,0.72)] sm:px-9 sm:py-9">
-        <header className="flex flex-col justify-between gap-5 border-b border-zinc-100 pb-7 sm:flex-row sm:items-end">
+    <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+      <section className="mx-auto w-full max-w-6xl">
+        <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div className="max-w-xl">
-            <p className="text-xs font-medium tracking-[0.16em] text-zinc-400">DOCUMENTS</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em] text-zinc-950 sm:text-4xl">
+            <h1 className="text-3xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
               업로드할 문서를 확인하세요.
             </h1>
             <p className="mt-3 text-sm leading-6 text-zinc-500 sm:text-base">
@@ -69,19 +67,9 @@ export function UploadReviewState({
 
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => inputRef.current?.click()}
-              className="rounded-xl border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950"
-            >
-              <Plus className="size-4" aria-hidden />
-              문서 추가
-            </Button>
-            <Button
               onClick={onStartProcessing}
               size="lg"
-              className="rounded-xl bg-zinc-950 px-5 text-white hover:bg-zinc-800"
+              className="rounded-xl bg-primary px-5 text-primary-foreground hover:bg-primary/90"
             >
               업로드 시작
               <ChevronRight className="size-4" aria-hidden />
@@ -89,15 +77,16 @@ export function UploadReviewState({
           </div>
         </header>
 
-        <section className="pt-7" aria-label="선택한 문서">
+        <section className="mt-9" aria-label="선택한 문서">
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm font-medium text-zinc-700">선택한 문서 {documents.length}개</p>
             <input
               ref={inputRef}
-              id={inputId}
               type="file"
               multiple
               className="sr-only"
+              aria-hidden
+              tabIndex={-1}
               accept={acceptedDocumentFileTypes}
               onChange={(event) => {
                 onAddDocuments(event.target.files);
@@ -114,7 +103,7 @@ export function UploadReviewState({
               return (
                 <article
                   key={document.id}
-                  className="group flex min-h-52 min-w-0 shrink-0 basis-full flex-col overflow-hidden rounded-[1.25rem] border border-zinc-200/80 bg-zinc-50/70 p-4 transition-[background-color,transform,box-shadow] duration-200 sm:basis-[calc((100%-1rem)/2)] hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_18px_32px_-28px_rgba(24,36,31,0.42)] lg:basis-[calc((100%-2rem)/3)] xl:basis-[calc((100%-3rem)/4)]"
+                  className="group flex min-h-52 min-w-0 shrink-0 basis-full flex-col overflow-hidden rounded-[1.25rem] border border-stone-200/90 bg-white p-4 shadow-[0_18px_34px_-30px_rgba(35,33,30,0.18),0_1px_0_rgba(255,255,255,0.95)_inset] transition-[background-color,border-color,box-shadow] duration-200 sm:basis-[calc((100%-1rem)/2)] hover:border-stone-300 hover:bg-stone-50/70 hover:shadow-[0_22px_38px_-30px_rgba(35,33,30,0.26)] lg:basis-[calc((100%-2rem)/3)] xl:basis-[calc((100%-3rem)/4)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className={cn("grid size-10 place-items-center rounded-xl border font-mono text-[0.65rem] font-medium tracking-[0.08em] shadow-[0_10px_18px_-16px_rgba(24,36,31,0.5)]", visual.badge)}>
@@ -123,7 +112,7 @@ export function UploadReviewState({
                     <button
                       type="button"
                       onClick={() => onRemoveDocument(document.id)}
-                      className="grid size-8 cursor-pointer place-items-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45"
+                      className="grid size-8 cursor-pointer place-items-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
                       aria-label={`${document.file.name} 제거`}
                     >
                       <X className="size-4" aria-hidden />
@@ -160,6 +149,18 @@ export function UploadReviewState({
                 </article>
               );
             })}
+
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="flex min-h-52 min-w-0 shrink-0 basis-full flex-col items-center justify-center rounded-[1.25rem] border border-dashed border-zinc-300 bg-white/55 p-4 text-center text-zinc-500 transition-[background-color,border-color,color] duration-200 hover:border-zinc-400 hover:bg-white hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-2 sm:basis-[calc((100%-1rem)/2)] lg:basis-[calc((100%-2rem)/3)] xl:basis-[calc((100%-3rem)/4)]"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-zinc-100 text-zinc-600">
+                <Plus className="size-5" aria-hidden />
+              </span>
+              <span className="mt-4 text-sm font-semibold text-zinc-700">문서 더 추가</span>
+              <span className="mt-1 text-xs text-zinc-400">여러 파일 선택 가능</span>
+            </button>
           </div>
         </section>
       </section>

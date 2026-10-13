@@ -84,8 +84,8 @@ function SidebarLink({
       href={item.href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex h-11 w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-xl py-0 pl-3.5 pr-3 text-sm font-medium text-zinc-500 transition-[background-color,color,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-950 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45",
-        active && "bg-emerald-50 text-emerald-950",
+        "group flex h-11 w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-xl py-0 pl-3.5 pr-3 text-sm font-medium text-zinc-500 transition-[background-color,color,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-950 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
+        active && "bg-stone-100 text-zinc-950",
       )}
     >
       <SidebarRowContent icon={item.icon} label={item.label} collapsed={collapsed} />
@@ -140,7 +140,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             : { duration: 0.42, ease: [0.22, 1, 0.36, 1] }
         }
         className={cn(
-          "relative z-10 flex shrink-0 flex-col overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/90 p-3 shadow-[0_18px_45px_-34px_rgba(24,36,31,0.45)] backdrop-blur-sm",
+          "relative z-10 flex shrink-0 flex-col overflow-hidden rounded-3xl border border-stone-200/90 bg-white/90 p-3 shadow-[0_22px_50px_-36px_rgba(35,33,30,0.27),0_1px_0_rgba(255,255,255,0.95)_inset] backdrop-blur-sm",
           isChatRoute
             ? "h-full"
             : "sticky top-3 h-[calc(100dvh-1.5rem)] sm:top-4 sm:h-[calc(100dvh-2rem)]",
@@ -167,7 +167,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => setCollapsed(true)}
-              className="grid size-8 cursor-pointer place-items-center justify-self-end rounded-lg text-zinc-400 transition-[background-color,color,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45 max-md:hidden"
+              className="grid size-8 cursor-pointer place-items-center justify-self-end rounded-lg text-zinc-400 transition-[background-color,color,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 max-md:hidden"
               aria-label="사이드바 접기"
               title="사이드바 접기"
             >
@@ -202,7 +202,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           />
           <div className="mt-3 grid h-12 grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50">
             <span className="grid size-12 place-items-center">
-              <span className="grid size-7 place-items-center rounded-lg bg-emerald-100 text-[11px] font-semibold text-emerald-800">
+              <span className="grid size-7 place-items-center rounded-lg bg-primary text-[11px] font-semibold text-primary-foreground">
                 K
               </span>
             </span>
@@ -239,14 +239,14 @@ function SidebarBrand({
       <button
         type="button"
         onClick={collapsed ? onExpand : onHome}
-        className="group relative inline-grid cursor-pointer place-items-center rounded-2xl p-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45"
+        className="group relative inline-grid cursor-pointer place-items-center rounded-2xl p-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
         aria-label={collapsed ? "사이드바 펼치기" : "Knowledge 홈"}
         title={collapsed ? "사이드바 펼치기" : "Knowledge 홈"}
       >
         <span
           aria-hidden
           className={cn(
-            "absolute inset-0 rounded-2xl bg-zinc-950",
+            "absolute inset-0 rounded-2xl bg-primary",
             collapsed &&
               "transition-[background-color] duration-300 ease-in-out group-hover:bg-zinc-100 motion-reduce:transition-none",
           )}
@@ -288,7 +288,7 @@ function SidebarUtility({
     <button
       type="button"
       className={cn(
-        "flex h-10 w-full items-center gap-2.5 overflow-hidden rounded-xl py-0 pl-3.5 pr-3 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45",
+        "flex h-10 w-full items-center gap-2.5 overflow-hidden rounded-xl py-0 pl-3.5 pr-3 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
         cursorDefault ? "cursor-default" : "cursor-pointer",
       )}
     >

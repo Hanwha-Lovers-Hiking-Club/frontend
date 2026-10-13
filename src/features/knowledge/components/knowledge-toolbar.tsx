@@ -38,7 +38,7 @@ export function KnowledgeToolbar({
   return (
     <section
       aria-label="지식카드 검색 및 정렬"
-      className="mt-7 rounded-3xl border border-zinc-200/90 bg-white p-4 shadow-[0_18px_45px_-34px_rgba(24,36,31,0.45)] sm:p-5"
+      className="mt-7 border-b border-zinc-200 py-4"
     >
       <form
         className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
@@ -58,13 +58,13 @@ export function KnowledgeToolbar({
             placeholder="제목, 내용, 태그로 지식카드 검색"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/70 py-2 pl-11 pr-14 text-sm text-zinc-900 outline-none transition-[border-color,background-color,box-shadow] placeholder:text-zinc-400 focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/15"
+            className="h-12 w-full rounded-lg border border-zinc-200 bg-white py-2 pl-11 pr-14 text-sm text-zinc-900 outline-none transition-[border-color,background-color,box-shadow] placeholder:text-zinc-400 focus:border-brand focus:ring-2 focus:ring-brand/15"
           />
           <button
             type="submit"
             aria-label="검색"
             title="검색"
-            className="absolute right-1.5 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-xl bg-zinc-950 text-white transition-[background-color,transform] hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+            className="absolute right-1.5 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg bg-primary text-primary-foreground transition-[background-color,transform] hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
           >
             <Search className="size-4" aria-hidden />
           </button>

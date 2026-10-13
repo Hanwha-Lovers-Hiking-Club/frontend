@@ -395,6 +395,18 @@ const mockRecordMeta: Record<string, Pick<KnowledgeCard, "department" | "project
   "kc-012": { department: "문서 인텔리전스", projectDate: "2026-08-28" },
 };
 
+/** 채팅의 인용 패널처럼 단일 지식카드를 바로 보여줘야 하는 화면에서 사용한다. */
+export function getMockKnowledgeCard(id: string): KnowledgeCard | null {
+  const card = mockCards.find((item) => item.id === id);
+  if (!card) return null;
+
+  return {
+    ...card,
+    ...mockRecordMeta[card.id],
+    detail: mockDetails[card.id],
+  };
+}
+
 export function queryMockCards({ query, type, sort, page, pageSize }: KnowledgeCardQuery): KnowledgeCardPage {
   const keyword = query.trim().toLocaleLowerCase();
   const cards = mockCards.map((card) => ({ ...card, ...mockRecordMeta[card.id], detail: mockDetails[card.id] }));

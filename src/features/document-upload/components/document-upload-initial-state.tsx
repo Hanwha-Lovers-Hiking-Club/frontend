@@ -1,9 +1,8 @@
 "use client";
 
-import { Upload } from "lucide-react";
-import { useId, useRef } from "react";
+import { FileUp, Upload } from "lucide-react";
+import { useRef } from "react";
 
-import { Button } from "@/components/ui/button";
 import { acceptedDocumentFileTypes, acceptedDocumentFileTypesLabel } from "@/features/document-upload/file-utils";
 
 export function UploadInitialState({
@@ -11,46 +10,55 @@ export function UploadInitialState({
 }: {
   onAddDocuments: (files: FileList | null) => void;
 }) {
-  const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <main className="app-page grid place-items-center px-5 py-7 sm:px-8">
-      <section className="w-full max-w-xl rounded-[2rem] border border-zinc-200/90 bg-white px-7 py-10 text-center shadow-[0_28px_64px_-54px_rgba(24,36,31,0.72)] sm:px-12 sm:py-12">
-        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-zinc-100 text-zinc-700">
-          <Upload className="size-5" aria-hidden />
-        </div>
-        <p className="mt-6 text-xs font-medium tracking-[0.14em] text-zinc-400">DOCUMENT UPLOAD</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
-          문서를 추가하세요.
-        </h1>
-        <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-zinc-500">
-          선택한 문서는 분석을 거쳐 지식카드의 기반이 됩니다.
-        </p>
-        <div className="mt-8 rounded-2xl bg-zinc-50 p-3">
-          <input
-            ref={inputRef}
-            id={inputId}
-            type="file"
-            multiple
-            className="sr-only"
-            accept={acceptedDocumentFileTypes}
-            onChange={(event) => {
-              onAddDocuments(event.target.files);
-              event.target.value = "";
-            }}
-          />
-          <Button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            size="lg"
-            className="h-12 w-full rounded-xl bg-zinc-950 text-base text-white hover:bg-zinc-800"
-          >
-            파일 선택
-            <Upload className="size-4" aria-hidden />
-          </Button>
-        </div>
-        <p className="mt-4 text-xs text-zinc-400">{acceptedDocumentFileTypesLabel} · 여러 파일 선택 가능</p>
+    <main className="app-page flex items-center px-5 py-8 sm:px-8 sm:py-12 lg:px-12">
+      <section className="mx-auto w-full max-w-xl">
+        <header className="mx-auto max-w-md text-center">
+          <h1 className="text-3xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
+            문서를 추가하세요.
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-zinc-500 sm:text-base">
+            선택한 문서는 분석을 거쳐 지식카드의 기반이 됩니다.
+          </p>
+        </header>
+
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          className="sr-only"
+          aria-hidden
+          tabIndex={-1}
+          accept={acceptedDocumentFileTypes}
+          onChange={(event) => {
+            onAddDocuments(event.target.files);
+            event.target.value = "";
+          }}
+        />
+        <section className="mt-8 rounded-[1.75rem] border border-stone-200/90 bg-white p-2 shadow-[0_26px_60px_-48px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]">
+          <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.35rem] border border-dashed border-zinc-200 bg-zinc-50/55 px-6 py-10 text-center sm:min-h-96 sm:px-10">
+            <span className="grid size-14 place-items-center rounded-2xl bg-white text-zinc-700 shadow-[0_12px_24px_-20px_rgba(24,36,31,0.65)]">
+              <FileUp className="size-6" aria-hidden />
+            </span>
+            <h2 className="mt-6 text-xl font-semibold tracking-[-0.03em] text-zinc-950">파일을 선택하세요</h2>
+            <p className="mt-2 max-w-xs text-sm leading-6 text-zinc-500">
+              여러 파일을 한 번에 선택하고, 업로드 전에 목록을 확인할 수 있습니다.
+            </p>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-2"
+            >
+              파일 선택
+              <Upload className="size-4" aria-hidden />
+            </button>
+          </div>
+          <footer className="px-4 pb-3 pt-4 text-center">
+            <p className="text-xs text-zinc-400">지원 형식: {acceptedDocumentFileTypesLabel} · 여러 파일 선택 가능</p>
+          </footer>
+        </section>
       </section>
     </main>
   );
