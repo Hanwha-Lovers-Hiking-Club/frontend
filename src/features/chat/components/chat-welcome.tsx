@@ -79,7 +79,7 @@ export function ChatWelcome({
                     variant="outline"
                     size="sm"
                     onClick={() => onPromptChange(suggestion)}
-                    className="h-9 rounded-xl border-zinc-200 bg-white/75 px-3.5 text-zinc-600 shadow-none transition-[background-color,border-color,color,transform] hover:-translate-y-px hover:border-zinc-300 hover:bg-white hover:text-zinc-950 active:translate-y-0"
+                    className="h-9 rounded-xl border-stone-200 bg-white/75 px-3.5 text-zinc-600 shadow-none transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-stone-300 hover:bg-white hover:text-zinc-950 hover:shadow-[0_10px_18px_-16px_rgba(35,33,30,0.36)] active:translate-y-0"
                   >
                     {suggestion}
                   </Button>

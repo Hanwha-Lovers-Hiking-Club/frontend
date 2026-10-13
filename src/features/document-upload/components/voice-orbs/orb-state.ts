@@ -47,6 +47,8 @@ export interface OrbProps {
   speed?: number;
   colorFrom?: string;
   colorTo?: string;
+  accentColor?: string;
+  accentRatio?: number;
   particleCount?: number;
   motion?: OrbMotionOverrides;
   levelRef?: RefObject<number>;

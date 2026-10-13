@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/utils/cn";
 
-const baseButton = "grid size-10 place-items-center rounded-xl transition-colors";
+const baseButton = "grid size-10 place-items-center rounded-xl text-sm leading-none transition-colors";
 const outlineButton = "border border-zinc-200 bg-white text-zinc-600 shadow-[0_1px_1px_rgba(24,36,31,0.03)] hover:border-zinc-300 hover:bg-zinc-50";
 
 export function KnowledgePagination({

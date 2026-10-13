@@ -28,7 +28,7 @@ export function KnowledgeCardGrid({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-4 h-10 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm leading-none font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           다시 시도
         </button>

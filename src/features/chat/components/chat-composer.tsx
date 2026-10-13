@@ -29,7 +29,7 @@ export function ChatComposer({
 }) {
   return (
     <PromptInput
-      className="[&_[data-slot=input-group]]:rounded-[1.45rem] [&_[data-slot=input-group]]:border-stone-200 [&_[data-slot=input-group]]:bg-white [&_[data-slot=input-group]]:shadow-[0_22px_52px_-34px_rgba(35,33,30,0.22),0_1px_0_rgba(255,255,255,0.95)_inset] [&_[data-slot=input-group]]:transition-[border-color,box-shadow] [&_[data-slot=input-group]]:focus-within:border-stone-300 [&_[data-slot=input-group]]:focus-within:shadow-[0_28px_60px_-32px_rgba(35,33,30,0.3),0_1px_0_rgba(255,255,255,0.95)_inset]"
+      className="[&_[data-slot=input-group]]:rounded-[1.45rem] [&_[data-slot=input-group]]:border-stone-200 [&_[data-slot=input-group]]:bg-white [&_[data-slot=input-group]]:shadow-[0_22px_52px_-34px_rgba(35,33,30,0.22),0_1px_0_rgba(255,255,255,0.95)_inset] [&_[data-slot=input-group]]:transition-[border-color,box-shadow,transform] [&_[data-slot=input-group]]:duration-200 [&_[data-slot=input-group]]:hover:-translate-y-px [&_[data-slot=input-group]]:hover:border-stone-300 [&_[data-slot=input-group]]:hover:shadow-[0_26px_56px_-32px_rgba(35,33,30,0.28),0_1px_0_rgba(255,255,255,0.95)_inset] [&_[data-slot=input-group]]:focus-within:translate-y-0 [&_[data-slot=input-group]]:focus-within:border-stone-300 [&_[data-slot=input-group]]:focus-within:shadow-[0_28px_60px_-32px_rgba(35,33,30,0.3),0_1px_0_rgba(255,255,255,0.95)_inset]"
       onSubmit={({ text }) => onSubmit(text)}
     >
       <PromptInputBody>

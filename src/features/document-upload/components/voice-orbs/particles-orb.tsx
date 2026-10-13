@@ -20,7 +20,8 @@ const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const TIME_OFFSET = 1.7;
 const TONE_BUCKETS = 6;
 const ALPHA_BUCKETS = 10;
-const BUCKETS = TONE_BUCKETS * ALPHA_BUCKETS;
+const COLOR_VARIANTS = 2;
+const BUCKETS = TONE_BUCKETS * COLOR_VARIANTS * ALPHA_BUCKETS;
 const ANGLE_X = 0.32;
 
 const ERROR_FROM_RGB = hexToRgb(ERROR_COLOR_FROM);
@@ -34,6 +35,7 @@ interface Sphere {
   seed: Float32Array;
   toneBucket: Uint8Array;
   tone: Float32Array;
+  accentSeed: Float32Array;
 }
 
 const buildSphere = (count: number): Sphere => {
@@ -45,6 +47,7 @@ const buildSphere = (count: number): Sphere => {
     seed: new Float32Array(count),
     toneBucket: new Uint8Array(count),
     tone: new Float32Array(count),
+    accentSeed: new Float32Array(count),
   };
   for (let i = 0; i < count; i += 1) {
     const y = 1 - (i / (count - 1)) * 2;
@@ -58,6 +61,7 @@ const buildSphere = (count: number): Sphere => {
     sphere.seed[i] = ((i * 0.7548776662) % 1) * TWO_PI;
     sphere.tone[i] = tone;
     sphere.toneBucket[i] = Math.min(TONE_BUCKETS - 1, Math.floor(tone * TONE_BUCKETS));
+    sphere.accentSeed[i] = (i * 0.3376410213 + 0.17) % 1;
   }
   return sphere;
 };
@@ -79,6 +83,8 @@ export const ParticlesOrb = ({
   speed = 1,
   colorFrom = '#f0abfc',
   colorTo = '#818cf8',
+  accentColor,
+  accentRatio = 0,
   particleCount = DEFAULT_PARTICLE_COUNT,
   motion,
   levelRef,
@@ -88,7 +94,7 @@ export const ParticlesOrb = ({
 }: OrbProps) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const colorRef = useRef({ from: colorFrom, to: colorTo });
+  const colorRef = useRef({ from: colorFrom, to: colorTo, accent: accentColor, accentRatio });
   const motionRef = useRef(motion);
   const drawRef = useRef<((frame: OrbFrame) => void) | null>(null);
 
@@ -108,9 +114,9 @@ export const ParticlesOrb = ({
   const { frameRef } = useOrbAnimator(hostRef, { state, levelRef, speed, onFrame });
 
   useEffect(() => {
-    colorRef.current = { from: colorFrom, to: colorTo };
+    colorRef.current = { from: colorFrom, to: colorTo, accent: accentColor, accentRatio };
     drawRef.current?.({ ...frameRef.current, dt: 0 });
-  }, [colorFrom, colorTo, frameRef]);
+  }, [accentColor, accentRatio, colorFrom, colorTo, frameRef]);
 
   useEffect(() => {
     motionRef.current = motion;
@@ -143,7 +149,7 @@ export const ParticlesOrb = ({
     const order = new Uint16Array(n);
     const counts = new Uint16Array(BUCKETS);
     const starts = new Uint16Array(BUCKETS);
-    const toneStyles: string[] = new Array<string>(TONE_BUCKETS).fill('#fff');
+    const toneStyles: string[] = new Array<string>(TONE_BUCKETS * COLOR_VARIANTS).fill('#fff');
 
     let paletteKey = '';
     let baseFrom: Rgb = [255, 255, 255];
@@ -156,9 +162,9 @@ export const ParticlesOrb = ({
     let ringPhase = 0;
 
     const ensurePalette = (errorW: number) => {
-      const { from, to } = colorRef.current;
+      const { from, to, accent, accentRatio: ratio } = colorRef.current;
       const errKey = Math.round(errorW * 64);
-      const key = `${from}|${to}|${errKey}`;
+      const key = `${from}|${to}|${accent}|${ratio}|${errKey}`;
       if (key === paletteKey) return;
       paletteKey = key;
       baseFrom = hexToRgb(from);
@@ -168,6 +174,10 @@ export const ParticlesOrb = ({
       const t = mixRgb(baseTo, ERROR_TO_RGB, e);
       for (let b = 0; b < TONE_BUCKETS; b += 1) {
         toneStyles[b] = rgba(mixRgb(f, t, (b + 0.5) / TONE_BUCKETS), 1);
+      }
+      const accentRgb = accent ? hexToRgb(accent) : baseTo;
+      for (let b = 0; b < TONE_BUCKETS; b += 1) {
+        toneStyles[TONE_BUCKETS + b] = rgba(accentRgb, 1);
       }
     };
 
@@ -277,7 +287,9 @@ export const ParticlesOrb = ({
         pr[i] = dot * dotScale;
         alpha *= alphaScale;
         const ab = Math.min(ALPHA_BUCKETS - 1, Math.floor(alpha * ALPHA_BUCKETS));
-        const b = sphere.toneBucket[i] * ALPHA_BUCKETS + ab;
+        const hasAccent = Boolean(colorRef.current.accent) && sphere.accentSeed[i] < colorRef.current.accentRatio;
+        const colorBucket = sphere.toneBucket[i] + (hasAccent ? TONE_BUCKETS : 0);
+        const b = colorBucket * ALPHA_BUCKETS + ab;
         bucketOf[i] = b;
         counts[b] += 1;
       }

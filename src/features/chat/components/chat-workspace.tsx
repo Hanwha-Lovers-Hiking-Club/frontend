@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 
 import { ChatConversation } from "@/features/chat/components/chat-conversation";
+import { useChatAmbientMode } from "@/features/chat/components/chat-ambient-context";
 import { ChatReferencePanel } from "@/features/chat/components/chat-reference-panel";
 import { ChatWelcome } from "@/features/chat/components/chat-welcome";
-import type { ChatMessage, ChatReference } from "@/features/chat/types";
+import type { ChatReference } from "@/features/chat/types";
 import { getMockKnowledgeCard } from "@/features/knowledge/mock";
+import { useChatStore } from "@/stores/use-chat-store";
 
 const demoReply = `업로드된 문서를 기준으로 보면, 현재 흐름은 **문서 수집 → 분석 처리 → 지식카드 생성**으로 정리할 수 있어요.
 
@@ -55,43 +57,48 @@ const demoReferences: ChatReference[] = [
 
 export function ChatWorkspace() {
   const [prompt, setPrompt] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [referencePanel, setReferencePanel] = useState<{
-    references: ChatReference[];
-    selectedReferenceId: string;
-  } | null>(null);
+  const messages = useChatStore((state) => state.messages);
+  const isStreaming = useChatStore((state) => state.isStreaming);
+  const referencePanel = useChatStore((state) => state.referencePanel);
+  const addUserMessage = useChatStore((state) => state.addUserMessage);
+  const startAssistantMessage = useChatStore((state) => state.startAssistantMessage);
+  const appendAssistantChunk = useChatStore((state) => state.appendAssistantChunk);
+  const finishAssistantMessage = useChatStore((state) => state.finishAssistantMessage);
+  const openReference = useChatStore((state) => state.openReference);
+  const closeReferencePanel = useChatStore((state) => state.closeReferencePanel);
+  const selectReference = useChatStore((state) => state.selectReference);
+  const resetStoredConversation = useChatStore((state) => state.resetConversation);
   const streamTimer = useRef<number | null>(null);
+  const setAmbientMode = useChatAmbientMode();
 
   useEffect(() => () => {
     if (streamTimer.current) window.clearInterval(streamTimer.current);
+    useChatStore.getState().finishAssistantMessage();
   }, []);
+
+  useEffect(() => {
+    setAmbientMode(messages.length === 0 ? "welcome" : "conversation");
+  }, [messages.length, setAmbientMode]);
 
   function stopStreaming() {
     if (streamTimer.current) window.clearInterval(streamTimer.current);
     streamTimer.current = null;
-    setIsStreaming(false);
+    finishAssistantMessage();
   }
 
   function submitPrompt(rawText: string) {
     const text = rawText.trim();
     if (!text || streamTimer.current) return;
 
-    const replyId = crypto.randomUUID();
-    const createdAt = new Date();
-    setMessages((current) => [
-      ...current,
-      { id: crypto.randomUUID(), role: "user", content: text, createdAt },
-      { id: replyId, role: "assistant", content: "", createdAt, references: demoReferences },
-    ]);
+    addUserMessage(text);
+    const replyId = startAssistantMessage(demoReferences);
     setPrompt("");
-    setIsStreaming(true);
 
     let cursor = 0;
     streamTimer.current = window.setInterval(() => {
       cursor = Math.min(cursor + STREAM_CHUNK_SIZE, demoReply.length);
       const content = demoReply.slice(0, cursor);
-      setMessages((current) => current.map((message) => (message.id === replyId ? { ...message, content } : message)));
+      appendAssistantChunk(replyId, content);
 
       if (cursor === demoReply.length) stopStreaming();
     }, 36);
@@ -100,8 +107,7 @@ export function ChatWorkspace() {
   function resetConversation() {
     stopStreaming();
     setPrompt("");
-    setMessages([]);
-    setReferencePanel(null);
+    resetStoredConversation();
   }
 
   if (messages.length === 0) {
@@ -118,15 +124,13 @@ export function ChatWorkspace() {
         onSubmit={submitPrompt}
         onStop={stopStreaming}
         onReset={resetConversation}
-        onOpenReference={(reference, references) => setReferencePanel({ references, selectedReferenceId: reference.id })}
+        onOpenReference={openReference}
       />
       <ChatReferencePanel
         references={referencePanel?.references ?? []}
         selectedReferenceId={referencePanel?.selectedReferenceId ?? null}
-        onClose={() => setReferencePanel(null)}
-        onSelectReference={(selectedReferenceId) => {
-          setReferencePanel((current) => current ? { ...current, selectedReferenceId } : current);
-        }}
+        onClose={closeReferencePanel}
+        onSelectReference={selectReference}
       />
     </>
   );

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ComponentType, type CSSProperties } from "react";
+import { type ComponentType, type CSSProperties, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Bot,
@@ -18,6 +18,10 @@ import {
 import { cn } from "@/utils/cn";
 import { useSidebarStore } from "@/stores/use-sidebar-store";
 import { ChatAmbientGlow } from "@/features/chat/components/chat-ambient-glow";
+import {
+  ChatAmbientProvider,
+  type ChatAmbientMode,
+} from "@/features/chat/components/chat-ambient-context";
 import {
   Tooltip,
   TooltipContent,
@@ -85,7 +89,7 @@ function SidebarLink({
       aria-current={active ? "page" : undefined}
       className={cn(
         "group flex h-11 w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-xl py-0 pl-3.5 pr-3 text-sm font-medium text-zinc-500 transition-[background-color,color,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-950 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
-        active && "bg-stone-100 text-zinc-950",
+        active && "bg-brand-soft text-brand-strong",
       )}
     >
       <SidebarRowContent icon={item.icon} label={item.label} collapsed={collapsed} />
@@ -111,7 +115,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const setCollapsed = useSidebarStore((state) => state.setCollapsed);
   const reducedMotion = useReducedMotion();
   const isChatRoute = pathname === "/";
-  const usesAmbientGlow = pathname === "/" || pathname.startsWith("/upload");
+  const usesAmbientGlow = pathname === "/";
+  const [chatAmbientMode, setChatAmbientMode] = useState<ChatAmbientMode>("welcome");
 
   return (
     <div
@@ -128,7 +133,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         usesAmbientGlow && "isolate",
       )}
     >
-      {usesAmbientGlow && <ChatAmbientGlow />}
+      <ChatAmbientProvider value={setChatAmbientMode}>
+      {usesAmbientGlow && <ChatAmbientGlow mode={isChatRoute ? chatAmbientMode : "welcome"} />}
       <motion.aside
         initial={false}
         animate={{
@@ -221,6 +227,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       </motion.aside>
 
       <div className={cn("relative z-10 min-w-0 flex-1", isChatRoute && "min-h-0")}>{children}</div>
+      </ChatAmbientProvider>
     </div>
   );
 }

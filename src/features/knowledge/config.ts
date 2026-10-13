@@ -9,8 +9,8 @@ export const cardTypeConfig: Record<
   KnowledgeCardType,
   { label: string; icon: LucideIcon; badgeClassName: string }
 > = {
-  technical: { label: "기술", icon: Layers3, badgeClassName: "bg-slate-100 text-slate-700" },
-  "case-study": { label: "사례", icon: FolderKanban, badgeClassName: "bg-orange-100/80 text-orange-700" },
+  technical: { label: "기술", icon: Layers3, badgeClassName: "bg-trust/10 text-trust" },
+  "case-study": { label: "사례", icon: FolderKanban, badgeClassName: "bg-brand-soft text-brand-strong" },
   lesson: { label: "교훈", icon: FileText, badgeClassName: "bg-sky-100/80 text-sky-700" },
 };
 

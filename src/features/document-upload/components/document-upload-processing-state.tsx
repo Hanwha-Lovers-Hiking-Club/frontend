@@ -78,6 +78,8 @@ export function UploadProcessingState({
                 speed={currentStep.orb.speed}
                 colorFrom={currentStep.orb.colorFrom}
                 colorTo={currentStep.orb.colorTo}
+                accentColor={currentStep.orb.accentColor}
+                accentRatio={currentStep.orb.accentRatio}
                 particleCount={currentStep.orb.particleCount}
                 motion={currentStep.orb.motion}
                 label={isComplete ? "문서 처리 완료" : "문서 분석 진행 중"}
@@ -112,7 +114,12 @@ export function UploadProcessingState({
                 aria-label="문서 분석 진행률"
               >
                 <motion.div
-                  className={cn("h-full rounded-full", isComplete ? "bg-violet-500" : "bg-primary")}
+                  className={cn(
+                    "h-full rounded-full",
+                    isComplete
+                      ? "bg-[linear-gradient(90deg,#18a89b,#90e3c2)]"
+                      : "bg-[linear-gradient(90deg,#7766f8,#38c7e8)]",
+                  )}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 />
@@ -137,7 +144,7 @@ export function UploadProcessingState({
                   {visibleSteps.map((step, index) => {
                     const stepIndex = firstVisibleStep + index;
                     const isCurrentStep = stepIndex === activeStep;
-                    const isCompletedStep = stepIndex < activeStep;
+                    const isCompletedStep = isComplete || stepIndex < activeStep;
                     const isFinalStep = isComplete && isCurrentStep;
 
                     return (
@@ -157,25 +164,25 @@ export function UploadProcessingState({
                               }
                         }
                         className={cn(
-                          "relative flex h-12 items-center gap-3 rounded-xl border border-transparent px-3 text-sm transition-[background-color,border-color,color] duration-300",
+                          "relative flex h-12 items-center gap-3 rounded-xl border px-3 text-sm transition-[background-color,border-color,color,box-shadow] duration-300",
                           isCurrentStep
                             ? isFinalStep
-                              ? "border-violet-200/90 bg-violet-50 font-medium text-violet-950"
-                              : "border-brand/35 bg-white font-medium text-zinc-950"
+                              ? "border-brand/35 bg-brand-soft font-medium text-zinc-950"
+                              : "border-foreground bg-foreground font-semibold text-white shadow-[0_12px_24px_-20px_rgba(28,25,23,0.65)]"
                             : isCompletedStep
-                              ? "text-zinc-500"
-                              : "text-zinc-400",
+                              ? "border-brand/20 bg-brand-soft text-zinc-700"
+                              : "border-transparent text-zinc-400",
                         )}
                       >
                         <span
                           className={cn(
-                            "grid size-5 shrink-0 place-items-center rounded-full font-mono text-[0.625rem] tabular-nums",
+                            "inline-flex w-5 shrink-0 items-center justify-center font-mono text-[0.625rem] tabular-nums",
                             isFinalStep
-                              ? "bg-violet-100 text-violet-700"
+                              ? "text-brand-strong"
                               : isCurrentStep
-                                ? "bg-slate-100 text-brand-strong"
+                                ? "text-brand"
                                 : isCompletedStep
-                                  ? "bg-zinc-100 text-zinc-500"
+                                  ? "text-brand-strong"
                                   : "text-zinc-400",
                           )}
                         >
@@ -190,7 +197,7 @@ export function UploadProcessingState({
                           <span
                             className={cn(
                               "ml-auto size-1.5 shrink-0 rounded-full",
-                              isFinalStep ? "bg-violet-500" : "bg-primary",
+                              isFinalStep ? "bg-primary" : "bg-primary shadow-[0_0_0_3px_rgba(243,115,33,0.16)]",
                             )}
                           />
                         )}

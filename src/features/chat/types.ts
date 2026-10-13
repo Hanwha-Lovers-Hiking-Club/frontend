@@ -21,5 +21,6 @@ export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   createdAt: Date;
+  status: "streaming" | "complete" | "error";
   references?: ChatReference[];
 };

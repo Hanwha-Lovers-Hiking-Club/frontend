@@ -37,9 +37,9 @@ export function UploadInitialState({
             event.target.value = "";
           }}
         />
-        <section className="mt-8 rounded-[1.75rem] border border-stone-200/90 bg-white p-2 shadow-[0_26px_60px_-48px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]">
-          <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.35rem] border border-dashed border-zinc-200 bg-zinc-50/55 px-6 py-10 text-center sm:min-h-96 sm:px-10">
-            <span className="grid size-14 place-items-center rounded-2xl bg-white text-zinc-700 shadow-[0_12px_24px_-20px_rgba(24,36,31,0.65)]">
+        <section className="group mt-8 rounded-[1.75rem] border border-stone-200/90 bg-white p-2 shadow-[0_26px_60px_-48px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset] transition-[border-color,box-shadow] duration-200 hover:border-stone-300 hover:shadow-[0_30px_64px_-46px_rgba(35,33,30,0.3),0_1px_0_rgba(255,255,255,0.95)_inset]">
+          <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.35rem] border border-dashed border-zinc-200 bg-zinc-50/55 px-6 py-10 text-center transition-[border-color,background-color] duration-200 group-hover:border-brand/55 group-hover:bg-white sm:min-h-96 sm:px-10">
+            <span className="grid size-14 place-items-center rounded-2xl bg-white text-zinc-700 shadow-[0_12px_24px_-20px_rgba(24,36,31,0.65)] transition-[color,box-shadow,transform] duration-200 group-hover:-translate-y-0.5 group-hover:text-brand-strong group-hover:shadow-[0_16px_28px_-20px_rgba(35,33,30,0.46)]">
               <FileUp className="size-6" aria-hidden />
             </span>
             <h2 className="mt-6 text-xl font-semibold tracking-[-0.03em] text-zinc-950">파일을 선택하세요</h2>
@@ -49,7 +49,7 @@ export function UploadInitialState({
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-2"
+              className="mt-7 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm leading-none font-semibold text-primary-foreground transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-px hover:bg-primary/90 hover:shadow-[0_12px_20px_-12px_rgba(243,115,33,0.62)] active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-2"
             >
               파일 선택
               <Upload className="size-4" aria-hidden />

@@ -115,11 +115,11 @@ export function ChatConversation({
                   ) : (
                     <div className="min-w-0 border-l-2 border-zinc-200/90 py-0.5 pl-5 sm:pl-6">
                       <MessageContent className="w-full max-w-none !bg-transparent !p-0 text-[14px] leading-[1.8] text-zinc-700 shadow-none [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_p]:my-0 [&_p:not(:first-child)]:mt-4 [&_strong]:font-semibold [&_strong]:text-zinc-950">
-                        <MessageResponse isAnimating={isStreaming && message.id === latestMessageId}>
+                        <MessageResponse isAnimating={message.status === "streaming" && message.id === latestMessageId}>
                           {message.content || " "}
                         </MessageResponse>
                       </MessageContent>
-                      {message.content && !(isStreaming && message.id === latestMessageId) && (
+                      {message.content && message.status !== "streaming" && (
                         <div className="mt-4 flex flex-wrap items-center gap-2">
                           {message.references?.map((reference) => (
                             <button
