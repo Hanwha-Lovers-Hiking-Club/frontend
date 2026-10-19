@@ -21,7 +21,7 @@ export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpe
       className="group relative grid min-w-0 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 py-5 transition-[background-color,box-shadow] hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/45 sm:grid-cols-[auto_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] sm:items-center sm:gap-x-5 sm:px-6"
     >
       <span aria-hidden className="absolute inset-y-4 left-0 w-0.5 scale-y-0 bg-brand transition-transform duration-200 group-hover:scale-y-100" />
-      <span className="row-span-2 grid size-10 shrink-0 place-items-center rounded-xl bg-zinc-100 text-zinc-500">
+      <span className="row-span-2 grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-100/80 text-emerald-700">
         <FileText className="size-[18px]" aria-hidden />
       </span>
 

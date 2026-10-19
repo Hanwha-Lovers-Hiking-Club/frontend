@@ -176,6 +176,10 @@ body::-webkit-scrollbar-thumb:hover,
     @apply font-sans;
     background-color: var(--app-canvas);
   }
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-brand) 20%, transparent);
+    color: inherit;
+  }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]) {
     @apply cursor-pointer;
