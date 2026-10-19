@@ -32,14 +32,8 @@ export function ChatAmbientGlow({ mode = "welcome" }: { mode?: ChatAmbientMode }
     };
   }, [mode, pointerOffsetX, pointerOffsetY, reduceMotion]);
 
-  if (mode === "conversation") {
-    return (
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -right-36 -top-40 size-[34rem] rounded-full bg-brand/8 blur-[132px]" />
-        <div className="absolute right-0 top-0 h-[30rem] w-[44rem] bg-[radial-gradient(ellipse_at_top_right,rgba(243,115,33,0.09),transparent_68%)]" />
-      </div>
-    );
-  }
+  // 대화가 시작되면 배경 글로우를 보여주지 않는다. (포인터를 따라다니는 글로우는 첫 화면에서만)
+  if (mode === "conversation") return null;
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
