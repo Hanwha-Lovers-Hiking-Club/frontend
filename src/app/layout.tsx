@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Geist_Mono } from "next/font/google";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { UploadJobRestorer } from "@/features/document-upload/components/upload-job-restorer";
 import "./globals.css";
 
 const paperlogy = localFont({
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${paperlogy.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <UploadJobRestorer />
         <TooltipProvider>
           <AppSidebar>{children}</AppSidebar>
         </TooltipProvider>
