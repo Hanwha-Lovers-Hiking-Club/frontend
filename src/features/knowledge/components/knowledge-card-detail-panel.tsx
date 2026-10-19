@@ -1,6 +1,6 @@
 "use client";
 
-import { AlignLeft, Building2, CalendarDays, CheckCircle2, Clock3, ExternalLink, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
+import { AlignLeft, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, ExternalLink, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { type ReactNode } from "react";
 
@@ -96,6 +96,7 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
     { icon: Building2, label: "담당 부서", value: card.department ?? "미지정" },
     { icon: FolderKanban, label: "출처 프로젝트", value: card.projectName ?? sourceTitle },
     { icon: CalendarDays, label: "프로젝트 날짜", value: formatKnowledgeDate(card.projectDate ?? card.createdAt) },
+    { icon: CalendarPlus, label: "카드 생성일", value: formatKnowledgeDate(card.createdAt) },
     { icon: Clock3, label: "카드 업데이트", value: formatKnowledgeDate(card.updatedAt) },
   ];
   const recordRows = [
