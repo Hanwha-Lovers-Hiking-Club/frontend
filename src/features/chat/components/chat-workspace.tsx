@@ -28,7 +28,7 @@ const demoKnowledgeCard = getMockKnowledgeCard("kc-007");
 const demoSupportingCard = getMockKnowledgeCard("kc-003");
 const demoSourceDocument = {
   id: "document-search-response-design",
-  documentName: "검색 응답 설계서",
+  documentTitle: "검색 응답 설계서",
   location: "2장 · 답변 근거와 지식 연결",
   excerpt: "답변의 각 주장은 원본 문서와 연결하고, 같은 문서에서 파생된 지식카드는 근거를 빠르게 확인할 수 있도록 함께 제공해야 합니다.",
 };
@@ -50,7 +50,7 @@ const demoReferences: ChatReference[] = [
         label: demoSupportingCard.title,
         card: {
           ...demoSupportingCard,
-          evidences: demoSupportingCard.evidences.map((evidence) => ({ ...evidence, documentTitle: demoSourceDocument.documentName })),
+          evidences: demoSupportingCard.evidences.map((evidence) => ({ ...evidence, documentTitle: demoSourceDocument.documentTitle })),
         },
         reason: "문서의 구조를 보존한 단위로 나누는 기준은 이 카드의 청크 분할 원칙을 참고했습니다.",
         document: demoSourceDocument,
