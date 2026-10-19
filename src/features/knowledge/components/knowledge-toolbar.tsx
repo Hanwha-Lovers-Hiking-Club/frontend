@@ -10,27 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cardTypeConfig, sortOptions } from "@/features/knowledge/config";
-import {
-  KNOWLEDGE_CARD_TYPES,
-  type KnowledgeCardTypeFilter,
-  type KnowledgeSort,
-} from "@/features/knowledge/types";
+import { sortOptions } from "@/features/knowledge/config";
+import type { KnowledgeSort } from "@/features/knowledge/types";
 
 const selectClassName =
   "h-12 w-fit min-w-0 max-w-full cursor-pointer whitespace-nowrap rounded-xl border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 shadow-none transition-[border-color,box-shadow] hover:bg-white focus:border-brand focus:ring-2 focus:ring-brand/20";
 
 export function KnowledgeToolbar({
-  type,
   sort,
   onSearch,
-  onTypeChange,
   onSortChange,
 }: {
-  type: KnowledgeCardTypeFilter;
   sort: KnowledgeSort;
   onSearch: (query: string) => void;
-  onTypeChange: (type: KnowledgeCardTypeFilter) => void;
   onSortChange: (sort: KnowledgeSort) => void;
 }) {
   const [draft, setDraft] = useState("");
@@ -71,22 +63,6 @@ export function KnowledgeToolbar({
         </label>
 
         <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-          <Select
-            value={type}
-            onValueChange={(value) => onTypeChange(value as KnowledgeCardTypeFilter)}
-          >
-            <SelectTrigger className={selectClassName} aria-label="카드 유형">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent position="popper" className="rounded-xl border-zinc-200 p-1.5 shadow-lg">
-              <SelectItem value="all" className="cursor-pointer rounded-lg py-2">모든 유형</SelectItem>
-              {KNOWLEDGE_CARD_TYPES.map((value) => (
-                <SelectItem key={value} value={value} className="cursor-pointer rounded-lg py-2">
-                  {cardTypeConfig[value].label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Select
             value={sort}
             onValueChange={(value) => onSortChange(value as KnowledgeSort)}

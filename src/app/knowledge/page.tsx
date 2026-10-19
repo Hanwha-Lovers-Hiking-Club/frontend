@@ -55,10 +55,8 @@ export default function KnowledgePage() {
         </header>
 
         <KnowledgeToolbar
-          type={filters.type}
           sort={filters.sort}
           onSearch={knowledge.setQuery}
-          onTypeChange={knowledge.setType}
           onSortChange={knowledge.setSort}
         />
 

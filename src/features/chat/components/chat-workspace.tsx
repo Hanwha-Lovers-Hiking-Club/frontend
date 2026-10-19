@@ -48,7 +48,10 @@ const demoReferences: ChatReference[] = [
         id: "knowledge-card-kc-003",
         type: "knowledge-card" as const,
         label: demoSupportingCard.title,
-        card: { ...demoSupportingCard, source: demoSourceDocument.documentName },
+        card: {
+          ...demoSupportingCard,
+          evidences: demoSupportingCard.evidences.map((evidence) => ({ ...evidence, documentTitle: demoSourceDocument.documentName })),
+        },
         reason: "문서의 구조를 보존한 단위로 나누는 기준은 이 카드의 청크 분할 원칙을 참고했습니다.",
         document: demoSourceDocument,
       }]

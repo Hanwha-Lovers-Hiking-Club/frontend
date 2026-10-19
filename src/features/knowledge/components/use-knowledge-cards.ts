@@ -7,11 +7,10 @@ import { KNOWLEDGE_PAGE_SIZE } from "@/features/knowledge/config";
 import type {
   KnowledgeCardPage,
   KnowledgeCardQuery,
-  KnowledgeCardTypeFilter,
   KnowledgeSort,
 } from "@/features/knowledge/types";
 
-type Filters = Pick<KnowledgeCardQuery, "query" | "type" | "sort">;
+type Filters = Pick<KnowledgeCardQuery, "query" | "sort">;
 type Result = { key: string; data?: KnowledgeCardPage; error?: Error };
 
 /**
@@ -19,7 +18,7 @@ type Result = { key: string; data?: KnowledgeCardPage; error?: Error };
  * 조건이 바뀌면 1페이지로 돌아가고, 이전 요청은 취소된다.
  */
 export function useKnowledgeCards() {
-  const [filters, setFilters] = useState<Filters>({ query: "", type: "all", sort: "recent" });
+  const [filters, setFilters] = useState<Filters>({ query: "", sort: "recent" });
   const [page, setPage] = useState(1);
   const [retryCount, setRetryCount] = useState(0);
   const [result, setResult] = useState<Result | null>(null);
@@ -59,7 +58,6 @@ export function useKnowledgeCards() {
     isLoading: !isCurrent,
     error: isCurrent ? (result?.error ?? null) : null,
     setQuery: (query: string) => updateFilters({ query }),
-    setType: (type: KnowledgeCardTypeFilter) => updateFilters({ type }),
     setSort: (sort: KnowledgeSort) => updateFilters({ sort }),
     setPage,
     retry: () => setRetryCount((count) => count + 1),

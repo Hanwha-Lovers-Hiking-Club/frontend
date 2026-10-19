@@ -1,10 +1,10 @@
-import { cardTypeConfig } from "@/features/knowledge/config";
+import { FileText } from "lucide-react";
+
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import type { KnowledgeCard as KnowledgeCardData } from "@/features/knowledge/types";
-import { cn } from "@/utils/cn";
 
 export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpen: (card: KnowledgeCardData) => void }) {
-  const { label, icon: Icon, badgeClassName } = cardTypeConfig[card.type];
+  const sourceTitle = card.projectName ?? card.evidences[0]?.documentTitle ?? "";
 
   return (
     <article
@@ -21,29 +21,27 @@ export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpe
       className="group relative grid min-w-0 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 py-5 transition-[background-color,box-shadow] hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/45 sm:grid-cols-[auto_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] sm:items-center sm:gap-x-5 sm:px-6"
     >
       <span aria-hidden className="absolute inset-y-4 left-0 w-0.5 scale-y-0 bg-brand transition-transform duration-200 group-hover:scale-y-100" />
-      <span className={cn("row-span-2 grid size-10 shrink-0 place-items-center rounded-xl", badgeClassName)}>
-        <Icon className="size-[18px]" aria-hidden />
+      <span className="row-span-2 grid size-10 shrink-0 place-items-center rounded-xl bg-zinc-100 text-zinc-500">
+        <FileText className="size-[18px]" aria-hidden />
       </span>
 
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-zinc-500">{label}</span>
-          <span className="hidden text-zinc-300 sm:block" aria-hidden>·</span>
-          <span className="hidden truncate text-xs text-zinc-500 sm:block">{card.source}</span>
+          <span className="truncate text-xs text-zinc-500">{sourceTitle}</span>
         </div>
         <h3 className="mt-1.5 text-pretty text-[15px] font-semibold leading-6 tracking-[-0.025em] text-zinc-950 group-hover:text-zinc-700">
           {card.title}
         </h3>
         <p className="mt-1 line-clamp-1 text-sm leading-6 text-zinc-600">{card.summary}</p>
         <div className="mt-2 flex flex-wrap gap-1.5 sm:hidden">
-          {card.tags.slice(0, 2).map((tag) => (
+          {card.keywords.slice(0, 2).map((tag) => (
             <span key={tag} className="text-xs text-zinc-500">#{tag}</span>
           ))}
         </div>
       </div>
 
       <div className="col-span-2 row-start-2 flex flex-wrap gap-1.5 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:justify-self-start">
-        {card.tags.slice(0, 2).map((tag) => (
+        {card.keywords.slice(0, 2).map((tag) => (
           <span key={tag} className="hidden items-center rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 sm:inline-flex">#{tag}</span>
         ))}
       </div>
