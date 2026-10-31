@@ -1,66 +1,133 @@
-import { processingSteps } from "@/features/document-upload/config";
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/+$/, "");
 
-/**
- * 업로드 작업 서버 통신 경계. 백엔드가 준비되면 이 파일의 두 함수 본문만 교체한다.
- *   - submitUpload  -> POST /upload (파일 저장 후 작업 ID 만 즉시 응답)
- *   - connectJob    -> GET /jobs/{jobId}/events (SSE, 중간 접속 시 현재 단계부터 수신)
- * 지금은 서버 없이 개발할 수 있도록 작업 시작 시각(startedAt)만으로 진행 상태를 계산해 흉내 낸다.
- */
+function apiUrl(path: string) {
+  return `${API_BASE_URL}${path}`;
+}
 
 export type JobProgress = { activeStep: number; progress: number };
 
+export type CompletedJob = {
+  jobId: string;
+  status: "completed";
+  createdCardCount: number;
+};
+
 export type JobHandlers = {
   onProgress: (progress: JobProgress) => void;
-  onComplete: () => void;
-  /** 서버가 모르는 작업 ID (404). 서버 재시작 등으로 발생할 수 있다. */
-  onNotFound: () => void;
+  onComplete: (job: CompletedJob) => void;
+  onFailed: (developerMessage?: string) => void;
+  onUnavailable: () => void;
 };
 
 export type SubmittedJob = {
   jobId: string;
-  /** 개발용 시뮬레이션 전용. 실서버 연동 시 제거한다. */
-  startedAt: number;
+  documentCount: number;
+  status: "queued";
 };
 
-export const INITIAL_PROGRESS = 8;
+export class UploadRequestError extends Error {}
 
-const SIMULATED_START_DELAY = 1_500;
-const SIMULATED_STEP_DURATION = 10_000;
-const SIMULATED_COMPLETE_DELAY = 10_000;
-const SIMULATED_TICK = 500;
+export const INITIAL_PROGRESS = 0;
 
-export async function submitUpload(files: File[]): Promise<SubmittedJob> {
-  void files;
-  return { jobId: crypto.randomUUID(), startedAt: Date.now() };
+async function readErrorDetail(response: Response) {
+  try {
+    const body = (await response.json()) as { detail?: unknown };
+    return typeof body.detail === "string" ? body.detail : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
-export function connectJob(job: SubmittedJob, handlers: JobHandlers): () => void {
-  const lastIndex = processingSteps.length - 1;
-  const totalDuration = SIMULATED_START_DELAY + lastIndex * SIMULATED_STEP_DURATION + SIMULATED_COMPLETE_DELAY;
-  let lastStep = -2;
-  const tick = () => {
-    const elapsed = Date.now() - job.startedAt;
-    if (elapsed >= totalDuration) {
-      clearInterval(timer);
-      handlers.onProgress({ activeStep: lastIndex, progress: processingSteps[lastIndex].progress });
-      handlers.onComplete();
+export async function submitUpload(files: File[]): Promise<SubmittedJob> {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+
+  let response: Response;
+  try {
+    response = await fetch(apiUrl("/api/documents/upload"), {
+      method: "POST",
+      body: formData,
+    });
+  } catch {
+    throw new UploadRequestError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+  }
+
+  if (response.status !== 202) {
+    throw new UploadRequestError(
+      (await readErrorDetail(response)) ?? "문서를 접수하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    );
+  }
+
+  const job = (await response.json()) as Partial<SubmittedJob>;
+  if (
+    typeof job.jobId !== "string" ||
+    typeof job.documentCount !== "number" ||
+    job.status !== "queued"
+  ) {
+    throw new UploadRequestError("서버 응답을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.");
+  }
+
+  return job as SubmittedJob;
+}
+
+function readEventData<T>(event: MessageEvent<string>): T | null {
+  try {
+    return JSON.parse(event.data) as T;
+  } catch {
+    return null;
+  }
+}
+
+export function connectJob(job: Pick<SubmittedJob, "jobId">, handlers: JobHandlers): () => void {
+  const source = new EventSource(
+    apiUrl(`/api/documents/jobs/${encodeURIComponent(job.jobId)}/events`),
+  );
+  let finished = false;
+
+  const close = () => {
+    finished = true;
+    source.close();
+  };
+
+  source.addEventListener("progress", (event: MessageEvent<string>) => {
+    const progress = readEventData<JobProgress>(event);
+    if (
+      progress &&
+      Number.isInteger(progress.activeStep) &&
+      progress.activeStep >= 0 &&
+      progress.activeStep <= 8 &&
+      typeof progress.progress === "number" &&
+      progress.progress >= 0 &&
+      progress.progress <= 100
+    ) {
+      handlers.onProgress(progress);
+    }
+  });
+
+  source.addEventListener("completed", (event: MessageEvent<string>) => {
+    const completed = readEventData<CompletedJob>(event);
+    if (!completed || typeof completed.createdCardCount !== "number") {
+      close();
+      handlers.onUnavailable();
       return;
     }
 
-    const step =
-      elapsed < SIMULATED_START_DELAY
-        ? -1
-        : Math.min(lastIndex, Math.floor((elapsed - SIMULATED_START_DELAY) / SIMULATED_STEP_DURATION));
-    if (step === lastStep) return;
-    lastStep = step;
-    handlers.onProgress(
-      step < 0
-        ? { activeStep: 0, progress: INITIAL_PROGRESS }
-        : { activeStep: step, progress: processingSteps[step].progress },
-    );
+    close();
+    handlers.onComplete(completed);
+  });
+
+  source.addEventListener("failed", (event: MessageEvent<string>) => {
+    const failed = readEventData<{ message?: unknown }>(event);
+    close();
+    handlers.onFailed(typeof failed?.message === "string" ? failed.message : undefined);
+  });
+
+  source.onerror = () => {
+    if (!finished && source.readyState === EventSource.CLOSED) {
+      close();
+      handlers.onUnavailable();
+    }
   };
 
-  const timer = setInterval(tick, SIMULATED_TICK);
-  tick();
-  return () => clearInterval(timer);
+  return close;
 }

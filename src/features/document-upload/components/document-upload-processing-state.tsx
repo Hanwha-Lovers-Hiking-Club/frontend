@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { processingSteps } from "@/features/document-upload/config";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { cn } from "@/utils/cn";
 const PROCESSING_STEP_QUEUE_CAPACITY = 6;
 const PREFERRED_ACTIVE_STEP_POSITION = 2;
 const DEFAULT_PROCESSING_ORB_SIZE = 240;
+const LONG_WAIT_NOTICE_DELAY = 25_000;
 
 function getVisibleStepRange(activeStep: number, totalSteps: number) {
   const visibleStepCount = Math.min(PROCESSING_STEP_QUEUE_CAPACITY, totalSteps);
@@ -28,17 +30,32 @@ export function UploadProcessingState({
   activeStep,
   documentCount,
   progress,
+  isJobStarted = true,
+  createdCardCount = null,
   status = "processing",
   onReset,
 }: {
   activeStep: number;
   documentCount: number;
   progress: number;
+  isJobStarted?: boolean;
+  createdCardCount?: number | null;
   status?: "processing" | "complete";
   onReset?: () => void;
 }) {
   const isComplete = status === "complete";
+  const hasCreatedCards = (createdCardCount ?? 0) > 0;
   const reducedMotion = useReducedMotion();
+  const [delayedStep, setDelayedStep] = useState<number | null>(null);
+  const showLongWaitNotice =
+    !isComplete && isJobStarted && activeStep === 0 && delayedStep === activeStep;
+
+  useEffect(() => {
+    if (isComplete || !isJobStarted || activeStep !== 0) return;
+
+    const timer = window.setTimeout(() => setDelayedStep(activeStep), LONG_WAIT_NOTICE_DELAY);
+    return () => window.clearTimeout(timer);
+  }, [activeStep, isComplete, isJobStarted]);
   const { start: firstVisibleStep, end: lastVisibleStep } = getVisibleStepRange(
     activeStep,
     processingSteps.length,
@@ -52,7 +69,11 @@ export function UploadProcessingState({
         <header className="flex items-start justify-between gap-5 border-b border-zinc-100 px-6 py-6 sm:px-9">
           <div>
             <h1 className="text-xl font-semibold tracking-[-0.04em] text-zinc-950 sm:text-2xl">
-              {isComplete ? "문서 정리가 끝났습니다." : "문서를 지식으로 정리하고 있습니다."}
+              {isComplete
+                ? hasCreatedCards
+                  ? "새로운 지식카드가 완성되었습니다."
+                  : "문서가 검색할 준비를 마쳤습니다."
+                : "문서를 지식으로 정리하고 있습니다."}
             </h1>
           </div>
           <p className="shrink-0 rounded-full bg-zinc-100 px-3 py-1.5 font-mono text-xs tabular-nums text-zinc-500">
@@ -101,9 +122,23 @@ export function UploadProcessingState({
                   className="max-w-[22rem] text-sm leading-6 text-zinc-500"
                 >
                   {isComplete
-                    ? `${documentCount}개 문서의 내용을 지식카드로 정리했습니다.`
+                    ? hasCreatedCards
+                      ? `${documentCount}개 문서에서 ${createdCardCount}개의 지식카드를 발견했습니다.`
+                      : `${documentCount}개 문서에서 카드로 만들 핵심 내용은 없었지만, 검색할 수 있도록 정리했습니다.`
                     : currentStep.label}
                 </motion.p>
+              </AnimatePresence>
+              <AnimatePresence initial={false}>
+                {showLongWaitNotice ? (
+                  <motion.p
+                    initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reducedMotion ? undefined : { opacity: 0, y: -4 }}
+                    className="mt-2 text-xs leading-5 text-zinc-400"
+                  >
+                    분석 환경을 깨우고 있어요. 첫 준비에는 조금 더 시간이 걸릴 수 있습니다.
+                  </motion.p>
+                ) : null}
               </AnimatePresence>
               <div
                 className="mt-3 h-3 overflow-hidden rounded-full bg-zinc-200/80"
@@ -174,7 +209,8 @@ export function UploadProcessingState({
                               : "border-transparent text-zinc-400",
                         )}
                       >
-                        <span
+                        <motion.span
+                          layout
                           className={cn(
                             "inline-flex w-5 shrink-0 items-center justify-center font-mono text-[0.625rem] tabular-nums",
                             isFinalStep
@@ -186,12 +222,22 @@ export function UploadProcessingState({
                                   : "text-zinc-400",
                           )}
                         >
-                          {isCompletedStep ? (
-                            <Check className="size-3" aria-hidden />
-                          ) : (
-                            String(stepIndex + 1).padStart(2, "0")
-                          )}
-                        </span>
+                          <AnimatePresence initial={false} mode="wait">
+                            <motion.span
+                              key={isCompletedStep ? "complete" : "pending"}
+                              initial={reducedMotion ? false : { opacity: 0, scale: 0.7 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={reducedMotion ? undefined : { opacity: 0, scale: 0.7 }}
+                              transition={{ duration: reducedMotion ? 0 : 0.18 }}
+                            >
+                              {isCompletedStep ? (
+                                <Check className="size-3" aria-hidden />
+                              ) : (
+                                String(stepIndex + 1).padStart(2, "0")
+                              )}
+                            </motion.span>
+                          </AnimatePresence>
+                        </motion.span>
                         <span className="min-w-0 truncate">{step.label}</span>
                         {isCurrentStep && (
                           <span
@@ -224,11 +270,15 @@ export function UploadProcessingState({
             className="flex flex-col gap-4 border-t border-zinc-100 bg-zinc-50/60 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-9"
           >
             <p className="text-sm leading-6 text-zinc-500">
-              생성된 지식카드를 확인하거나 새 문서를 추가할 수 있습니다.
+              {hasCreatedCards
+                ? "생성된 지식카드를 확인하거나 새 문서를 추가할 수 있습니다."
+                : "카드는 없지만 문서 내용은 검색과 질문에 활용할 수 있습니다."}
             </p>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button asChild className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/knowledge">지식카드 보러가기</Link>
+                <Link href={hasCreatedCards ? "/knowledge" : "/"}>
+                  {hasCreatedCards ? "지식카드 보러가기" : "문서로 질문하기"}
+                </Link>
               </Button>
               <Button
                 type="button"

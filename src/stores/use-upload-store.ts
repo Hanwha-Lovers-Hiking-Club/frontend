@@ -2,8 +2,14 @@ import { create } from "zustand";
 import { toast } from "sonner";
 
 import { canGenerateDocumentPreview, generateDocumentPreview } from "@/features/document-upload/document-preview";
-import { getDocumentId } from "@/features/document-upload/file-utils";
-import { connectJob, INITIAL_PROGRESS, submitUpload, type SubmittedJob } from "@/features/document-upload/job-client";
+import { getDocumentId, getDocumentSelectionError } from "@/features/document-upload/file-utils";
+import {
+  connectJob,
+  INITIAL_PROGRESS,
+  submitUpload,
+  UploadRequestError,
+  type SubmittedJob,
+} from "@/features/document-upload/job-client";
 import type { SelectedDocument, UploadPhase } from "@/features/document-upload/types";
 
 /**
@@ -13,15 +19,15 @@ import type { SelectedDocument, UploadPhase } from "@/features/document-upload/t
 
 const JOB_STORAGE_KEY = "upload-job";
 
-type StoredJob = SubmittedJob & { documentCount: number };
+type StoredJob = Pick<SubmittedJob, "jobId" | "documentCount">;
 
 function readStoredJob(): StoredJob | null {
   try {
     const raw = localStorage.getItem(JOB_STORAGE_KEY);
     if (!raw) return null;
     const job = JSON.parse(raw) as Partial<StoredJob>;
-    if (typeof job.jobId !== "string" || typeof job.startedAt !== "number") return null;
-    return { jobId: job.jobId, startedAt: job.startedAt, documentCount: Number(job.documentCount) || 1 };
+    if (typeof job.jobId !== "string" || typeof job.documentCount !== "number") return null;
+    return { jobId: job.jobId, documentCount: job.documentCount };
   } catch {
     return null;
   }
@@ -48,6 +54,7 @@ type UploadStore = {
   progress: number;
   activeStep: number;
   jobId: string | null;
+  createdCardCount: number | null;
   addDocuments: (files: FileList | File[] | null) => void;
   removeDocument: (id: string) => void;
   startProcessing: () => Promise<void>;
@@ -59,18 +66,43 @@ type UploadStore = {
 let disconnect: (() => void) | null = null;
 
 export const useUploadStore = create<UploadStore>((set, get) => {
+  function returnToUploadAfterJobError() {
+    disconnect?.();
+    disconnect = null;
+    writeStoredJob(null);
+    set({
+      phase: get().documents.length > 0 ? "review" : "initial",
+      progress: 0,
+      activeStep: 0,
+      jobId: null,
+      createdCardCount: null,
+    });
+  }
+
   function listen(job: StoredJob) {
     disconnect?.();
     disconnect = connectJob(job, {
       onProgress: ({ activeStep, progress }) => set({ activeStep, progress }),
-      onComplete: () => {
+      onComplete: ({ createdCardCount }) => {
         disconnect?.();
         disconnect = null;
-        set({ phase: "complete" });
+        writeStoredJob(null);
+        set({ phase: "complete", progress: 100, activeStep: 8, jobId: null, createdCardCount });
       },
-      onNotFound: () => {
-        // 서버가 모르는 작업이면 저장된 ID 를 지우고 초기 화면으로 돌아간다.
-        get().reset();
+      onFailed: (developerMessage) => {
+        if (process.env.NODE_ENV === "development" && developerMessage) {
+          console.error("Document processing failed:", developerMessage);
+        }
+        returnToUploadAfterJobError();
+        toast.error("문서 분석에 실패했어요.", {
+          description: "문서를 확인한 뒤 다시 업로드해 주세요.",
+        });
+      },
+      onUnavailable: () => {
+        returnToUploadAfterJobError();
+        toast.error("분석 작업을 이어갈 수 없어요.", {
+          description: "서버가 다시 시작되었거나 연결이 종료되었습니다. 다시 업로드해 주세요.",
+        });
       },
     });
   }
@@ -106,12 +138,20 @@ export const useUploadStore = create<UploadStore>((set, get) => {
     progress: 0,
     activeStep: 0,
     jobId: null,
+    createdCardCount: null,
 
     addDocuments: (files) => {
       if (!files) return;
 
+      const selectedFiles = Array.from(files);
+      const validationError = getDocumentSelectionError(selectedFiles);
+      if (validationError) {
+        toast.error("선택한 파일을 추가할 수 없어요.", { description: validationError });
+        return;
+      }
+
       const existingIds = new Set(get().documents.map((document) => document.id));
-      const additions: SelectedDocument[] = Array.from(files)
+      const additions: SelectedDocument[] = selectedFiles
         .map((file) => ({
           id: getDocumentId(file),
           file,
@@ -138,17 +178,29 @@ export const useUploadStore = create<UploadStore>((set, get) => {
       if (documents.length === 0 || phase !== "review") return;
 
       // 접수 요청이 나가는 동안 중복 시작을 막는다.
-      set({ phase: "processing", progress: INITIAL_PROGRESS, activeStep: 0, documentCount: documents.length });
+      set({
+        phase: "processing",
+        progress: INITIAL_PROGRESS,
+        activeStep: 0,
+        documentCount: documents.length,
+        createdCardCount: null,
+      });
       try {
         const submitted = await submitUpload(documents.map((document) => document.file));
-        const job: StoredJob = { ...submitted, documentCount: documents.length };
+        const job: StoredJob = {
+          jobId: submitted.jobId,
+          documentCount: submitted.documentCount,
+        };
         writeStoredJob(job);
-        set({ jobId: job.jobId });
+        set({ jobId: job.jobId, documentCount: job.documentCount });
         listen(job);
-      } catch {
-        set({ phase: "review" });
+      } catch (error) {
+        set({ phase: "review", progress: 0, activeStep: 0 });
         toast.error("문서를 업로드하지 못했습니다.", {
-          description: "잠시 후 다시 시도해 주세요.",
+          description:
+            error instanceof UploadRequestError
+              ? error.message
+              : "잠시 후 다시 시도해 주세요.",
         });
       }
     },
@@ -158,7 +210,14 @@ export const useUploadStore = create<UploadStore>((set, get) => {
       const job = readStoredJob();
       if (!job) return;
 
-      set({ phase: "processing", jobId: job.jobId, documentCount: job.documentCount, progress: INITIAL_PROGRESS, activeStep: 0 });
+      set({
+        phase: "processing",
+        jobId: job.jobId,
+        documentCount: job.documentCount,
+        progress: INITIAL_PROGRESS,
+        activeStep: 0,
+        createdCardCount: null,
+      });
       listen(job);
     },
 
@@ -167,7 +226,15 @@ export const useUploadStore = create<UploadStore>((set, get) => {
       disconnect = null;
       get().documents.forEach(releasePreview);
       writeStoredJob(null);
-      set({ phase: "initial", documents: [], documentCount: 0, progress: 0, activeStep: 0, jobId: null });
+      set({
+        phase: "initial",
+        documents: [],
+        documentCount: 0,
+        progress: 0,
+        activeStep: 0,
+        jobId: null,
+        createdCardCount: null,
+      });
     },
   };
 });
