@@ -7,9 +7,9 @@ export type ChatSourceDocument = {
   /** documents.title */
   documentTitle: string;
   /** card_documents.location */
-  location: string;
+  location: string | null;
   /** card_documents.excerpt */
-  excerpt: string;
+  excerpt: string | null;
 };
 
 export type ChatReference = {
@@ -29,4 +29,5 @@ export type ChatMessage = {
   createdAt: Date;
   status: "streaming" | "complete" | "error";
   references?: ChatReference[];
+  error?: string;
 };

@@ -15,8 +15,9 @@ type ChatStore = {
   addUserMessage: (content: string) => string;
   startAssistantMessage: (references?: ChatReference[]) => string;
   appendAssistantChunk: (messageId: string, content: string) => void;
+  setAssistantReferences: (messageId: string, references: ChatReference[]) => void;
   finishAssistantMessage: (messageId?: string) => void;
-  failAssistantMessage: (messageId?: string) => void;
+  failAssistantMessage: (messageId?: string, error?: string) => void;
   openReference: (reference: ChatReference, references: ChatReference[]) => void;
   closeReferencePanel: () => void;
   selectReference: (referenceId: string) => void;
@@ -61,6 +62,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       )),
     }));
   },
+  setAssistantReferences: (messageId, references) => {
+    set((state) => ({
+      messages: state.messages.map((message) => (
+        message.id === messageId && message.status === "streaming" ? { ...message, references } : message
+      )),
+    }));
+  },
   finishAssistantMessage: (messageId) => {
     const targetId = messageId ?? get().streamingMessageId;
     if (!targetId) return;
@@ -73,13 +81,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       streamingMessageId: state.streamingMessageId === targetId ? null : state.streamingMessageId,
     }));
   },
-  failAssistantMessage: (messageId) => {
+  failAssistantMessage: (messageId, error) => {
     const targetId = messageId ?? get().streamingMessageId;
     if (!targetId) return;
 
     set((state) => ({
       messages: state.messages.map((message) => (
-        message.id === targetId ? { ...message, status: "error" } : message
+        message.id === targetId ? { ...message, status: "error", error } : message
       )),
       isStreaming: state.streamingMessageId === targetId ? false : state.isStreaming,
       streamingMessageId: state.streamingMessageId === targetId ? null : state.streamingMessageId,

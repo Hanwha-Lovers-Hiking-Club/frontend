@@ -12,6 +12,7 @@ COPY . .
 # NEXT_PUBLIC_ 값은 빌드할 때 코드에 박히므로 npm run build보다 앞에 둔다.
 # 브라우저로 전달되는 값이라 서버 전용 키를 넣으면 안 된다
 ARG NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_CHAT_MODE=mock
 RUN npm run build
 
 EXPOSE 3000

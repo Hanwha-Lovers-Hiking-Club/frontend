@@ -1,6 +1,6 @@
 import type { KnowledgeCard, KnowledgeCardEvidence } from "./types";
 
-// 채팅 데모 전용 임시 데이터. 지식카드 페이지는 실제 API 를 쓴다. 채팅을 연동하면 이 파일을 지운다.
+// 채팅 mock 모드 전용 데이터. 지식카드 페이지와 채팅 api 모드는 실제 API를 쓴다.
 // 아래 시드 목록과 상세 텍스트를 buildMockCard 가 DB 컬럼 구조(KnowledgeCard)로 조립한다.
 // createdAt 은 아직 원본 데이터가 없어 updatedAt 과 동일하게 둔다.
 type MockSeed = {
