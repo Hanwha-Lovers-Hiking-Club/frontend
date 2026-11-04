@@ -47,7 +47,7 @@ export function KnowledgeToolbar({
           />
           <input
             type="search"
-            placeholder="제목, 내용, 태그로 지식카드 검색"
+            placeholder="제목, 요약, 배경, 키워드, 기술로 지식카드 검색"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             className="h-12 w-full rounded-lg border border-zinc-200 bg-white py-2 pl-11 pr-14 text-sm text-zinc-900 outline-none transition-[border-color,background-color,box-shadow] placeholder:text-zinc-400 focus:border-brand focus:ring-2 focus:ring-brand/15"

@@ -22,16 +22,16 @@ export type KnowledgeCardEvidence = {
   /** documents.original_filename (사용자가 올린 파일명) */
   originalFilename: string;
   /** 원문 내 위치. 예: "3장 · 통신 방식 선정" */
-  location: string;
+  location: string | null;
   /** 원문에서 그대로 가져온 발췌문 */
-  excerpt: string;
-  /** 백엔드가 내려주는 서명된 임시 URL */
+  excerpt: string | null;
+  /** 지금은 항상 null. 원본 주소는 fetchDocumentUrl 로 열 때 발급받는다 */
   url: string | null;
 };
 
 /**
- * knowledge_cards 테이블 기준 형태. 필드명은 camelCase 로 두었다(백엔드 snake_case 변환 위치는 미정).
- * 날짜는 ISO 문자열이며 date 컬럼은 YYYY-MM-DD 로 받는다.
+ * GET /api/knowledge/cards 응답 형태. 백엔드가 camelCase 로 내려준다.
+ * createdAt 등 timestamptz 는 ISO 일시 문자열, projectDate 는 YYYY-MM-DD 로 받는다.
  * problem / cause / approach / rationale / outcome 은 최소 1개만 값이 있다.
  */
 export type KnowledgeCard = {

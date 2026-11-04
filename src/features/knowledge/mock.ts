@@ -1,6 +1,6 @@
-import type { KnowledgeCard, KnowledgeCardEvidence, KnowledgeCardPage, KnowledgeCardQuery } from "./types";
+import type { KnowledgeCard, KnowledgeCardEvidence } from "./types";
 
-// 백엔드 연결 전 임시 데이터. API 연동 시 이 파일과 api.ts 의 mock 호출만 제거하면 된다.
+// 채팅 데모 전용 임시 데이터. 지식카드 페이지는 실제 API 를 쓴다. 채팅을 연동하면 이 파일을 지운다.
 // 아래 시드 목록과 상세 텍스트를 buildMockCard 가 DB 컬럼 구조(KnowledgeCard)로 조립한다.
 // createdAt 은 아직 원본 데이터가 없어 updatedAt 과 동일하게 둔다.
 type MockSeed = {
@@ -454,24 +454,4 @@ const mockCards: KnowledgeCard[] = mockSeeds.map(buildMockCard);
 /** 채팅의 인용 패널처럼 단일 지식카드를 바로 보여줘야 하는 화면에서 사용한다. */
 export function getMockKnowledgeCard(id: string): KnowledgeCard | null {
   return mockCards.find((item) => item.id === id) ?? null;
-}
-
-export function queryMockCards({ query, sort, page, pageSize }: KnowledgeCardQuery): KnowledgeCardPage {
-  const keyword = query.trim().toLocaleLowerCase();
-
-  const matched = mockCards
-    .filter(
-      (card) =>
-        !keyword ||
-        [card.title, card.summary, ...card.keywords, ...card.evidences.map((evidence) => evidence.documentTitle)].some(
-          (value) => value.toLocaleLowerCase().includes(keyword),
-        ),
-    )
-    .toSorted((a, b) => {
-      if (sort === "name") return a.title.localeCompare(b.title, "ko");
-      const field = sort === "created" ? "createdAt" : "updatedAt";
-      return b[field].localeCompare(a[field]);
-    });
-
-  return { items: matched.slice((page - 1) * pageSize, page * pageSize), total: matched.length };
 }

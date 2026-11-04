@@ -1,8 +1,4 @@
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/+$/, "");
-
-function apiUrl(path: string) {
-  return `${API_BASE_URL}${path}`;
-}
+import { apiUrl, readErrorDetail } from "@/utils/api";
 
 export type JobProgress = { activeStep: number; progress: number };
 
@@ -28,15 +24,6 @@ export type SubmittedJob = {
 export class UploadRequestError extends Error {}
 
 export const INITIAL_PROGRESS = 0;
-
-async function readErrorDetail(response: Response) {
-  try {
-    const body = (await response.json()) as { detail?: unknown };
-    return typeof body.detail === "string" ? body.detail : undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 export async function submitUpload(files: File[]): Promise<SubmittedJob> {
   const formData = new FormData();
