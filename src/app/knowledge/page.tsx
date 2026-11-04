@@ -41,7 +41,7 @@ export default function KnowledgePage() {
 
             <div className="flex items-center gap-5 sm:justify-end">
               <p className="text-sm text-zinc-500">
-                전체 지식 <span className="ml-1 font-mono font-semibold tabular-nums text-zinc-950">{total}</span>
+                {filters.query ? "검색 결과" : "전체 지식"} <span className="ml-1 font-mono font-semibold tabular-nums text-zinc-950">{knowledge.isLoading || knowledge.error ? "—" : total}</span>
               </p>
               <Link
                 href="/upload"
@@ -64,18 +64,18 @@ export default function KnowledgePage() {
           <div className="flex flex-col items-start gap-2 border-b border-zinc-200 bg-zinc-50/65 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
             <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
               <h2 id="knowledge-results-title" className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">
-                전체 지식카드
+                {filters.query ? "검색된 지식카드" : "전체 지식카드"}
               </h2>
               <span className="text-sm text-zinc-500">{sortLabel}</span>
             </div>
             <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-500">
-              {total}개 중 {rangeStart} — {rangeEnd}
+              {knowledge.isLoading ? "불러오는 중…" : knowledge.error ? "조회 실패" : `${total}개 중 ${rangeStart} — ${rangeEnd}`}
             </span>
           </div>
 
           <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] gap-x-5 border-b border-zinc-200 px-6 py-2.5 text-[11px] font-semibold tracking-[0.08em] text-zinc-400 sm:grid">
             <span className="col-start-2">지식카드</span>
-            <span className="col-start-3">키워드</span>
+            <span className="col-start-3">키워드 · 기술스택</span>
             <span className="col-start-4 text-right">업데이트</span>
           </div>
 

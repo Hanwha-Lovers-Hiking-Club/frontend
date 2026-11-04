@@ -6,6 +6,7 @@ import { useState } from "react";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -47,6 +48,7 @@ export function KnowledgeToolbar({
           />
           <input
             type="search"
+            aria-describedby="knowledge-search-help"
             placeholder="제목, 요약, 배경, 키워드, 기술로 지식카드 검색"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
@@ -71,15 +73,20 @@ export function KnowledgeToolbar({
               <SelectValue />
             </SelectTrigger>
             <SelectContent position="popper" className="rounded-xl border-zinc-200 p-1.5 shadow-lg">
+              <SelectGroup>
               {sortOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value} className="cursor-pointer rounded-lg py-2">
                   {option.label}
                 </SelectItem>
               ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
       </form>
+      <p id="knowledge-search-help" className="mt-2 text-xs leading-5 text-zinc-500">
+        제목·요약·배경은 포함된 단어로, 키워드는 정확한 이름으로 검색하세요. 기술스택은 별칭도 지원합니다.
+      </p>
     </section>
   );
 }

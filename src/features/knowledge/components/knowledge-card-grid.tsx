@@ -23,8 +23,9 @@ export function KnowledgeCardGrid({
 }) {
   if (error) {
     return (
-      <div className="mt-5 rounded-2xl border border-dashed border-zinc-200 px-5 py-12 text-center">
+      <div role="alert" className="mt-5 rounded-2xl border border-dashed border-zinc-200 px-5 py-12 text-center">
         <p className="text-sm text-zinc-500">지식카드를 불러오지 못했습니다.</p>
+        <p className="mt-2 text-sm text-zinc-500">{error.message}</p>
         <button
           type="button"
           onClick={onRetry}

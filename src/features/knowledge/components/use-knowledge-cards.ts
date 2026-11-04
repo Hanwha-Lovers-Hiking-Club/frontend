@@ -18,7 +18,7 @@ type Result = { key: string; data?: KnowledgeCardPage; error?: Error };
  * 조건이 바뀌면 1페이지로 돌아가고, 이전 요청은 취소된다.
  */
 export function useKnowledgeCards() {
-  const [filters, setFilters] = useState<Filters>({ query: "", sort: "recent" });
+  const [filters, setFilters] = useState<Filters>({ query: "", sort: "created" });
   const [page, setPage] = useState(1);
   const [retryCount, setRetryCount] = useState(0);
   const [result, setResult] = useState<Result | null>(null);

@@ -18,7 +18,7 @@ export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpe
           onOpen(card);
         }
       }}
-      className="group relative grid min-w-0 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 py-5 transition-[background-color,box-shadow] hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/45 sm:grid-cols-[auto_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] sm:items-center sm:gap-x-5 sm:px-6"
+      className="group relative grid min-w-0 cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-3 px-5 py-5 transition-[background-color,box-shadow] hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/45 sm:grid-cols-[auto_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] sm:items-center sm:gap-x-5 sm:px-6"
     >
       <span aria-hidden className="absolute inset-y-4 left-0 w-0.5 scale-y-0 bg-brand transition-transform duration-200 group-hover:scale-y-100" />
       <span className="row-span-2 grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-100/80 text-emerald-700">
@@ -38,15 +38,27 @@ export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpe
             <span key={tag} className="text-xs text-zinc-500">#{tag}</span>
           ))}
         </div>
+        <div aria-label="기술스택" className="mt-1.5 flex flex-wrap gap-1.5 sm:hidden">
+          {card.technologies.map((technology) => (
+            <span key={technology} className="text-xs text-zinc-500">{technology}</span>
+          ))}
+        </div>
       </div>
 
-      <div className="col-span-2 row-start-2 flex flex-wrap gap-1.5 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:justify-self-start">
+      <div className="hidden min-w-0 flex-col gap-2 sm:col-start-3 sm:row-start-1 sm:flex sm:justify-self-start">
+        <div aria-label="키워드" className="flex flex-wrap gap-1.5">
         {card.keywords.slice(0, 2).map((tag) => (
           <span key={tag} className="hidden items-center rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600 sm:inline-flex">#{tag}</span>
         ))}
+        </div>
+        <div aria-label="기술스택" className="flex flex-wrap gap-1.5">
+          {card.technologies.map((technology) => (
+            <span key={technology} className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600">{technology}</span>
+          ))}
+        </div>
       </div>
 
-      <time dateTime={card.updatedAt} className="col-start-3 row-start-1 shrink-0 self-start text-right text-xs font-medium tabular-nums text-zinc-500 sm:col-start-4 sm:self-center">
+      <time dateTime={card.updatedAt} className="col-start-2 row-start-2 shrink-0 self-start sm:text-right text-xs font-medium tabular-nums text-zinc-500 sm:col-start-4 sm:row-start-1 sm:self-center">
         {formatKnowledgeDate(card.updatedAt)}
       </time>
     </article>
@@ -57,7 +69,7 @@ export function KnowledgeCardSkeleton() {
   return (
     <div
       aria-hidden
-      className="grid animate-pulse grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 py-5 sm:grid-cols-[auto_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] sm:items-center sm:gap-x-5 sm:px-6"
+      className="grid animate-pulse grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-3 px-5 py-5 sm:grid-cols-[auto_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] sm:items-center sm:gap-x-5 sm:px-6"
     >
       <span className="row-span-2 size-10 rounded-xl bg-zinc-100" />
       <div className="min-w-0 space-y-2.5">
@@ -66,7 +78,7 @@ export function KnowledgeCardSkeleton() {
         <span className="block h-3 w-full rounded bg-zinc-100" />
       </div>
       <span className="col-span-2 row-start-2 h-6 w-28 rounded-md bg-zinc-100 sm:col-span-1 sm:col-start-3 sm:row-start-1" />
-      <span className="col-start-3 row-start-1 h-3 w-14 justify-self-end rounded bg-zinc-100 sm:col-start-4" />
+      <span className="col-start-2 row-start-2 h-3 w-14 rounded bg-zinc-100 sm:col-start-4 sm:row-start-1 sm:justify-self-end" />
     </div>
   );
 }

@@ -65,7 +65,7 @@ function RecordMetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: 
   return (
     <div className="min-w-0">
       <dt className="flex items-center gap-2 text-xs font-medium text-zinc-500"><Icon className="size-3.5 shrink-0 text-zinc-400" aria-hidden />{label}</dt>
-      <dd className="mt-1.5 truncate text-sm font-semibold text-zinc-800">{value}</dd>
+      <dd className="mt-1.5 break-words text-sm font-semibold text-zinc-800">{value}</dd>
     </div>
   );
 }
@@ -84,7 +84,7 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
   const sourceTitle = evidence?.documentTitle ?? "";
   const metadataRows = [
     { icon: Building2, label: "담당 부서", value: card.department ?? "미지정" },
-    { icon: FolderKanban, label: "출처 프로젝트", value: card.projectName ?? sourceTitle },
+    { icon: FolderKanban, label: "출처 프로젝트", value: card.projectName ?? "미지정" },
     { icon: CalendarDays, label: "프로젝트 날짜", value: card.projectDate ? formatKnowledgeDate(card.projectDate) : "미지정" },
     { icon: CalendarPlus, label: "카드 생성일", value: formatKnowledgeDate(card.createdAt) },
     { icon: Clock3, label: "카드 업데이트", value: formatKnowledgeDate(card.updatedAt) },

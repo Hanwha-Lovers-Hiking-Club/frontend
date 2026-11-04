@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, ExternalLink, FileText, LoaderCircle } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { toast } from "sonner";
 
 import { fetchDocumentUrl } from "@/features/knowledge/api";
@@ -38,8 +38,8 @@ function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600"><FileText className="size-4" aria-hidden /></span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-zinc-800">{evidence.documentTitle}</p>
-            <p className="mt-0.5 truncate text-xs text-zinc-500">{evidence.location ?? evidence.originalFilename}</p>
+            <p className="break-words text-sm font-semibold text-zinc-800">{evidence.documentTitle}</p>
+            <p className="mt-0.5 break-words text-xs text-zinc-500">{evidence.location ?? evidence.originalFilename}</p>
           </div>
         </div>
         <button
@@ -58,7 +58,7 @@ function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
         </button>
       </div>
       {evidence.excerpt && (
-        <blockquote className="mt-3 border-l-2 border-zinc-200 pl-4 text-sm leading-6 text-zinc-700">{evidence.excerpt}</blockquote>
+        <blockquote className="mt-3 whitespace-pre-wrap break-words border-l-2 border-zinc-200 pl-4 text-sm leading-6 text-zinc-700">{evidence.excerpt}</blockquote>
       )}
     </li>
   );
@@ -66,22 +66,25 @@ function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
 
 export function KnowledgeCardEvidences({ evidences }: { evidences: KnowledgeCardEvidence[] }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const listId = useId();
   const visible = isExpanded ? evidences : evidences.slice(0, VISIBLE_EVIDENCE_COUNT);
   const hiddenCount = evidences.length - visible.length;
 
   return (
     <>
-      <ul className="mt-3 flex flex-col gap-2">
+      <ul id={listId} className="mt-3 flex flex-col gap-2">
         {visible.map((evidence) => <EvidenceItem key={evidence.id} evidence={evidence} />)}
       </ul>
-      {hiddenCount > 0 && (
+      {evidences.length > VISIBLE_EVIDENCE_COUNT && (
         <button
           type="button"
-          onClick={() => setIsExpanded(true)}
+          onClick={() => setIsExpanded((expanded) => !expanded)}
+          aria-expanded={isExpanded}
+          aria-controls={listId}
           className="mt-2 inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 text-sm font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
         >
-          <ChevronDown className="size-4" aria-hidden />
-          근거 {hiddenCount}개 더 보기
+          <ChevronDown className={`size-4 ${isExpanded ? "rotate-180" : ""}`} aria-hidden />
+          {isExpanded ? "근거 접기" : `근거 ${hiddenCount}개 더 보기`}
         </button>
       )}
     </>

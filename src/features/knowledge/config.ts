@@ -15,7 +15,6 @@ export const cardTypeConfig: Record<
 };
 
 export const sortOptions: { value: KnowledgeSort; label: string }[] = [
-  { value: "recent", label: "최근 업데이트순" },
   { value: "created", label: "최신 생성순" },
   { value: "name", label: "이름순" },
 ];

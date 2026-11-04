@@ -5,7 +5,7 @@
 export const KNOWLEDGE_CARD_TYPES = ["technical", "case-study", "lesson"] as const;
 export type KnowledgeCardType = (typeof KNOWLEDGE_CARD_TYPES)[number];
 
-export type KnowledgeSort = "recent" | "created" | "name";
+export type KnowledgeSort = "created" | "name";
 
 /** knowledge_cards.status */
 export type KnowledgeCardStatus = "draft" | "active" | "flagged" | "archived";
