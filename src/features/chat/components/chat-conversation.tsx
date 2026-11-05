@@ -155,6 +155,22 @@ export function ChatConversation({
                           </MessageActions>
                         </div>
                       )}
+                      {message.status !== "streaming" && !!message.sources?.length && (
+                        <details className="mt-3 text-xs text-zinc-500">
+                          <summary className="w-fit cursor-pointer rounded font-medium hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45">
+                            근거 원문 {message.sources.length}개
+                          </summary>
+                          <ul className="mt-2 space-y-2">
+                            {message.sources.map((source) => (
+                              <li key={source.chunkId} className="rounded-lg border border-zinc-200 bg-white/70 px-3 py-2">
+                                <p className="font-medium text-zinc-700">{source.documentTitle}</p>
+                                {source.location && <p className="mt-0.5 text-zinc-400">{source.location}</p>}
+                                <p className="mt-1.5 max-h-32 overflow-y-auto whitespace-pre-wrap leading-5 text-zinc-600">{source.excerpt}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
                     </div>
                   )}
                 </Message>

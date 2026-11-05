@@ -22,6 +22,18 @@ export type ChatReference = {
   document: ChatSourceDocument;
 };
 
+/** 답변의 사실 근거로 쓴 원문 청크. 카드 없이 원문만으로 답한 경우에도 내려온다. */
+export type ChatSource = {
+  /** document_chunks.id */
+  chunkId: string;
+  /** documents.id */
+  documentId: string;
+  documentTitle: string;
+  location: string | null;
+  /** 청크 본문 전체 */
+  excerpt: string;
+};
+
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
@@ -29,5 +41,6 @@ export type ChatMessage = {
   createdAt: Date;
   status: "streaming" | "complete" | "error";
   references?: ChatReference[];
+  sources?: ChatSource[];
   error?: string;
 };

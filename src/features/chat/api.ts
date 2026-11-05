@@ -1,4 +1,4 @@
-import type { ChatMessage, ChatReference } from "./types";
+import type { ChatMessage, ChatReference, ChatSource } from "./types";
 
 type ChatRequest = {
   message: string;
@@ -7,7 +7,7 @@ type ChatRequest = {
 
 type ChatHandlers = {
   onToken: (content: string) => void;
-  onReferences: (references: ChatReference[]) => void;
+  onReferences: (references: ChatReference[], sources: ChatSource[]) => void;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -26,6 +26,12 @@ function isReference(value: unknown): value is ChatReference {
     && Array.isArray(card.evidences) && card.evidences.every((evidence) => isRecord(evidence)
       && ["id", "documentId", "documentTitle", "originalFilename"].every((key) => typeof evidence[key] === "string")
       && ["location", "excerpt", "url"].every((key) => evidence[key] === null || typeof evidence[key] === "string"));
+}
+
+function isSource(value: unknown): value is ChatSource {
+  return isRecord(value)
+    && [value.chunkId, value.documentId, value.documentTitle, value.excerpt].every((v) => typeof v === "string")
+    && (value.location === null || typeof value.location === "string");
 }
 
 /** POST SSE: token.content는 누적 답변이 아닌 새로 추가할 문자열이다. */
@@ -85,8 +91,11 @@ export async function streamChat(
           if (typeof payload.content !== "string") throw new Error("답변 토큰 형식이 올바르지 않습니다.");
           handlers.onToken(payload.content);
         } else if (event === "references") {
-          if (!Array.isArray(payload.items) || !payload.items.every(isReference)) throw new Error("답변 근거 형식이 올바르지 않습니다.");
-          handlers.onReferences(payload.items);
+          if (!Array.isArray(payload.items) || !payload.items.every(isReference)
+            || !Array.isArray(payload.sources) || !payload.sources.every(isSource)) {
+            throw new Error("답변 근거 형식이 올바르지 않습니다.");
+          }
+          handlers.onReferences(payload.items, payload.sources);
         }
       }
     }

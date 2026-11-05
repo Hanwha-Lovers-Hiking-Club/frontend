@@ -24,7 +24,7 @@ const handlers = { onToken() {}, onReferences() {} };
 
 test("POST history, fragmented Korean tokens, heartbeats and references", async (t) => {
   mockStream(t, ': ping\r\n\r\n' + event("token", { content: "한글 " })
-    + event("token", { content: "답변" }) + event("references", { items: [] }) + event("completed", {}));
+    + event("token", { content: "답변" }) + event("references", { items: [], sources: [] }) + event("completed", { messageId: "id" }));
   let answer = "";
   let references;
   await streamChat("http://test/chat", request, {
@@ -33,6 +33,14 @@ test("POST history, fragmented Korean tokens, heartbeats and references", async 
   }, new AbortController().signal);
   assert.equal(answer, "한글 답변");
   assert.deepEqual(references, []);
+});
+
+test("delivers sources when an answer has no knowledge cards", async (t) => {
+  const source = { chunkId: "chunk", documentId: "document", documentTitle: "문서", location: null, excerpt: "원문" };
+  mockStream(t, event("references", { items: [], sources: [source] }) + event("completed", {}));
+  let received;
+  await streamChat("http://test/chat", request, { ...handlers, onReferences: (_, sources) => { received = sources; } }, new AbortController().signal);
+  assert.deepEqual(received, [source]);
 });
 
 test("accepts nullable document fields with a complete reference", async (t) => {
@@ -45,7 +53,7 @@ test("accepts nullable document fields with a complete reference", async (t) => 
   };
   const reference = { id: "evidence", type: "knowledge-card", label: "제목", reason: "이유", card,
     document: { id: "document", documentTitle: "문서", location: null, excerpt: null } };
-  mockStream(t, event("references", { items: [reference] }) + event("completed", {}));
+  mockStream(t, event("references", { items: [reference], sources: [] }) + event("completed", {}));
   let received;
   await streamChat("http://test/chat", request, { ...handlers, onReferences: (items) => { received = items; } }, new AbortController().signal);
   assert.deepEqual(received, [reference]);
@@ -55,7 +63,8 @@ for (const [name, text, error] of [
   ["server error", event("error", { message: "생성 실패" }), /생성 실패/],
   ["missing completed", event("token", { content: "일부 답변" }), /완료 전에/],
   ["invalid token", event("token", { content: 42 }), /토큰 형식/],
-  ["invalid reference", event("references", { items: [{ card: null }] }), /근거 형식/],
+  ["invalid reference", event("references", { items: [{ card: null }], sources: [] }), /근거 형식/],
+  ["invalid source", event("references", { items: [], sources: [{ chunkId: 1 }] }), /근거 형식/],
   ["invalid JSON", "event: token\ndata: broken\n\n", /JSON|Unexpected/],
 ]) {
   test(name, async (t) => {

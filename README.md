@@ -1,14 +1,12 @@
 ## 챗봇 연결
 
-기본값은 기존 프론트 데모(`mock`)입니다. `.env.local`에 아래 값을 설정하고 개발 서버를 재시작하면 API 모드로 전환합니다.
+챗봇은 항상 백엔드 API를 호출합니다. 로컬 개발에서는 `.env.local`에 주소를 설정합니다.
 
 ```dotenv
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
-NEXT_PUBLIC_CHAT_MODE=api
 ```
 
-`mock`으로 되돌리면 기존 답변·참조 카드 데모를 그대로 사용합니다. API 오류 시 목데이터로 자동 전환하지 않습니다.
-`NEXT_PUBLIC_` 설정은 빌드 시 고정되므로 배포에서는 다시 빌드해야 합니다. Docker Compose의 프론트 `build.args`에도 `NEXT_PUBLIC_CHAT_MODE: api`를 지정하세요.
+`NEXT_PUBLIC_` 설정은 빌드 시 고정되므로 배포에서는 다시 빌드해야 합니다. Docker에서는 백엔드 레포 `docker-compose.yml`의 프론트 `build.args`가 이 값을 넘깁니다.
 
 백엔드와 맞출 규격:
 
@@ -16,11 +14,10 @@ NEXT_PUBLIC_CHAT_MODE=api
 - 현재 질문은 `history`에 중복해서 넣지 않습니다. 실패한 답변은 제외합니다.
 - 응답 `Content-Type: text/event-stream`, 각 이벤트는 빈 줄로 구분합니다.
 - `event: token` → `data: {"content":"추가할 답변 조각"}` (누적 답변이 아닌 delta)
-- `event: references` → `data: {"items":[...]}` (`src/features/chat/types.ts`의 `ChatReference[]`, 전체 카드 포함, 근거 없으면 빈 배열)
-- `event: completed` → `data: {}` (필수 종료 이벤트)
+- `event: references` → `data: {"items":[...],"sources":[...]}` (`src/features/chat/types.ts`의 `ChatReference[]`, `ChatSource[]`, 근거 없으면 빈 배열)
+- `event: completed` → `data: {"messageId":"..."}` (필수 종료 이벤트)
 - `event: error` → `data: {"message":"오류 설명"}`
 
-현재 백엔드의 `/api/chat/stream`도 Mock이므로 API 연결 성공과 실제 RAG 완성은 별개입니다.
 프론트 SSE 처리 및 오류·취소 검증: `node --test src/features/chat/api.test.mjs`.
 
 ---

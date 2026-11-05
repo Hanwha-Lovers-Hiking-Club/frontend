@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { ChatMessage, ChatReference } from "@/features/chat/types";
+import type { ChatMessage, ChatReference, ChatSource } from "@/features/chat/types";
 
 type ReferencePanelState = {
   references: ChatReference[];
@@ -13,9 +13,9 @@ type ChatStore = {
   streamingMessageId: string | null;
   referencePanel: ReferencePanelState | null;
   addUserMessage: (content: string) => string;
-  startAssistantMessage: (references?: ChatReference[]) => string;
+  startAssistantMessage: () => string;
   appendAssistantChunk: (messageId: string, content: string) => void;
-  setAssistantReferences: (messageId: string, references: ChatReference[]) => void;
+  setAssistantReferences: (messageId: string, references: ChatReference[], sources: ChatSource[]) => void;
   finishAssistantMessage: (messageId?: string) => void;
   failAssistantMessage: (messageId?: string, error?: string) => void;
   openReference: (reference: ChatReference, references: ChatReference[]) => void;
@@ -41,12 +41,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }));
     return id;
   },
-  startAssistantMessage: (references) => {
+  startAssistantMessage: () => {
     const id = createMessageId();
     set((state) => ({
       messages: [
         ...state.messages,
-        { id, role: "assistant", content: "", createdAt: new Date(), status: "streaming", references },
+        { id, role: "assistant", content: "", createdAt: new Date(), status: "streaming" },
       ],
       isStreaming: true,
       streamingMessageId: id,
@@ -62,10 +62,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       )),
     }));
   },
-  setAssistantReferences: (messageId, references) => {
+  setAssistantReferences: (messageId, references, sources) => {
     set((state) => ({
       messages: state.messages.map((message) => (
-        message.id === messageId && message.status === "streaming" ? { ...message, references } : message
+        message.id === messageId && message.status === "streaming" ? { ...message, references, sources } : message
       )),
     }));
   },
