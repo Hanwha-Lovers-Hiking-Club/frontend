@@ -22,13 +22,11 @@ export type ProjectSummary = {
 };
 
 export type ProjectDomain = "ai" | "web" | "data" | "platform" | "client";
-export type ProjectStage = "운영 중" | "파일럿" | "개선 중" | "종료";
 
 /** 프로젝트를 구분하는 표시 정보. API 필드가 생기기 전까지 project-meta.ts 의 고정값을 쓴다. */
 export type ProjectMeta = {
   domain: ProjectDomain;
   team: string;
-  stage: ProjectStage;
   period: string;
   description: string;
   stack: string[];

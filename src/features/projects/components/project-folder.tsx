@@ -6,9 +6,11 @@ import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import {
   getProjectDomainStyle,
   getProjectMeta,
-  PROJECT_STAGE_DOT,
 } from "@/features/projects/project-meta";
 import type { ProjectSummary } from "@/features/projects/types";
+
+const VISIBLE_STACK_COUNT = 3;
+const stackClassName = "rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600";
 
 /** 폴더 탭 오른쪽의 곡선. 탭 높이(h-8)와 같은 비율로 그린다. */
 function TabCurve() {
@@ -23,6 +25,7 @@ export function ProjectFolder({ project, listQuery }: { project: ProjectSummary;
   const meta = getProjectMeta(project.name);
   const domain = getProjectDomainStyle(project.name);
   const DomainIcon = domain.icon;
+  const hiddenStack = meta?.stack.slice(VISIBLE_STACK_COUNT) ?? [];
 
   return (
     <Link
@@ -54,18 +57,19 @@ export function ProjectFolder({ project, listQuery }: { project: ProjectSummary;
         {meta && (
           <>
             <span className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-zinc-500">
-              <span className="inline-flex items-center gap-1.5 font-medium text-zinc-700">
-                <span aria-hidden className={`size-1.5 rounded-full ${PROJECT_STAGE_DOT[meta.stage]}`} />
-                {meta.stage}
-              </span>
-              <span>{meta.team}</span>
+              <span className="font-medium text-zinc-700">{meta.team}</span>
               <span className="font-mono tabular-nums">{meta.period}</span>
             </span>
             <span className="mt-3.5 line-clamp-2 min-h-11 break-keep text-sm leading-[1.375rem] text-zinc-600">{meta.description}</span>
             <span className="mt-3.5 flex flex-wrap gap-1.5">
-              {meta.stack.map((item) => (
-                <span key={item} className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600">{item}</span>
+              {meta.stack.slice(0, VISIBLE_STACK_COUNT).map((item) => (
+                <span key={item} title={item} className={`inline-block max-w-full truncate ${stackClassName}`}>{item}</span>
               ))}
+              {hiddenStack.length > 0 && (
+                <span title={hiddenStack.join(", ")} aria-label={`외 ${hiddenStack.length}개: ${hiddenStack.join(", ")}`} className={`inline-block font-mono tabular-nums ${stackClassName}`}>
+                  +{hiddenStack.length}
+                </span>
+              )}
             </span>
           </>
         )}
