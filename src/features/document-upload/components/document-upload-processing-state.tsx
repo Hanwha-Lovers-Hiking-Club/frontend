@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { processingSteps } from "@/features/document-upload/config";
+import { completedOrb, processingSteps } from "@/features/document-upload/config";
 import { Button } from "@/components/ui/button";
 import { ParticlesOrb } from "@/features/document-upload/components/voice-orbs/particles-orb";
 import { cn } from "@/utils/cn";
@@ -14,6 +14,7 @@ const PROCESSING_STEP_QUEUE_CAPACITY = 6;
 const PREFERRED_ACTIVE_STEP_POSITION = 2;
 const DEFAULT_PROCESSING_ORB_SIZE = 240;
 const LONG_WAIT_NOTICE_DELAY = 25_000;
+const MIN_STEP_DISPLAY_MS = 1_000;
 
 function getVisibleStepRange(activeStep: number, totalSteps: number) {
   const visibleStepCount = Math.min(PROCESSING_STEP_QUEUE_CAPACITY, totalSteps);
@@ -26,10 +27,29 @@ function getVisibleStepRange(activeStep: number, totalSteps: number) {
   return { start, end: start + visibleStepCount };
 }
 
+function useDisplayedStep(activeStep: number, isComplete: boolean) {
+  const [displayedStep, setDisplayedStep] = useState(activeStep);
+
+  useEffect(() => {
+    if (isComplete || activeStep < displayedStep) {
+      const timer = window.setTimeout(() => setDisplayedStep(activeStep), 0);
+      return () => window.clearTimeout(timer);
+    }
+    if (activeStep === displayedStep) return;
+
+    const timer = window.setTimeout(
+      () => setDisplayedStep((current) => Math.min(current + 1, activeStep)),
+      MIN_STEP_DISPLAY_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [activeStep, displayedStep, isComplete]);
+
+  return displayedStep;
+}
+
 export function UploadProcessingState({
   activeStep,
   documentCount,
-  progress,
   isJobStarted = true,
   createdCardCount = null,
   status = "processing",
@@ -37,7 +57,6 @@ export function UploadProcessingState({
 }: {
   activeStep: number;
   documentCount: number;
-  progress: number;
   isJobStarted?: boolean;
   createdCardCount?: number | null;
   status?: "processing" | "complete";
@@ -46,22 +65,25 @@ export function UploadProcessingState({
   const isComplete = status === "complete";
   const hasCreatedCards = (createdCardCount ?? 0) > 0;
   const reducedMotion = useReducedMotion();
+  const displayedStep = useDisplayedStep(activeStep, isComplete);
   const [delayedStep, setDelayedStep] = useState<number | null>(null);
   const showLongWaitNotice =
-    !isComplete && isJobStarted && activeStep === 0 && delayedStep === activeStep;
+    !isComplete && isJobStarted && displayedStep === 0 && delayedStep === displayedStep;
 
   useEffect(() => {
-    if (isComplete || !isJobStarted || activeStep !== 0) return;
+    if (isComplete || !isJobStarted || displayedStep !== 0) return;
 
-    const timer = window.setTimeout(() => setDelayedStep(activeStep), LONG_WAIT_NOTICE_DELAY);
+    const timer = window.setTimeout(() => setDelayedStep(displayedStep), LONG_WAIT_NOTICE_DELAY);
     return () => window.clearTimeout(timer);
-  }, [activeStep, isComplete, isJobStarted]);
+  }, [displayedStep, isComplete, isJobStarted]);
   const { start: firstVisibleStep, end: lastVisibleStep } = getVisibleStepRange(
-    activeStep,
+    displayedStep,
     processingSteps.length,
   );
   const visibleSteps = processingSteps.slice(firstVisibleStep, lastVisibleStep);
-  const currentStep = processingSteps[activeStep] ?? processingSteps[0];
+  const currentStep = processingSteps[displayedStep] ?? processingSteps[0];
+  const currentOrb = isComplete ? completedOrb : currentStep.orb;
+  const displayedProgress = isComplete ? 100 : currentStep.progress;
 
   return (
     <main className="app-page grid place-items-center px-5 py-7 sm:px-8 sm:py-9 lg:px-12">
@@ -88,21 +110,21 @@ export function UploadProcessingState({
                 <p className="text-sm font-medium text-zinc-500">
                   {isComplete ? "처리 완료" : "전체 진행률"}
                 </p>
-                <span className="font-mono text-lg font-semibold tabular-nums text-zinc-700">{progress}%</span>
+                <span className="font-mono text-lg font-semibold tabular-nums text-zinc-700">{displayedProgress}%</span>
               </div>
             </div>
 
             <div className="grid min-h-0 items-end justify-items-center">
               <ParticlesOrb
-                state={currentStep.orb.state}
-                size={currentStep.orb.size ?? DEFAULT_PROCESSING_ORB_SIZE}
-                speed={currentStep.orb.speed}
-                colorFrom={currentStep.orb.colorFrom}
-                colorTo={currentStep.orb.colorTo}
-                accentColor={currentStep.orb.accentColor}
-                accentRatio={currentStep.orb.accentRatio}
-                particleCount={currentStep.orb.particleCount}
-                motion={currentStep.orb.motion}
+                state={currentOrb.state}
+                size={currentOrb.size ?? DEFAULT_PROCESSING_ORB_SIZE}
+                speed={currentOrb.speed}
+                colorFrom={currentOrb.colorFrom}
+                colorTo={currentOrb.colorTo}
+                accentColor={currentOrb.accentColor}
+                accentRatio={currentOrb.accentRatio}
+                particleCount={currentOrb.particleCount}
+                motion={currentOrb.motion}
                 label={isComplete ? "문서 처리 완료" : "문서 분석 진행 중"}
               />
             </div>
@@ -145,7 +167,7 @@ export function UploadProcessingState({
                 role="progressbar"
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-valuenow={progress}
+                aria-valuenow={displayedProgress}
                 aria-label="문서 분석 진행률"
               >
                 <motion.div
@@ -155,7 +177,7 @@ export function UploadProcessingState({
                       ? "bg-[linear-gradient(90deg,#18a89b,#90e3c2)]"
                       : "bg-[linear-gradient(90deg,#7766f8,#38c7e8)]",
                   )}
-                  animate={{ width: `${progress}%` }}
+                  animate={{ width: `${displayedProgress}%` }}
                   transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 />
               </div>
@@ -166,7 +188,7 @@ export function UploadProcessingState({
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-medium text-zinc-700">처리 단계</p>
               <p className="font-mono text-xs tabular-nums text-zinc-400">
-                {Math.min(activeStep + 1, processingSteps.length)} / {processingSteps.length}
+                {Math.min(displayedStep + 1, processingSteps.length)} / {processingSteps.length}
               </p>
             </div>
 
@@ -178,8 +200,8 @@ export function UploadProcessingState({
                 <AnimatePresence initial={false} mode="popLayout">
                   {visibleSteps.map((step, index) => {
                     const stepIndex = firstVisibleStep + index;
-                    const isCurrentStep = stepIndex === activeStep;
-                    const isCompletedStep = isComplete || stepIndex < activeStep;
+                    const isCurrentStep = stepIndex === displayedStep;
+                    const isCompletedStep = isComplete || stepIndex < displayedStep;
                     const isFinalStep = isComplete && isCurrentStep;
 
                     return (

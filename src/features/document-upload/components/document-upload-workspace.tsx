@@ -10,7 +10,6 @@ export function DocumentUploadWorkspace() {
   const phase = useUploadStore((state) => state.phase);
   const documents = useUploadStore((state) => state.documents);
   const documentCount = useUploadStore((state) => state.documentCount);
-  const progress = useUploadStore((state) => state.progress);
   const activeStep = useUploadStore((state) => state.activeStep);
   const isJobStarted = useUploadStore((state) => Boolean(state.jobId));
   const createdCardCount = useUploadStore((state) => state.createdCardCount);
@@ -34,7 +33,6 @@ export function DocumentUploadWorkspace() {
         <UploadProcessingState
           activeStep={activeStep}
           documentCount={documentCount}
-          progress={progress}
           isJobStarted={isJobStarted}
         />
       );
@@ -43,7 +41,6 @@ export function DocumentUploadWorkspace() {
         <UploadProcessingState
           activeStep={activeStep}
           documentCount={documentCount}
-          progress={progress}
           createdCardCount={createdCardCount}
           status="complete"
           onReset={reset}
