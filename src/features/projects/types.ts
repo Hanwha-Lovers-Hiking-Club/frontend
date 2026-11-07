@@ -1,5 +1,14 @@
 import type { KnowledgeCard } from "@/features/knowledge/types";
 
+export type ProjectQuery = {
+  query: string;
+  sort: "created" | "name";
+  page: number;
+  pageSize: number;
+};
+
+export type ProjectPage = { items: ProjectSummary[]; total: number };
+
 /**
  * GET /api/projects 의 항목. 같은 이름의 프로젝트도 별개이므로 이름이 아니라 id 로 구분한다.
  * cardCount 는 상세의 cards 와 같은 기준(active)으로 센다.

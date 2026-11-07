@@ -1,96 +1,60 @@
-"use client";
-
+import { FileUp, Folder, LibraryBig } from "lucide-react";
 import Link from "next/link";
-import { FileUp, LibraryBig } from "lucide-react";
 
-import { KnowledgeCardGrid } from "@/features/knowledge/components/knowledge-card-grid";
-import { KnowledgeCardDetailPanel } from "@/features/knowledge/components/knowledge-card-detail-panel";
-import { KnowledgePagination } from "@/features/knowledge/components/knowledge-pagination";
-import { KnowledgeToolbar } from "@/features/knowledge/components/knowledge-toolbar";
-import { useKnowledgeCards } from "@/features/knowledge/components/use-knowledge-cards";
-import { sortOptions } from "@/features/knowledge/config";
-import type { KnowledgeCard } from "@/features/knowledge/types";
-import { useCallback, useState } from "react";
+import { KnowledgeCardBrowser } from "@/features/knowledge/components/knowledge-card-browser";
+import { ProjectList } from "@/features/projects/components/project-list";
+import { cn } from "@/utils/cn";
 
-export default function KnowledgePage() {
-  const knowledge = useKnowledgeCards();
-  const [selectedCard, setSelectedCard] = useState<KnowledgeCard | null>(null);
-  const closeDetailPanel = useCallback(() => setSelectedCard(null), []);
-  const { filters, page, pageSize, total } = knowledge;
-
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const rangeEnd = Math.min(page * pageSize, total);
-  const sortLabel = sortOptions.find((option) => option.value === filters.sort)?.label;
+export default async function KnowledgePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string; q?: string; sort?: string; page?: string }>;
+}) {
+  const params = await searchParams;
+  const isCards = params.view === "cards";
+  const page = Number(params.page ?? 1);
 
   return (
     <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
       <div className="mx-auto w-full max-w-[90rem]">
-        <header className="border-b border-zinc-200 pb-8 sm:pb-10">
-          <div className="grid gap-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-            <div>
-              <div className="flex items-center gap-2.5 text-zinc-500">
-                <LibraryBig className="size-5 text-brand-strong" aria-hidden />
-                <span className="text-sm font-semibold">지식 라이브러리</span>
-              </div>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">지식카드</h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-600 sm:text-base">
-                프로젝트 문서에서 정리된 핵심 지식을 찾아보고 연결하세요.
-              </p>
+        <header className="flex flex-col items-start justify-between gap-6 border-b border-zinc-200 pb-8 sm:flex-row sm:items-end sm:pb-10">
+          <div>
+            <div className="flex items-center gap-2.5 text-zinc-500">
+              <LibraryBig className="size-5 text-brand-strong" aria-hidden />
+              <span className="text-sm font-semibold">지식 라이브러리</span>
             </div>
-
-            <div className="flex items-center gap-5 sm:justify-end">
-              <p className="text-sm text-zinc-500">
-                {filters.query ? "검색 결과" : "전체 지식"} <span className="ml-1 font-mono font-semibold tabular-nums text-zinc-950">{knowledge.isLoading || knowledge.error ? "—" : total}</span>
-              </p>
-              <Link
-                href="/upload"
-                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm leading-none font-semibold text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
-              >
-                <FileUp className="size-4" aria-hidden />
-                문서 업로드
-              </Link>
-            </div>
+            <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">지식카드</h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-600 sm:text-base">
+              프로젝트별로 살펴보거나, 전체 카드에서 필요한 지식을 찾아보세요.
+            </p>
           </div>
+          <Link href="/upload" className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45">
+            <FileUp className="size-4" aria-hidden />문서 업로드
+          </Link>
         </header>
 
-        <KnowledgeToolbar
-          sort={filters.sort}
-          onSearch={knowledge.setQuery}
-          onSortChange={knowledge.setSort}
-        />
+        <nav aria-label="지식카드 보기 방식" className="mt-7 flex gap-6 border-b border-zinc-200">
+          {[
+            { href: "/knowledge", label: "프로젝트별 보기", icon: Folder, active: !isCards },
+            { href: "/knowledge?view=cards", label: "전체 카드", icon: LibraryBig, active: isCards },
+          ].map(({ href, label, icon: Icon, active }) => (
+            <Link key={href} href={href} scroll={false} aria-current={active ? "page" : undefined} className={cn(
+              "inline-flex items-center gap-2 border-b-2 px-1 pb-4 pt-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
+              active ? "border-brand text-brand-strong" : "border-transparent text-zinc-500 hover:text-zinc-900",
+            )}>
+              <Icon className="size-4" aria-hidden />{label}
+            </Link>
+          ))}
+        </nav>
 
-        <section aria-labelledby="knowledge-results-title" className="mt-9 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95 shadow-[0_24px_56px_-46px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]">
-          <div className="flex flex-col items-start gap-2 border-b border-zinc-200 bg-zinc-50/65 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
-            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-              <h2 id="knowledge-results-title" className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">
-                {filters.query ? "검색된 지식카드" : "전체 지식카드"}
-              </h2>
-              <span className="text-sm text-zinc-500">{sortLabel}</span>
-            </div>
-            <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-500">
-              {knowledge.isLoading ? "불러오는 중…" : knowledge.error ? "조회 실패" : `${total}개 중 ${rangeStart} — ${rangeEnd}`}
-            </span>
-          </div>
-
-          <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] gap-x-5 border-b border-zinc-200 px-6 py-2.5 text-[11px] font-semibold tracking-[0.08em] text-zinc-400 sm:grid">
-            <span className="col-start-2">지식카드</span>
-            <span className="col-start-3">키워드 · 기술스택</span>
-            <span className="col-start-4 text-right">업데이트</span>
-          </div>
-
-          <KnowledgeCardGrid
-            cards={knowledge.items}
-            isLoading={knowledge.isLoading}
-            error={knowledge.error}
-            query={filters.query}
-            onRetry={knowledge.retry}
-            onOpenCard={setSelectedCard}
+        {isCards ? <KnowledgeCardBrowser /> : (
+          <ProjectList
+            query={typeof params.q === "string" ? params.q.trim() : ""}
+            sort={params.sort === "name" ? "name" : "created"}
+            page={Number.isSafeInteger(page) && page > 0 ? page : 1}
           />
-          <KnowledgePagination page={page} totalPages={totalPages} onPageChange={knowledge.setPage} />
-        </section>
+        )}
       </div>
-      <KnowledgeCardDetailPanel card={selectedCard} onClose={closeDetailPanel} />
     </main>
   );
 }

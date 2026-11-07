@@ -9,16 +9,20 @@ export function KnowledgePagination({
   page,
   totalPages,
   onPageChange,
+  label = "지식카드 페이지 이동",
 }: {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  label?: string;
 }) {
   if (totalPages <= 1) return null;
+  const firstPage = Math.max(1, Math.min(page - 2, totalPages - 4));
+  const pages = Array.from({ length: Math.min(5, totalPages) }, (_, index) => firstPage + index);
 
   return (
-    <nav aria-label="지식카드 페이지 이동" className="relative flex items-center justify-center border-t border-zinc-200 bg-zinc-50/65 px-5 py-4 sm:px-6">
-      <p className="absolute left-6 hidden text-sm text-zinc-500 sm:block">
+    <nav aria-label={label} className="relative flex flex-wrap items-center justify-center gap-3 border-t border-zinc-200 bg-zinc-50/65 px-3 py-4 sm:px-6">
+      <p className="hidden text-sm text-zinc-500 lg:absolute lg:left-6 lg:block">
         <span className="font-semibold text-zinc-800">{page}</span> / {totalPages} 페이지
       </p>
       <div className="flex items-center gap-2">
@@ -32,7 +36,7 @@ export function KnowledgePagination({
           <ChevronLeft className="size-4" aria-hidden />
         </button>
         <div className="flex items-center rounded-xl border border-zinc-200 bg-white p-1 shadow-[0_1px_1px_rgba(24,36,31,0.03)]">
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => (
+          {pages.map((number) => (
         <button
           key={number}
           type="button"

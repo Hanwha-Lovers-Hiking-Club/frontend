@@ -21,16 +21,22 @@ export function KnowledgeToolbar({
   sort,
   onSearch,
   onSortChange,
+  scope = "cards",
+  query = "",
 }: {
   sort: KnowledgeSort;
   onSearch: (query: string) => void;
   onSortChange: (sort: KnowledgeSort) => void;
+  scope?: "cards" | "projects";
+  query?: string;
 }) {
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState(query);
+  const isProjects = scope === "projects";
+  const searchLabel = isProjects ? "프로젝트 이름 검색" : "지식카드 검색";
 
   return (
     <section
-      aria-label="지식카드 검색 및 정렬"
+      aria-label={isProjects ? "프로젝트 검색 및 정렬" : "지식카드 검색 및 정렬"}
       className="mt-7 border-b border-zinc-200 py-4"
     >
       <form
@@ -41,7 +47,7 @@ export function KnowledgeToolbar({
         }}
       >
         <label className="group relative block">
-          <span className="sr-only">지식카드 검색</span>
+          <span className="sr-only">{searchLabel}</span>
           <Search
             className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-brand-strong"
             aria-hidden
@@ -49,7 +55,7 @@ export function KnowledgeToolbar({
           <input
             type="search"
             aria-describedby="knowledge-search-help"
-            placeholder="제목, 요약, 배경, 키워드, 기술로 지식카드 검색"
+            placeholder={isProjects ? "프로젝트 이름으로 폴더 검색" : "제목, 요약, 배경, 키워드, 기술로 지식카드 검색"}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             className="h-12 w-full rounded-lg border border-zinc-200 bg-white py-2 pl-11 pr-14 text-sm text-zinc-900 outline-none transition-[border-color,background-color,box-shadow] placeholder:text-zinc-400 focus:border-brand focus:ring-2 focus:ring-brand/15"
@@ -85,7 +91,9 @@ export function KnowledgeToolbar({
         </div>
       </form>
       <p id="knowledge-search-help" className="mt-2 text-xs leading-5 text-zinc-500">
-        제목·요약·배경은 포함된 단어로, 키워드는 정확한 이름으로 검색하세요. 기술스택은 별칭도 지원합니다.
+        {isProjects
+          ? "프로젝트 이름으로 검색합니다. 카드 내용으로 찾으려면 전체 카드 보기를 이용하세요."
+          : "제목·요약·배경·키워드·기술스택을 부분 검색합니다. 기술스택은 별칭도 지원합니다."}
       </p>
     </section>
   );

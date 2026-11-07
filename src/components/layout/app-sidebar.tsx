@@ -10,7 +10,6 @@ import {
   ChevronRight,
   CircleHelp,
   FileUp,
-  FolderKanban,
   LibraryBig,
   Settings2,
   Sparkles,
@@ -38,7 +37,6 @@ type NavigationItem = {
 const navigationItems: NavigationItem[] = [
   { href: "/", label: "챗봇", icon: Bot },
   { href: "/upload", label: "문서 업로드", icon: FileUp },
-  { href: "/projects", label: "프로젝트", icon: FolderKanban },
   { href: "/knowledge", label: "지식카드", icon: LibraryBig },
 ];
 
@@ -190,7 +188,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               key={item.href}
               item={item}
               collapsed={collapsed}
-              active={pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`))}
+              active={pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`)) || (item.href === "/knowledge" && pathname.startsWith("/projects/"))}
             />
           ))}
         </nav>

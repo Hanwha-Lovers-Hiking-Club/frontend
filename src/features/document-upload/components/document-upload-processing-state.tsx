@@ -300,7 +300,7 @@ export function UploadProcessingState({
             </p>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button asChild className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href={projectId ? `/projects/${projectId}` : "/projects"}>프로젝트 폴더 보기</Link>
+                <Link href={projectId ? `/projects/${projectId}` : "/knowledge"}>프로젝트 폴더 보기</Link>
               </Button>
               <Button
                 type="button"

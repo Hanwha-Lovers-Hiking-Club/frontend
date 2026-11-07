@@ -53,7 +53,7 @@ function SectionHeader({ id, title, count }: { id: string; title: string; count?
 const sectionClassName =
   "mt-6 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95 shadow-[0_24px_56px_-46px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]";
 
-export function ProjectDetail({ projectId }: { projectId: string }) {
+export function ProjectDetail({ projectId, listHref }: { projectId: string; listHref: string }) {
   const load = useCallback((signal: AbortSignal) => fetchProject(projectId, signal), [projectId]);
   const { data: project, error, isLoading, retry } = useRequest(projectId, load);
   const [selectedCard, setSelectedCard] = useState<KnowledgeCard | null>(null);
@@ -63,11 +63,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
     <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
       <div className="mx-auto w-full max-w-[90rem]">
         <Link
-          href="/projects"
+          href={listHref}
           className="inline-flex items-center gap-1.5 rounded-lg text-sm font-semibold text-zinc-500 transition-colors hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
         >
           <ArrowLeft className="size-4" aria-hidden />
-          프로젝트 목록
+          지식카드 · 프로젝트 목록
         </Link>
 
         <header className="mt-6 border-b border-zinc-200 pb-8">

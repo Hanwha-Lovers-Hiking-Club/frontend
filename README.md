@@ -1,3 +1,13 @@
+## 지식 라이브러리
+
+`/knowledge`에서 프로젝트별 폴더와 전체 카드를 전환합니다. 기존 `/projects` 목록 주소는
+`/knowledge`로 연결되며, `/projects/{id}` 상세 주소는 유지합니다.
+
+프로젝트 목록 API는 `GET /api/projects?q=&sort=created&page=1&pageSize=12`이며
+`{ items, total }`을 반환합니다. `q`는 프로젝트 이름 검색, `sort`는 `created` 또는 `name`입니다.
+검색·정렬은 서버에서 처리하고, 폴더의 카드 개수는 공개된 `active` 카드 기준입니다.
+프론트 배포 전에 이 규격을 지원하는 백엔드를 먼저 배포해야 합니다.
+
 ## 챗봇 연결
 
 챗봇은 항상 백엔드 API를 호출합니다. 로컬 개발에서는 `.env.local`에 주소를 설정합니다.
