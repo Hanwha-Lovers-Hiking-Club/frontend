@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ExternalLink, FileText, Folder, LoaderCircle } from "lucide-react";
+import { ArrowLeft, ExternalLink, FileText, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
@@ -9,7 +9,9 @@ import { openDocument } from "@/features/knowledge/components/knowledge-card-evi
 import { KnowledgeCardGrid } from "@/features/knowledge/components/knowledge-card-grid";
 import type { KnowledgeCard } from "@/features/knowledge/types";
 import { fetchProject } from "@/features/projects/api";
+import { ProjectStack } from "@/features/projects/components/project-folder";
 import { useRequest } from "@/features/projects/components/use-request";
+import { getProjectDomainStyle } from "@/features/projects/project-domain";
 import type { ProjectDocument } from "@/features/projects/types";
 
 function DocumentRow({ document }: { document: ProjectDocument }) {
@@ -58,6 +60,8 @@ export function ProjectDetail({ projectId, listHref }: { projectId: string; list
   const { data: project, error, isLoading, retry } = useRequest(projectId, load);
   const [selectedCard, setSelectedCard] = useState<KnowledgeCard | null>(null);
   const closeDetailPanel = useCallback(() => setSelectedCard(null), []);
+  const domain = getProjectDomainStyle(project?.domain ?? null);
+  const DomainIcon = domain.icon;
 
   return (
     <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
@@ -71,13 +75,23 @@ export function ProjectDetail({ projectId, listHref }: { projectId: string; list
         </Link>
 
         <header className="mt-6 border-b border-zinc-200 pb-8">
-          <div className="flex items-center gap-2.5 text-zinc-500">
-            <Folder className="size-5 text-brand-strong" aria-hidden />
-            <span className="text-sm font-semibold">프로젝트</span>
+          <div style={{ color: domain.ink }} className="flex items-center gap-2.5">
+            <DomainIcon className="size-5" aria-hidden />
+            <span className="text-sm font-semibold">{project ? domain.label : "프로젝트"}</span>
           </div>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
             {project?.name ?? (error ? "프로젝트" : "불러오는 중…")}
           </h1>
+          {project?.description && (
+            <p className="mt-3 max-w-2xl break-keep text-sm leading-6 text-zinc-600 sm:text-base">{project.description}</p>
+          )}
+          {project && (project.team || project.period || project.stack.length > 0) && (
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-500">
+              {project.team && <span className="font-medium text-zinc-700">{project.team}</span>}
+              {project.period && <span className="font-mono text-xs tabular-nums">{project.period}</span>}
+              <ProjectStack stack={project.stack} className="min-w-0" />
+            </div>
+          )}
         </header>
 
         {error ? (

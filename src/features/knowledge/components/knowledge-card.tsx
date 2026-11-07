@@ -1,6 +1,6 @@
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import type { KnowledgeCard as KnowledgeCardData } from "@/features/knowledge/types";
-import { getProjectDomainStyle } from "@/features/projects/project-meta";
+import { getProjectDomainStyle } from "@/features/projects/project-domain";
 import { cn } from "@/utils/cn";
 
 const tagClassName = "items-center rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600";
@@ -26,7 +26,7 @@ function CardTags({ card, visibleCount, className }: { card: KnowledgeCardData; 
 
 export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpen: (card: KnowledgeCardData) => void }) {
   const sourceTitle = card.projectName ?? card.evidences[0]?.documentTitle ?? "";
-  const domain = getProjectDomainStyle(card.projectName);
+  const domain = getProjectDomainStyle(card.projectDomain);
   const DomainIcon = domain.icon;
 
   return (

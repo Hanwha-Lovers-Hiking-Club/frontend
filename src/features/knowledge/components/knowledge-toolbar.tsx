@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { sortOptions } from "@/features/knowledge/config";
+import { projectSortOptions, sortOptions } from "@/features/knowledge/config";
 import type { KnowledgeSort } from "@/features/knowledge/types";
 
 const selectClassName =
@@ -80,7 +80,7 @@ export function KnowledgeToolbar({
             </SelectTrigger>
             <SelectContent position="popper" className="rounded-xl border-zinc-200 p-1.5 shadow-lg">
               <SelectGroup>
-              {sortOptions.map((option) => (
+              {(isProjects ? projectSortOptions : sortOptions).map((option) => (
                 <SelectItem key={option.value} value={option.value} className="cursor-pointer rounded-lg py-2">
                   {option.label}
                 </SelectItem>

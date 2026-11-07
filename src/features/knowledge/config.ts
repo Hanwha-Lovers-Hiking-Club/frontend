@@ -15,6 +15,10 @@ export const cardTypeConfig: Record<
 };
 
 export const sortOptions: { value: KnowledgeSort; label: string }[] = [
+  { value: "recent", label: "최근 수정순" },
   { value: "created", label: "최신 생성순" },
   { value: "name", label: "이름순" },
 ];
+
+/** 프로젝트에는 수정 시각이 없어 최근 수정순을 쓸 수 없다. */
+export const projectSortOptions = sortOptions.filter((option) => option.value !== "recent");

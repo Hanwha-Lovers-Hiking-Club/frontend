@@ -3,14 +3,31 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
-import {
-  getProjectDomainStyle,
-  getProjectMeta,
-} from "@/features/projects/project-meta";
+import { getProjectDomainStyle } from "@/features/projects/project-domain";
 import type { ProjectSummary } from "@/features/projects/types";
+import { cn } from "@/utils/cn";
 
 const VISIBLE_STACK_COUNT = 3;
 const stackClassName = "rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium text-zinc-600";
+
+/** 대표 기술 뱃지. 긴 이름은 말줄임하고 나머지는 개수와 툴팁으로 알린다. */
+export function ProjectStack({ stack, className }: { stack: string[]; className?: string }) {
+  const hidden = stack.slice(VISIBLE_STACK_COUNT);
+  if (stack.length === 0) return null;
+
+  return (
+    <span className={cn("flex flex-wrap gap-1.5", className)}>
+      {stack.slice(0, VISIBLE_STACK_COUNT).map((item) => (
+        <span key={item} title={item} className={`inline-block max-w-full truncate ${stackClassName}`}>{item}</span>
+      ))}
+      {hidden.length > 0 && (
+        <span title={hidden.join(", ")} aria-label={`외 ${hidden.length}개: ${hidden.join(", ")}`} className={`inline-block font-mono tabular-nums ${stackClassName}`}>
+          +{hidden.length}
+        </span>
+      )}
+    </span>
+  );
+}
 
 /** 폴더 탭 오른쪽의 곡선. 탭 높이(h-8)와 같은 비율로 그린다. */
 function TabCurve() {
@@ -22,10 +39,8 @@ function TabCurve() {
 }
 
 export function ProjectFolder({ project, listQuery }: { project: ProjectSummary; listQuery: string }) {
-  const meta = getProjectMeta(project.name);
-  const domain = getProjectDomainStyle(project.name);
+  const domain = getProjectDomainStyle(project.domain);
   const DomainIcon = domain.icon;
-  const hiddenStack = meta?.stack.slice(VISIBLE_STACK_COUNT) ?? [];
 
   return (
     <Link
@@ -54,25 +69,16 @@ export function ProjectFolder({ project, listQuery }: { project: ProjectSummary;
           <ArrowUpRight className="mt-1 size-4 shrink-0 text-zinc-300 transition-[color,transform] duration-200 group-hover:-translate-y-px group-hover:translate-x-px group-hover:text-brand-strong motion-reduce:transition-none" aria-hidden />
         </span>
 
-        {meta && (
-          <>
-            <span className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-zinc-500">
-              <span className="font-medium text-zinc-700">{meta.team}</span>
-              <span className="font-mono tabular-nums">{meta.period}</span>
-            </span>
-            <span className="mt-3.5 line-clamp-2 min-h-11 break-keep text-sm leading-[1.375rem] text-zinc-600">{meta.description}</span>
-            <span className="mt-3.5 flex flex-wrap gap-1.5">
-              {meta.stack.slice(0, VISIBLE_STACK_COUNT).map((item) => (
-                <span key={item} title={item} className={`inline-block max-w-full truncate ${stackClassName}`}>{item}</span>
-              ))}
-              {hiddenStack.length > 0 && (
-                <span title={hiddenStack.join(", ")} aria-label={`외 ${hiddenStack.length}개: ${hiddenStack.join(", ")}`} className={`inline-block font-mono tabular-nums ${stackClassName}`}>
-                  +{hiddenStack.length}
-                </span>
-              )}
-            </span>
-          </>
+        {(project.team || project.period) && (
+          <span className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-zinc-500">
+            {project.team && <span className="font-medium text-zinc-700">{project.team}</span>}
+            {project.period && <span className="font-mono tabular-nums">{project.period}</span>}
+          </span>
         )}
+        {project.description && (
+          <span className="mt-3.5 line-clamp-2 min-h-11 break-keep text-sm leading-[1.375rem] text-zinc-600">{project.description}</span>
+        )}
+        <ProjectStack stack={project.stack} className="mt-3.5" />
 
         <span className="mt-auto pt-5">
           <span className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-zinc-100 pt-4 text-xs text-zinc-500">

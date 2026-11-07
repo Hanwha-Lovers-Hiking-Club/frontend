@@ -1,11 +1,11 @@
 "use client";
 
-import { AlignLeft, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, ExternalLink, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
+import { AlignLeft, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { type ReactNode } from "react";
 
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { KnowledgeCardEvidences } from "@/features/knowledge/components/knowledge-card-evidences";
+import { EvidenceOpenButton, KnowledgeCardEvidences } from "@/features/knowledge/components/knowledge-card-evidences";
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import type { KnowledgeCard } from "@/features/knowledge/types";
 import { cn } from "@/utils/cn";
@@ -70,7 +70,7 @@ function RecordMetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: 
   );
 }
 
-export function KnowledgeCardDetailPanel({ card, onClose, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard | null; onClose: () => void; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { excerpt: string; location: string } }) {
+export function KnowledgeCardDetailPanel({ card, onClose, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard | null; onClose: () => void; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { documentId: string; excerpt: string; location: string } }) {
   return (
     <Sheet open={Boolean(card)} onOpenChange={(open) => !open && onClose()}>
       {card && <DetailPanelContent card={card} relatedCards={relatedCards} onSelectCard={onSelectCard} sourceContext={sourceContext} />}
@@ -78,9 +78,9 @@ export function KnowledgeCardDetailPanel({ card, onClose, relatedCards, onSelect
   );
 }
 
-function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { excerpt: string; location: string } }) {
+function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { documentId: string; excerpt: string; location: string } }) {
   const shouldReduceMotion = useReducedMotion();
-  const evidence = card.evidences[0];
+  const evidence = card.evidences.find((item) => item.documentId === sourceContext?.documentId) ?? card.evidences[0];
   const sourceTitle = evidence?.documentTitle ?? "";
   const metadataRows = [
     { icon: Building2, label: "담당 부서", value: card.department ?? "미지정" },
@@ -167,9 +167,7 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
                     <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600"><FileText className="size-4" aria-hidden /></span>
                     <div className="min-w-0"><p className="truncate text-sm font-semibold text-zinc-800">{sourceTitle}</p><p className="mt-0.5 text-xs text-zinc-500">연결된 원본 문서</p></div>
                   </div>
-                  {evidence?.url ? (
-                    <a href={evidence.url} target="_blank" rel="noreferrer" className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-zinc-700 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"><ExternalLink className="size-4" aria-hidden />열기</a>
-                  ) : null}
+                  {evidence && <EvidenceOpenButton evidence={evidence} />}
                 </div>
                 <blockquote className="mt-4 border-l-2 border-zinc-200 px-4 text-[15px] leading-7 text-zinc-700">{sourceContext.excerpt}<footer className="mt-2 text-xs font-medium text-zinc-500">{sourceContext.location}</footer></blockquote>
               </>

@@ -32,9 +32,28 @@ export async function openDocument({
   }
 }
 
-function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
+export function EvidenceOpenButton({ evidence }: { evidence: KnowledgeCardEvidence }) {
   const [isOpening, setIsOpening] = useState(false);
 
+  return (
+    <button
+      type="button"
+      disabled={isOpening}
+      aria-label={`${evidence.documentTitle} 원본 열기`}
+      onClick={async () => {
+        setIsOpening(true);
+        await openDocument(evidence);
+        setIsOpening(false);
+      }}
+      className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-semibold text-zinc-700 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 disabled:cursor-wait disabled:opacity-60"
+    >
+      {isOpening ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <ExternalLink className="size-4" aria-hidden />}
+      열기
+    </button>
+  );
+}
+
+function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
   return (
     <li className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5">
       <div className="flex items-center justify-between gap-3">
@@ -45,20 +64,7 @@ function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
             <p className="mt-0.5 break-words text-xs text-zinc-500">{evidence.location ?? evidence.originalFilename}</p>
           </div>
         </div>
-        <button
-          type="button"
-          disabled={isOpening}
-          aria-label={`${evidence.documentTitle} 원본 열기`}
-          onClick={async () => {
-            setIsOpening(true);
-            await openDocument(evidence);
-            setIsOpening(false);
-          }}
-          className="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-semibold text-zinc-700 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 disabled:cursor-wait disabled:opacity-60"
-        >
-          {isOpening ? <LoaderCircle className="size-4 animate-spin" aria-hidden /> : <ExternalLink className="size-4" aria-hidden />}
-          열기
-        </button>
+        <EvidenceOpenButton evidence={evidence} />
       </div>
       {evidence.excerpt && (
         <blockquote className="mt-3 whitespace-pre-wrap break-words border-l-2 border-zinc-200 pl-4 text-sm leading-6 text-zinc-700">{evidence.excerpt}</blockquote>

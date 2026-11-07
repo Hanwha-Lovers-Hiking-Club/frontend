@@ -26,7 +26,7 @@ export function ChatReferencePanel({
         const nextReference = relatedReferences.find((item) => item.card.id === card.id);
         if (nextReference) onSelectReference(nextReference.id);
       }}
-      sourceContext={reference ? { excerpt: reference.document.excerpt ?? "", location: reference.document.location ?? "" } : undefined}
+      sourceContext={reference ? { documentId: reference.document.id, excerpt: reference.document.excerpt ?? "", location: reference.document.location ?? "" } : undefined}
     />
   );
 }

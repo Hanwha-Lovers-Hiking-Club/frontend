@@ -5,7 +5,10 @@
 export const KNOWLEDGE_CARD_TYPES = ["technical", "case-study", "lesson"] as const;
 export type KnowledgeCardType = (typeof KNOWLEDGE_CARD_TYPES)[number];
 
-export type KnowledgeSort = "created" | "name";
+export type KnowledgeSort = "recent" | "created" | "name";
+
+/** projects.domain */
+export type ProjectDomain = "ai" | "frontend" | "backend" | "data" | "app";
 
 /** knowledge_cards.status */
 export type KnowledgeCardStatus = "draft" | "active" | "flagged" | "archived";
@@ -50,8 +53,10 @@ export type KnowledgeCard = {
   /** 분야/주제어 (웹 개발, QA 등) */
   keywords: string[];
   /** 프로젝트 폴더 구분은 이름이 아니라 이 값으로 한다 */
-  projectId: string | null;
+  projectId: string;
   projectName: string | null;
+  /** NULL 이면 미분류로 표시한다 */
+  projectDomain: ProjectDomain | null;
   department: string | null;
   projectDate: string | null;
   status: KnowledgeCardStatus;
