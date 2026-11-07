@@ -5,16 +5,16 @@ import type { ProjectDomain, ProjectMeta, ProjectStage } from "./types";
 type DomainStyle = { label: string; icon: LucideIcon; color: string; ink: string };
 
 /** 사이드바·문서·지식카드 아이콘에 쓰는 연한 면색 + 진한 글자색 조합을 따른다. */
-export const PROJECT_DOMAINS: Record<ProjectDomain, DomainStyle> = {
-  ai: { label: "AI 에이전트", icon: Bot, color: "#e6e7f2", ink: "#353968" },
-  web: { label: "웹 서비스", icon: AppWindow, color: "#ffead6", ink: "#ad4708" },
-  data: { label: "데이터·정산", icon: Database, color: "#dcefe4", ink: "#1f6b4f" },
-  platform: { label: "백엔드 플랫폼", icon: Server, color: "#e9e6e1", ink: "#57534e" },
-  client: { label: "데스크톱·모바일", icon: MonitorSmartphone, color: "#fbe6e6", ink: "#a8384a" },
+const PROJECT_DOMAINS: Record<ProjectDomain, DomainStyle> = {
+  ai: { label: "AI 에이전트", icon: Bot, color: "#e0e5ff", ink: "#3a43c9" },
+  web: { label: "웹 서비스", icon: AppWindow, color: "#ffe3c9", ink: "#b04003" },
+  data: { label: "데이터·정산", icon: Database, color: "#c9f4dd", ink: "#04704c" },
+  platform: { label: "백엔드 플랫폼", icon: Server, color: "#cdeefc", ink: "#056a94" },
+  client: { label: "데스크톱·모바일", icon: MonitorSmartphone, color: "#ffdfe7", ink: "#c21a4e" },
 };
 
 /** 메타 정보가 없는 프로젝트(새로 업로드한 폴더 등)의 탭 */
-export const UNCLASSIFIED_DOMAIN: DomainStyle = { label: "미분류", icon: Folder, color: "#f1f0ee", ink: "#6b6660" };
+const UNCLASSIFIED_DOMAIN: DomainStyle = { label: "미분류", icon: Folder, color: "#f1f0ee", ink: "#6b6660" };
 
 export const PROJECT_STAGE_DOT: Record<ProjectStage, string> = {
   "운영 중": "bg-emerald-500",
@@ -71,6 +71,11 @@ const PROJECT_META: Record<string, ProjectMeta> = {
   "현장수첩": { domain: "client", team: "현장제품팀", stage: "운영 중", period: "2026.02 – 06", description: "오프라인에서도 사진과 점검 기록을 남기는 시설 현장 앱", stack: ["Offline Sync", "Mobile"] },
 };
 
-export function getProjectMeta(name: string): ProjectMeta | null {
-  return PROJECT_META[name] ?? null;
+export function getProjectMeta(name: string | null): ProjectMeta | null {
+  return name ? (PROJECT_META[name] ?? null) : null;
+}
+
+export function getProjectDomainStyle(name: string | null): DomainStyle {
+  const meta = getProjectMeta(name);
+  return meta ? PROJECT_DOMAINS[meta.domain] : UNCLASSIFIED_DOMAIN;
 }

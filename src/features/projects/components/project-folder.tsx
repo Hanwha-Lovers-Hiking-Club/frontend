@@ -4,10 +4,9 @@ import type { CSSProperties } from "react";
 
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import {
+  getProjectDomainStyle,
   getProjectMeta,
-  PROJECT_DOMAINS,
   PROJECT_STAGE_DOT,
-  UNCLASSIFIED_DOMAIN,
 } from "@/features/projects/project-meta";
 import type { ProjectSummary } from "@/features/projects/types";
 
@@ -22,7 +21,7 @@ function TabCurve() {
 
 export function ProjectFolder({ project, listQuery }: { project: ProjectSummary; listQuery: string }) {
   const meta = getProjectMeta(project.name);
-  const domain = meta ? PROJECT_DOMAINS[meta.domain] : UNCLASSIFIED_DOMAIN;
+  const domain = getProjectDomainStyle(project.name);
   const DomainIcon = domain.icon;
 
   return (
