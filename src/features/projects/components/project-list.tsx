@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowUpRight, FileText, Folder, LibraryBig } from "lucide-react";
-import Link from "next/link";
+import { Folder } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
@@ -9,41 +8,8 @@ import { KnowledgePagination } from "@/features/knowledge/components/knowledge-p
 import { KnowledgeToolbar } from "@/features/knowledge/components/knowledge-toolbar";
 import { KNOWLEDGE_PAGE_SIZE } from "@/features/knowledge/config";
 import { fetchProjects } from "@/features/projects/api";
+import { ProjectFolder, ProjectFolderSkeleton } from "@/features/projects/components/project-folder";
 import { useRequest } from "@/features/projects/components/use-request";
-import type { ProjectSummary } from "@/features/projects/types";
-import { formatKnowledgeDate } from "@/features/knowledge/formatters";
-
-function ProjectFolder({ project, listQuery }: { project: ProjectSummary; listQuery: string }) {
-  return (
-    <Link
-      href={`/projects/${project.id}?${listQuery}`}
-      className="group flex min-w-0 flex-col rounded-xl border border-zinc-200 bg-white p-5 transition-[background-color,border-color,box-shadow] hover:border-brand/35 hover:bg-brand-soft/30 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
-    >
-      <div className="flex items-center justify-between">
-        <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand-strong">
-          <Folder className="size-5" aria-hidden />
-        </span>
-        <ArrowUpRight className="size-4 text-zinc-300 transition-colors group-hover:text-brand-strong" aria-hidden />
-      </div>
-      <h3 className="mt-5 text-pretty text-lg font-semibold leading-7 tracking-[-0.025em] text-zinc-950">
-        {project.name}
-      </h3>
-      <time dateTime={project.createdAt} className="mb-5 mt-2 text-xs tabular-nums text-zinc-500">
-        {formatKnowledgeDate(project.createdAt)} 등록
-      </time>
-      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-zinc-100 pt-4 text-xs text-zinc-500">
-        <span className="inline-flex items-center gap-1.5">
-          <FileText className="size-3.5" aria-hidden />
-          문서 <span className="font-mono font-semibold tabular-nums text-zinc-700">{project.documentCount}</span>
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <LibraryBig className="size-3.5" aria-hidden />
-          지식카드 <span className="font-mono font-semibold tabular-nums text-zinc-700">{project.cardCount}</span>
-        </span>
-      </div>
-    </Link>
-  );
-}
 
 export function ProjectList({ query, sort, page }: { query: string; sort: "created" | "name"; page: number }) {
   const router = useRouter();
@@ -86,10 +52,8 @@ export function ProjectList({ query, sort, page }: { query: string; sort: "creat
             <button type="button" onClick={retry} className="mt-4 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45">다시 시도</button>
           </div>
         ) : isLoading ? (
-          <div aria-busy className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6 xl:grid-cols-3">
-            {Array.from({ length: 6 }, (_, index) => (
-              <div key={index} aria-hidden className="h-56 animate-pulse rounded-xl border border-zinc-200 bg-zinc-50" />
-            ))}
+          <div aria-busy className="grid gap-x-5 gap-y-6 bg-stone-50/70 p-5 sm:grid-cols-2 sm:p-6 xl:grid-cols-3">
+            {Array.from({ length: 6 }, (_, index) => <ProjectFolderSkeleton key={index} />)}
           </div>
         ) : projects.length === 0 ? (
           <div className="px-5 py-16 text-center">
@@ -103,7 +67,7 @@ export function ProjectList({ query, sort, page }: { query: string; sort: "creat
           </div>
         ) : (
           <>
-            <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6 xl:grid-cols-3">
+            <div className="grid gap-x-5 gap-y-6 bg-stone-50/70 p-5 sm:grid-cols-2 sm:p-6 xl:grid-cols-3">
               {projects.map((project) => <ProjectFolder key={project.id} project={project} listQuery={params.toString()} />)}
             </div>
             <KnowledgePagination label="프로젝트 페이지 이동" page={page} totalPages={Math.ceil(total / KNOWLEDGE_PAGE_SIZE)} onPageChange={(next) => navigate({ page: String(next) })} />
