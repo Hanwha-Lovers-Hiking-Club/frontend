@@ -28,7 +28,7 @@ export function KnowledgeCardBrowser() {
           onSortChange={knowledge.setSort}
         />
 
-        <section aria-labelledby="knowledge-results-title" className="mt-9 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95 shadow-[0_24px_56px_-46px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]">
+        <section aria-labelledby="knowledge-results-title" className="mt-6 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95 shadow-[0_24px_56px_-46px_rgba(35,33,30,0.24),0_1px_0_rgba(255,255,255,0.95)_inset]">
           <div className="flex flex-col items-start gap-2 border-b border-zinc-200 bg-zinc-50/65 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
             <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
               <h2 id="knowledge-results-title" className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">
@@ -41,7 +41,7 @@ export function KnowledgeCardBrowser() {
             </span>
           </div>
 
-          <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_minmax(8rem,0.65fr)_6.5rem] gap-x-5 border-b border-zinc-200 px-6 py-2.5 text-[11px] font-semibold tracking-[0.08em] text-zinc-400 sm:grid">
+          <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_minmax(12rem,0.9fr)_6.5rem] gap-x-5 border-b border-zinc-200 px-6 py-2.5 text-[11px] font-semibold tracking-[0.08em] text-zinc-400 sm:grid">
             <span className="col-start-2">지식카드</span>
             <span className="col-start-3">키워드 · 기술스택</span>
             <span className="col-start-4 text-right">업데이트</span>

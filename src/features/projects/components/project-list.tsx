@@ -37,7 +37,7 @@ export function ProjectList({ query, sort, page }: { query: string; sort: "creat
         onSearch={(q) => navigate({ q, page: "1" })}
         onSortChange={(value) => navigate({ sort: value, page: "1" })}
       />
-      <section aria-labelledby="project-results-title" className="mt-9 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95">
+      <section aria-labelledby="project-results-title" className="mt-6 overflow-hidden rounded-2xl border border-stone-200/90 bg-white/95">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 bg-zinc-50/65 px-5 py-4 sm:px-6">
           <h2 id="project-results-title" className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">
             {query ? "검색된 프로젝트" : "프로젝트 폴더"}

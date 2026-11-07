@@ -17,7 +17,7 @@ export default async function KnowledgePage({
   return (
     <main className="app-page px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
       <div className="mx-auto w-full max-w-[90rem]">
-        <header className="flex flex-col items-start justify-between gap-6 border-b border-zinc-200 pb-8 sm:flex-row sm:items-end sm:pb-10">
+        <header className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div>
             <div className="flex items-center gap-2.5 text-zinc-500">
               <LibraryBig className="size-5 text-brand-strong" aria-hidden />
@@ -33,7 +33,7 @@ export default async function KnowledgePage({
           </Link>
         </header>
 
-        <nav aria-label="지식카드 보기 방식" className="mt-7 flex gap-6 border-b border-zinc-200">
+        <nav aria-label="지식카드 보기 방식" className="mt-8 flex gap-6 border-b border-zinc-200 sm:mt-10">
           {[
             { href: "/knowledge", label: "프로젝트별 보기", icon: Folder, active: !isCards },
             { href: "/knowledge?view=cards", label: "전체 카드", icon: LibraryBig, active: isCards },

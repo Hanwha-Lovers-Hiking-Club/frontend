@@ -37,7 +37,7 @@ export function KnowledgeToolbar({
   return (
     <section
       aria-label={isProjects ? "프로젝트 검색 및 정렬" : "지식카드 검색 및 정렬"}
-      className="mt-7 border-b border-zinc-200 py-4"
+      className="mt-6"
     >
       <form
         className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
