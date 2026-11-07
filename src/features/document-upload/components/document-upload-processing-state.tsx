@@ -51,19 +51,21 @@ export function UploadProcessingState({
   activeStep,
   documentCount,
   isJobStarted = true,
-  createdCardCount = null,
+  projectId = null,
+  activeCardCount = null,
   status = "processing",
   onReset,
 }: {
   activeStep: number;
   documentCount: number;
   isJobStarted?: boolean;
-  createdCardCount?: number | null;
+  projectId?: string | null;
+  activeCardCount?: number | null;
   status?: "processing" | "complete";
   onReset?: () => void;
 }) {
   const isComplete = status === "complete";
-  const hasCreatedCards = (createdCardCount ?? 0) > 0;
+  const hasCreatedCards = (activeCardCount ?? 0) > 0;
   const reducedMotion = useReducedMotion();
   const displayedStep = useDisplayedStep(activeStep, isComplete);
   const [delayedStep, setDelayedStep] = useState<number | null>(null);
@@ -145,7 +147,7 @@ export function UploadProcessingState({
                 >
                   {isComplete
                     ? hasCreatedCards
-                      ? `${documentCount}개 문서에서 ${createdCardCount}개의 지식카드를 발견했습니다.`
+                      ? `${documentCount}개 문서에서 ${activeCardCount}개의 지식카드를 발견했습니다.`
                       : `${documentCount}개 문서에서 카드로 만들 핵심 내용은 없었지만, 검색할 수 있도록 정리했습니다.`
                     : currentStep.label}
                 </motion.p>
@@ -293,14 +295,12 @@ export function UploadProcessingState({
           >
             <p className="text-sm leading-6 text-zinc-500">
               {hasCreatedCards
-                ? "생성된 지식카드를 확인하거나 새 문서를 추가할 수 있습니다."
+                ? "프로젝트 폴더에서 지식카드와 원본 문서를 확인할 수 있습니다."
                 : "카드는 없지만 문서 내용은 검색과 질문에 활용할 수 있습니다."}
             </p>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button asChild className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href={hasCreatedCards ? "/knowledge" : "/"}>
-                  {hasCreatedCards ? "지식카드 보러가기" : "문서로 질문하기"}
-                </Link>
+                <Link href={projectId ? `/projects/${projectId}` : "/projects"}>프로젝트 폴더 보기</Link>
               </Button>
               <Button
                 type="button"

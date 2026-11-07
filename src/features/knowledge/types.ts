@@ -49,6 +49,8 @@ export type KnowledgeCard = {
   technologies: string[];
   /** 분야/주제어 (웹 개발, QA 등) */
   keywords: string[];
+  /** 프로젝트 폴더 구분은 이름이 아니라 이 값으로 한다 */
+  projectId: string | null;
   projectName: string | null;
   department: string | null;
   projectDate: string | null;

@@ -11,6 +11,7 @@ export function KnowledgeCardGrid({
   isLoading,
   error,
   query,
+  emptyMessage = "조건에 맞는 지식카드가 없습니다.",
   onRetry,
   onOpenCard,
 }: {
@@ -18,6 +19,7 @@ export function KnowledgeCardGrid({
   isLoading: boolean;
   error: Error | null;
   query: string;
+  emptyMessage?: string;
   onRetry: () => void;
   onOpenCard: (card: KnowledgeCardData) => void;
 }) {
@@ -51,7 +53,7 @@ export function KnowledgeCardGrid({
   if (cards.length === 0) {
     return (
       <p className="px-5 py-12 text-center text-sm text-zinc-500">
-        {query ? <>&ldquo;{query}&rdquo;와 일치하는 지식카드가 없습니다.</> : "조건에 맞는 지식카드가 없습니다."}
+        {query ? <>&ldquo;{query}&rdquo;와 일치하는 지식카드가 없습니다.</> : emptyMessage}
       </p>
     );
   }

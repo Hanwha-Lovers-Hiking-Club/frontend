@@ -11,7 +11,10 @@ const VISIBLE_EVIDENCE_COUNT = 3;
 // 백엔드가 브라우저에서 열리게 서명하는 형식. 나머지는 내려받기로 응답한다.
 const INLINE_FILE_PATTERN = /\.(pdf|txt)$/i;
 
-async function openDocument({ documentId, originalFilename }: KnowledgeCardEvidence) {
+export async function openDocument({
+  documentId,
+  originalFilename,
+}: Pick<KnowledgeCardEvidence, "documentId" | "originalFilename">) {
   const isInline = INLINE_FILE_PATTERN.test(originalFilename);
   // 팝업 차단을 피하려면 await 전, 클릭 처리 중에 탭을 열어야 한다.
   const tab = isInline ? window.open("", "_blank") : null;

@@ -6,6 +6,8 @@ export type CompletedJob = {
   jobId: string;
   status: "completed";
   createdCardCount: number;
+  /** 프로젝트 폴더에 보이는 카드 수(active). createdCardCount 에는 draft 도 포함된다 */
+  activeCardCount: number;
 };
 
 export type JobHandlers = {
@@ -17,6 +19,7 @@ export type JobHandlers = {
 
 export type SubmittedJob = {
   jobId: string;
+  projectId: string;
   documentCount: number;
   status: "queued";
 };
@@ -48,6 +51,7 @@ export async function submitUpload(files: File[]): Promise<SubmittedJob> {
   const job = (await response.json()) as Partial<SubmittedJob>;
   if (
     typeof job.jobId !== "string" ||
+    typeof job.projectId !== "string" ||
     typeof job.documentCount !== "number" ||
     job.status !== "queued"
   ) {
@@ -93,7 +97,7 @@ export function connectJob(job: Pick<SubmittedJob, "jobId">, handlers: JobHandle
 
   source.addEventListener("completed", (event: MessageEvent<string>) => {
     const completed = readEventData<CompletedJob>(event);
-    if (!completed || typeof completed.createdCardCount !== "number") {
+    if (!completed || typeof completed.activeCardCount !== "number") {
       close();
       handlers.onUnavailable();
       return;

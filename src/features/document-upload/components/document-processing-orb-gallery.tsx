@@ -147,7 +147,7 @@ function ProcessingPreview() {
         activeStep={activeStep}
         documentCount={1}
         isJobStarted
-        createdCardCount={4}
+        activeCardCount={4}
         status={isComplete ? "complete" : "processing"}
         onReset={replay}
       />

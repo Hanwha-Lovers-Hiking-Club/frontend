@@ -2,7 +2,7 @@ import { apiUrl, readErrorDetail } from "@/utils/api";
 
 import type { KnowledgeCardPage, KnowledgeCardQuery } from "./types";
 
-async function getJson<T>(path: string, failureMessage: string, signal?: AbortSignal): Promise<T> {
+export async function getJson<T>(path: string, failureMessage: string, signal?: AbortSignal): Promise<T> {
   let response: Response;
   try {
     response = await fetch(apiUrl(path), { signal });

@@ -19,15 +19,21 @@ import type { SelectedDocument, UploadPhase } from "@/features/document-upload/t
 
 const JOB_STORAGE_KEY = "upload-job";
 
-type StoredJob = Pick<SubmittedJob, "jobId" | "documentCount">;
+type StoredJob = Pick<SubmittedJob, "jobId" | "projectId" | "documentCount">;
 
 function readStoredJob(): StoredJob | null {
   try {
     const raw = localStorage.getItem(JOB_STORAGE_KEY);
     if (!raw) return null;
     const job = JSON.parse(raw) as Partial<StoredJob>;
-    if (typeof job.jobId !== "string" || typeof job.documentCount !== "number") return null;
-    return { jobId: job.jobId, documentCount: job.documentCount };
+    if (
+      typeof job.jobId !== "string" ||
+      typeof job.projectId !== "string" ||
+      typeof job.documentCount !== "number"
+    ) {
+      return null;
+    }
+    return { jobId: job.jobId, projectId: job.projectId, documentCount: job.documentCount };
   } catch {
     return null;
   }
@@ -54,7 +60,8 @@ type UploadStore = {
   progress: number;
   activeStep: number;
   jobId: string | null;
-  createdCardCount: number | null;
+  projectId: string | null;
+  activeCardCount: number | null;
   addDocuments: (files: FileList | File[] | null) => void;
   removeDocument: (id: string) => void;
   startProcessing: () => Promise<void>;
@@ -75,7 +82,8 @@ export const useUploadStore = create<UploadStore>((set, get) => {
       progress: 0,
       activeStep: 0,
       jobId: null,
-      createdCardCount: null,
+      projectId: null,
+      activeCardCount: null,
     });
   }
 
@@ -83,11 +91,18 @@ export const useUploadStore = create<UploadStore>((set, get) => {
     disconnect?.();
     disconnect = connectJob(job, {
       onProgress: ({ activeStep, progress }) => set({ activeStep, progress }),
-      onComplete: ({ createdCardCount }) => {
+      onComplete: ({ activeCardCount }) => {
         disconnect?.();
         disconnect = null;
         writeStoredJob(null);
-        set({ phase: "complete", progress: 100, activeStep: 8, jobId: null, createdCardCount });
+        set({
+          phase: "complete",
+          progress: 100,
+          activeStep: 8,
+          jobId: null,
+          projectId: job.projectId,
+          activeCardCount,
+        });
       },
       onFailed: (developerMessage) => {
         if (process.env.NODE_ENV === "development" && developerMessage) {
@@ -138,7 +153,8 @@ export const useUploadStore = create<UploadStore>((set, get) => {
     progress: 0,
     activeStep: 0,
     jobId: null,
-    createdCardCount: null,
+    projectId: null,
+    activeCardCount: null,
 
     addDocuments: (files) => {
       if (!files) return;
@@ -183,16 +199,18 @@ export const useUploadStore = create<UploadStore>((set, get) => {
         progress: INITIAL_PROGRESS,
         activeStep: 0,
         documentCount: documents.length,
-        createdCardCount: null,
+        projectId: null,
+        activeCardCount: null,
       });
       try {
         const submitted = await submitUpload(documents.map((document) => document.file));
         const job: StoredJob = {
           jobId: submitted.jobId,
+          projectId: submitted.projectId,
           documentCount: submitted.documentCount,
         };
         writeStoredJob(job);
-        set({ jobId: job.jobId, documentCount: job.documentCount });
+        set({ jobId: job.jobId, projectId: job.projectId, documentCount: job.documentCount });
         listen(job);
       } catch (error) {
         set({ phase: "review", progress: 0, activeStep: 0 });
@@ -213,10 +231,11 @@ export const useUploadStore = create<UploadStore>((set, get) => {
       set({
         phase: "processing",
         jobId: job.jobId,
+        projectId: job.projectId,
         documentCount: job.documentCount,
         progress: INITIAL_PROGRESS,
         activeStep: 0,
-        createdCardCount: null,
+        activeCardCount: null,
       });
       listen(job);
     },
@@ -233,7 +252,8 @@ export const useUploadStore = create<UploadStore>((set, get) => {
         progress: 0,
         activeStep: 0,
         jobId: null,
-        createdCardCount: null,
+        projectId: null,
+        activeCardCount: null,
       });
     },
   };
