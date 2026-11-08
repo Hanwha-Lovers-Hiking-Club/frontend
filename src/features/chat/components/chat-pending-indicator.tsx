@@ -47,7 +47,7 @@ export function ChatPendingIndicator() {
         {[0, 1, 2].map((index) => (
           <motion.span
             key={index}
-            className="size-1 rounded-full bg-zinc-400"
+            className="size-1 rounded-full bg-brand"
             animate={shouldReduceMotion ? undefined : { y: [0, -3, 0, 0], opacity: [0.35, 1, 0.35, 0.35] }}
             transition={{ duration: 1.2, times: [0, 0.25, 0.5, 1], repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
           />
