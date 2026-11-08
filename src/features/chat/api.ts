@@ -24,8 +24,11 @@ function isReference(value: unknown): value is ChatReference {
     && ["problem", "cause", "approach", "rationale", "outcome", "projectName", "department", "projectDate"].every((key) => card[key] === null || typeof card[key] === "string")
     && [card.keywords, card.technologies].every((v) => Array.isArray(v) && v.every((item) => typeof item === "string"))
     && Array.isArray(card.evidences) && card.evidences.every((evidence) => isRecord(evidence)
-      && ["id", "documentId", "documentTitle", "originalFilename"].every((key) => typeof evidence[key] === "string")
-      && ["location", "excerpt", "url"].every((key) => evidence[key] === null || typeof evidence[key] === "string"));
+      && ["documentId", "documentTitle", "originalFilename"].every((key) => typeof evidence[key] === "string")
+      && (evidence.url === null || typeof evidence.url === "string")
+      && Array.isArray(evidence.items) && evidence.items.every((item) => isRecord(item)
+        && typeof item.id === "string"
+        && ["location", "excerpt"].every((key) => item[key] === null || typeof item[key] === "string")));
 }
 
 function isSource(value: unknown): value is ChatSource {

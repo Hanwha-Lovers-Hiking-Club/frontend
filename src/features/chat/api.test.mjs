@@ -59,6 +59,41 @@ test("accepts nullable document fields with a complete reference", async (t) => 
   assert.deepEqual(received, [reference]);
 });
 
+test("accepts card evidences grouped by document", async (t) => {
+  const card = {
+    id: "card", title: "제목", summary: "요약", context: "배경", lesson: "교훈",
+    createdAt: "2026-11-04T00:00:00Z", updatedAt: "2026-11-04T00:00:00Z",
+    problem: null, cause: null, approach: null, rationale: null, outcome: null,
+    projectName: null, department: null, projectDate: null,
+    keywords: [], technologies: [],
+    evidences: [{
+      documentId: "document", documentTitle: "문서", originalFilename: "문서.pdf", url: null,
+      items: [{ id: "e1", location: "p.1 · 원인", excerpt: "발췌" }, { id: "e2", location: null, excerpt: null }],
+    }],
+  };
+  const reference = { id: "evidence", type: "knowledge-card", label: "제목", reason: "이유", card,
+    document: { id: "document", documentTitle: "문서", location: null, excerpt: null } };
+  mockStream(t, event("references", { items: [reference], sources: [] }) + event("completed", {}));
+  let received;
+  await streamChat("http://test/chat", request, { ...handlers, onReferences: (items) => { received = items; } }, new AbortController().signal);
+  assert.deepEqual(received, [reference]);
+});
+
+test("rejects card evidences in the old per-excerpt shape", async (t) => {
+  const card = {
+    id: "card", title: "제목", summary: "요약", context: "배경", lesson: "교훈",
+    createdAt: "2026-11-04T00:00:00Z", updatedAt: "2026-11-04T00:00:00Z",
+    problem: null, cause: null, approach: null, rationale: null, outcome: null,
+    projectName: null, department: null, projectDate: null,
+    keywords: [], technologies: [],
+    evidences: [{ id: "e1", documentId: "document", documentTitle: "문서", originalFilename: "문서.pdf", location: null, excerpt: null, url: null }],
+  };
+  const reference = { id: "evidence", type: "knowledge-card", label: "제목", reason: "이유", card,
+    document: { id: "document", documentTitle: "문서", location: null, excerpt: null } };
+  mockStream(t, event("references", { items: [reference], sources: [] }) + event("completed", {}));
+  await assert.rejects(streamChat("http://test/chat", request, handlers, new AbortController().signal), /근거 형식/);
+});
+
 for (const [name, text, error] of [
   ["server error", event("error", { message: "생성 실패" }), /생성 실패/],
   ["missing completed", event("token", { content: "일부 답변" }), /완료 전에/],

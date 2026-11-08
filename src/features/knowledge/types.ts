@@ -13,23 +13,29 @@ export type ProjectDomain = "ai" | "frontend" | "backend" | "data" | "app";
 /** knowledge_cards.status */
 export type KnowledgeCardStatus = "draft" | "active" | "flagged" | "archived";
 
-/**
- * 카드의 근거 하나 (card_documents 행 + documents 정보).
- * 한 문서에 근거가 여러 개일 수 있다. 확장자는 originalFilename 끝에서 잘라 쓴다.
- */
-export type KnowledgeCardEvidence = {
+/** 한 문서 안의 근거 하나 (card_documents 행). */
+export type EvidenceItem = {
   id: string;
+  /** 원문 내 위치. 예: "3장 · 통신 방식 선정" */
+  location: string | null;
+  /** 원문에서 그대로 가져온 발췌문 */
+  excerpt: string | null;
+};
+
+/**
+ * 카드의 근거를 문서별로 묶은 것. 문서 정보는 한 번만 오고, 그 문서의 근거는 items 에 있다.
+ * 문서 순서와 items 순서는 백엔드가 정렬해서 내려주므로 프론트에서 다시 정렬하지 않는다.
+ * 확장자는 originalFilename 끝에서 잘라 쓴다.
+ */
+export type EvidenceDocument = {
   documentId: string;
   /** documents.title (LLM 이 뽑은 제목) */
   documentTitle: string;
   /** documents.original_filename (사용자가 올린 파일명) */
   originalFilename: string;
-  /** 원문 내 위치. 예: "3장 · 통신 방식 선정" */
-  location: string | null;
-  /** 원문에서 그대로 가져온 발췌문 */
-  excerpt: string | null;
   /** 지금은 항상 null. 원본 주소는 fetchDocumentUrl 로 열 때 발급받는다 */
   url: string | null;
+  items: EvidenceItem[];
 };
 
 /**
@@ -65,7 +71,7 @@ export type KnowledgeCard = {
   verificationVersion: string | null;
   createdAt: string;
   updatedAt: string;
-  evidences: KnowledgeCardEvidence[];
+  evidences: EvidenceDocument[];
 };
 
 export type KnowledgeCardQuery = {

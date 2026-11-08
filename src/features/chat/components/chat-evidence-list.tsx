@@ -7,7 +7,7 @@ import { SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { toReadableExcerpt } from "@/features/chat/excerpt";
 import type { ChatReference, ChatSource } from "@/features/chat/types";
 import { EvidenceOpenButton } from "@/features/knowledge/components/knowledge-card-evidences";
-import type { KnowledgeCardEvidence } from "@/features/knowledge/types";
+import type { EvidenceDocument } from "@/features/knowledge/types";
 import { FileFormatIcon } from "@/utils/file-format";
 
 const COLLAPSED_EXCERPT_LENGTH = 220;
@@ -57,7 +57,7 @@ export function ChatEvidenceList({
   onSelectReference: (referenceId: string) => void;
 }) {
   // 원문 청크에는 파일명이 없어서 카드 근거에서 같은 문서의 파일 정보를 찾아 쓴다.
-  const evidenceByDocument = new Map<string, KnowledgeCardEvidence>();
+  const evidenceByDocument = new Map<string, EvidenceDocument>();
   for (const reference of references) {
     for (const evidence of reference.card.evidences) evidenceByDocument.set(evidence.documentId, evidence);
   }
