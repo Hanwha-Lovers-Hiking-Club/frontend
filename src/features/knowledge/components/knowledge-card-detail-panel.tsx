@@ -5,11 +5,10 @@ import { motion, useReducedMotion } from "framer-motion";
 import { type ReactNode } from "react";
 
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { EvidenceOpenButton, KnowledgeCardEvidences } from "@/features/knowledge/components/knowledge-card-evidences";
+import { type AnswerSource, KnowledgeCardEvidences } from "@/features/knowledge/components/knowledge-card-evidences";
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import type { KnowledgeCard } from "@/features/knowledge/types";
 import { cn } from "@/utils/cn";
-import { FileFormatIcon } from "@/utils/file-format";
 
 function DetailRow({
   title,
@@ -75,7 +74,8 @@ type DetailBodyProps = {
   card: KnowledgeCard;
   relatedCards?: KnowledgeCard[];
   onSelectCard?: (card: KnowledgeCard) => void;
-  sourceContext?: { documentId: string; excerpt: string; location: string };
+  /** 챗봇 답변에 쓰인 문서와 발췌. 있으면 원본 문서 목록에서 맨 위로 올려 강조한다. */
+  sourceContext?: AnswerSource;
   /** 챗봇이 이 카드를 답변 근거로 고른 이유. 챗봇에서 열었을 때만 있다. */
   selectionReason?: string;
 };
@@ -155,8 +155,6 @@ export function SidePanelContent({
 }
 
 export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sourceContext, selectionReason }: DetailBodyProps) {
-  const evidence = card.evidences.find((item) => item.documentId === sourceContext?.documentId) ?? card.evidences[0];
-  const sourceTitle = evidence?.documentTitle ?? "";
   const metadataRows = [
     { icon: Building2, label: "담당 부서", value: card.department ?? "미지정" },
     { icon: FolderKanban, label: "출처 프로젝트", value: card.projectName ?? "미지정" },
@@ -217,20 +215,7 @@ export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sour
           </DetailPanelSection>
 
           <DetailPanelSection title="원본 문서" icon={FileText} labelledBy="knowledge-card-source-title" className="mt-9 border-t border-zinc-200 pt-6">
-            {sourceContext ? (
-              <>
-                <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <FileFormatIcon filename={evidence?.originalFilename ?? ""} />
-                    <div className="min-w-0"><p className="truncate text-sm font-semibold text-zinc-800">{sourceTitle}</p><p className="mt-0.5 text-xs text-zinc-500">연결된 원본 문서</p></div>
-                  </div>
-                  {evidence && <EvidenceOpenButton evidence={evidence} />}
-                </div>
-                <blockquote className="mt-4 border-l-2 border-zinc-200 px-4 text-[15px] leading-7 text-zinc-700">{sourceContext.excerpt}<footer className="mt-2 text-xs font-medium text-zinc-500">{sourceContext.location}</footer></blockquote>
-              </>
-            ) : (
-              <KnowledgeCardEvidences key={card.id} evidences={card.evidences} />
-            )}
+            <KnowledgeCardEvidences key={card.id} evidences={card.evidences} answerSource={sourceContext} />
           </DetailPanelSection>
 
           {relatedCards && relatedCards.length > 1 && onSelectCard && <DetailPanelSection title="이 문서에서 생성된 지식카드" icon={Layers3} labelledBy="knowledge-card-related-title" className="mt-9 border-t border-zinc-200 pt-6"><div className="mt-3 flex flex-col gap-1">{relatedCards.map((relatedCard) => { const selected = relatedCard.id === card.id; return <button key={relatedCard.id} type="button" onClick={() => onSelectCard(relatedCard)} aria-pressed={selected} className={cn("flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45", selected ? "bg-zinc-100 text-zinc-950" : "text-zinc-600 hover:bg-zinc-50")}><span className="min-w-0 truncate font-medium">{relatedCard.title}</span></button>; })}</div></DetailPanelSection>}

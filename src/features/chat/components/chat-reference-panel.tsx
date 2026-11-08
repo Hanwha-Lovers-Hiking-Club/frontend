@@ -42,7 +42,7 @@ export function ChatReferencePanel({
                 const nextReference = relatedReferences.find((item) => item.card.id === card.id);
                 if (nextReference) onSelectReference(nextReference.id);
               }}
-              sourceContext={{ documentId: reference.document.id, excerpt: reference.document.excerpt ?? "", location: reference.document.location ?? "" }}
+              sourceContext={{ documentId: reference.document.id, documentTitle: reference.document.documentTitle, excerpt: reference.document.excerpt, location: reference.document.location }}
             />
           ) : (
             <ChatEvidenceList references={references} sources={sources} onSelectReference={onSelectReference} />
