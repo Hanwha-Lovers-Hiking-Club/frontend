@@ -1,4 +1,6 @@
 const TABLE_DIVIDER = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+/** ```text 처럼 코드 블록을 여닫는 줄. 안의 내용은 그대로 둔다. */
+const CODE_FENCE = /^\s*(`{3,}|~{3,})/;
 
 /**
  * 근거 원문 청크는 문서 중간을 자른 마크다운이라 표·목록이 온전하지 않다.
@@ -7,7 +9,7 @@ const TABLE_DIVIDER = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
 export function toReadableExcerpt(markdown: string) {
   return markdown
     .split(/\r?\n/)
-    .filter((line) => !TABLE_DIVIDER.test(line))
+    .filter((line) => !TABLE_DIVIDER.test(line) && !CODE_FENCE.test(line))
     .map((line) => {
       let text = line.trim();
       if (text.startsWith("|")) {
