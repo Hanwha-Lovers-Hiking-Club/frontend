@@ -1,5 +1,6 @@
 import { ArrowUpRight, FileText, LibraryBig } from "lucide-react";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import { getProjectDomainStyle } from "@/features/projects/project-domain";
@@ -37,10 +38,13 @@ export function ProjectFolder({ project, listQuery }: { project: ProjectSummary;
       href={`/projects/${project.id}?${listQuery}`}
       className="group relative flex min-w-0 flex-col pt-[1.875rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-4 focus-visible:ring-offset-stone-50"
     >
-      {/* 폴더 탭. 분야 색 면으로 본문 윗선을 덮어 본문과 한 덩어리로 이어 보이게 한다. */}
+      {/*
+        폴더 탭. 분야 색 면으로 본문 윗선을 덮어 본문과 한 덩어리로 이어 보이게 한다.
+        색 면은 ::before 를 아래쪽 기준으로 눕혀 윗변이 좁은 사다리꼴로 만든다(모서리 둥글기 유지).
+      */}
       <span
-        style={{ backgroundColor: domain.color, color: domain.ink }}
-        className="absolute left-0 top-0 z-10 flex h-8 max-w-[calc(100%-3rem)] items-center gap-1.5 rounded-t-lg border border-b-0 border-transparent px-3 text-xs font-semibold transition-colors duration-200 group-hover:border-brand/35"
+        style={{ "--tab-color": domain.color, color: domain.ink } as CSSProperties}
+        className="absolute left-0 top-0 z-10 isolate flex h-8 max-w-[calc(100%-3rem)] items-center gap-1.5 px-4 text-xs font-semibold before:absolute before:inset-0 before:-z-10 before:origin-bottom before:rounded-t-lg before:bg-(--tab-color) before:[transform:perspective(12px)_rotateX(3.4deg)]"
       >
         <DomainIcon className="size-3.5 shrink-0" aria-hidden />
         <span className="truncate">{domain.label}</span>
