@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ExternalLink, FileText, LoaderCircle } from "lucide-react";
+import { ArrowLeft, ExternalLink, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
@@ -13,6 +13,7 @@ import { ProjectStack } from "@/features/projects/components/project-folder";
 import { useRequest } from "@/features/projects/components/use-request";
 import { getProjectDomainStyle } from "@/features/projects/project-domain";
 import type { ProjectDocument } from "@/features/projects/types";
+import { FileFormatIcon } from "@/utils/file-format";
 
 function DocumentRow({ document }: { document: ProjectDocument }) {
   const [isOpening, setIsOpening] = useState(false);
@@ -20,9 +21,7 @@ function DocumentRow({ document }: { document: ProjectDocument }) {
   return (
     <li className="flex items-center justify-between gap-3 px-5 py-3.5 sm:px-6">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600">
-          <FileText className="size-4" aria-hidden />
-        </span>
+        <FileFormatIcon filename={document.originalFilename} />
         <p className="min-w-0 break-words text-sm font-medium text-zinc-800">{document.originalFilename}</p>
       </div>
       <button

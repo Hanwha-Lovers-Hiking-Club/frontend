@@ -9,6 +9,7 @@ import { EvidenceOpenButton, KnowledgeCardEvidences } from "@/features/knowledge
 import { formatKnowledgeDate } from "@/features/knowledge/formatters";
 import type { KnowledgeCard } from "@/features/knowledge/types";
 import { cn } from "@/utils/cn";
+import { FileFormatIcon } from "@/utils/file-format";
 
 function DetailRow({
   title,
@@ -164,7 +165,7 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
               <>
                 <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600"><FileText className="size-4" aria-hidden /></span>
+                    <FileFormatIcon filename={evidence?.originalFilename ?? ""} />
                     <div className="min-w-0"><p className="truncate text-sm font-semibold text-zinc-800">{sourceTitle}</p><p className="mt-0.5 text-xs text-zinc-500">연결된 원본 문서</p></div>
                   </div>
                   {evidence && <EvidenceOpenButton evidence={evidence} />}

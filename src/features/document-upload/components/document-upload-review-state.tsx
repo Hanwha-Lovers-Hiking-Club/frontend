@@ -7,37 +7,10 @@ import { Button } from "@/components/ui/button";
 import {
   acceptedDocumentFileTypes,
   formatFileSize,
-  getDocumentFileType,
 } from "@/features/document-upload/file-utils";
 import type { SelectedDocument } from "@/features/document-upload/types";
 import { cn } from "@/utils/cn";
-
-const fileVisuals = {
-  PDF: {
-    badge: "border-red-200/80 bg-red-50 text-red-600",
-  },
-  DOC: {
-    badge: "border-blue-200/80 bg-blue-50 text-blue-600",
-  },
-  DOCX: {
-    badge: "border-blue-200/80 bg-blue-50 text-blue-600",
-  },
-  XLS: {
-    badge: "border-emerald-200/80 bg-emerald-50 text-emerald-600",
-  },
-  XLSX: {
-    badge: "border-emerald-200/80 bg-emerald-50 text-emerald-600",
-  },
-  PPT: {
-    badge: "border-orange-200/80 bg-orange-50 text-orange-600",
-  },
-  PPTX: {
-    badge: "border-orange-200/80 bg-orange-50 text-orange-600",
-  },
-  FILE: {
-    badge: "border-zinc-200 bg-zinc-100 text-zinc-500",
-  },
-} as const;
+import { getFileFormat } from "@/utils/file-format";
 
 export function UploadReviewState({
   documents,
@@ -97,8 +70,7 @@ export function UploadReviewState({
 
           <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">
             {documents.map((document) => {
-              const fileType = getDocumentFileType(document.file);
-              const visual = fileVisuals[fileType as keyof typeof fileVisuals] ?? fileVisuals.FILE;
+              const format = getFileFormat(document.file.name);
 
               return (
                 <article
@@ -106,8 +78,8 @@ export function UploadReviewState({
                   className="group flex min-h-52 min-w-0 shrink-0 basis-full flex-col overflow-hidden rounded-[1.25rem] border border-stone-200/90 bg-white p-4 shadow-[0_18px_34px_-30px_rgba(35,33,30,0.18),0_1px_0_rgba(255,255,255,0.95)_inset] transition-[background-color,border-color,box-shadow,transform] duration-200 sm:basis-[calc((100%-1rem)/2)] hover:-translate-y-px hover:border-stone-300 hover:bg-stone-50 hover:shadow-[0_24px_40px_-28px_rgba(35,33,30,0.3)] lg:basis-[calc((100%-2rem)/3)] xl:basis-[calc((100%-3rem)/4)]"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className={cn("grid size-10 place-items-center rounded-xl border font-mono text-[0.65rem] font-medium tracking-[0.08em] shadow-[0_10px_18px_-16px_rgba(24,36,31,0.5)]", visual.badge)}>
-                      {fileType}
+                    <div className={cn("grid size-10 place-items-center rounded-xl border font-mono text-[0.65rem] font-medium tracking-[0.08em] shadow-[0_10px_18px_-16px_rgba(24,36,31,0.5)]", format.tone)}>
+                      {format.label}
                     </div>
                     <button
                       type="button"

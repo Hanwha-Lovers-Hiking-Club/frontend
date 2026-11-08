@@ -1,11 +1,12 @@
 "use client";
 
-import { ChevronDown, ExternalLink, FileText, LoaderCircle } from "lucide-react";
+import { ChevronDown, ExternalLink, LoaderCircle } from "lucide-react";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 
 import { fetchDocumentUrl } from "@/features/knowledge/api";
 import type { KnowledgeCardEvidence } from "@/features/knowledge/types";
+import { FileFormatIcon } from "@/utils/file-format";
 
 const VISIBLE_EVIDENCE_COUNT = 3;
 // 백엔드가 브라우저에서 열리게 서명하는 형식. 나머지는 내려받기로 응답한다.
@@ -58,7 +59,7 @@ function EvidenceItem({ evidence }: { evidence: KnowledgeCardEvidence }) {
     <li className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600"><FileText className="size-4" aria-hidden /></span>
+          <FileFormatIcon filename={evidence.originalFilename} />
           <div className="min-w-0">
             <p className="break-words text-sm font-semibold text-zinc-800">{evidence.documentTitle}</p>
             <p className="mt-0.5 break-words text-xs text-zinc-500">{evidence.location ?? evidence.originalFilename}</p>
