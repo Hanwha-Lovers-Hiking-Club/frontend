@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 
 import { ChatComposer } from "@/features/chat/components/chat-composer";
+import { ChatPendingIndicator } from "@/features/chat/components/chat-pending-indicator";
 import type { ChatMessage } from "@/features/chat/types";
 import {
   Message,
@@ -115,9 +116,13 @@ export function ChatConversation({
                   ) : (
                     <div className="min-w-0 border-l-2 border-zinc-200/90 py-0.5 pl-5 sm:pl-6">
                       <MessageContent className="w-full max-w-none !bg-transparent !p-0 text-[14px] leading-[1.8] text-zinc-700 shadow-none [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_p]:my-0 [&_p:not(:first-child)]:mt-4 [&_strong]:font-semibold [&_strong]:text-zinc-950">
-                        <MessageResponse isAnimating={message.status === "streaming" && message.id === latestMessageId}>
-                          {message.content || (message.status === "streaming" ? "답변을 준비하고 있습니다…" : " ")}
-                        </MessageResponse>
+                        {!message.content && message.status === "streaming" ? (
+                          <ChatPendingIndicator />
+                        ) : (
+                          <MessageResponse isAnimating={message.status === "streaming" && message.id === latestMessageId}>
+                            {message.content || " "}
+                          </MessageResponse>
+                        )}
                       </MessageContent>
                       {message.status === "error" && (
                         <p role="alert" className="mt-3 text-sm text-red-600">
