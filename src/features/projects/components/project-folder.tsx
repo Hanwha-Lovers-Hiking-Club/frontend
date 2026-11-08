@@ -37,9 +37,12 @@ export function ProjectFolder({ project, listQuery }: { project: ProjectSummary;
       href={`/projects/${project.id}?${listQuery}`}
       className="group relative flex min-w-0 flex-col pt-[1.875rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-4 focus-visible:ring-offset-stone-50"
     >
-      {/* 폴더 탭. 본문과 같은 흰 면·테두리로 이어 붙여 한 덩어리로 보이게 하고, 분야 색은 아이콘에만 쓴다. */}
-      <span className="absolute left-0 top-0 z-10 flex h-8 max-w-[calc(100%-3rem)] items-center gap-1.5 rounded-t-lg border border-b-0 border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-600 transition-colors duration-200 group-hover:border-brand/35">
-        <DomainIcon className="size-3.5 shrink-0" style={{ color: domain.ink }} aria-hidden />
+      {/* 폴더 탭. 분야 색 면으로 본문 윗선을 덮어 본문과 한 덩어리로 이어 보이게 한다. */}
+      <span
+        style={{ backgroundColor: domain.color, color: domain.ink }}
+        className="absolute left-0 top-0 z-10 flex h-8 max-w-[calc(100%-3rem)] items-center gap-1.5 rounded-t-lg border border-b-0 border-transparent px-3 text-xs font-semibold transition-colors duration-200 group-hover:border-brand/35"
+      >
+        <DomainIcon className="size-3.5 shrink-0" aria-hidden />
         <span className="truncate">{domain.label}</span>
       </span>
 
