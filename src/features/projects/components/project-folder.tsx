@@ -44,7 +44,7 @@ export function ProjectFolder({ project, listQuery }: { project: ProjectSummary;
       */}
       <span
         style={{ "--tab-color": domain.color, color: domain.ink } as CSSProperties}
-        className="absolute left-0 top-0 z-10 isolate flex h-8 max-w-[calc(100%-3rem)] items-center gap-1.5 px-3.5 pb-0.5 text-xs font-semibold leading-none before:absolute before:inset-0 before:-z-10 before:origin-bottom before:rounded-t-lg before:bg-(--tab-color) before:[transform:perspective(12px)_rotateX(3.4deg)]"
+        className="absolute left-0 top-0 z-10 isolate flex h-8 max-w-[calc(100%-3rem)] items-center gap-1.5 px-3.5 pt-0.5 text-xs font-semibold leading-none before:absolute before:inset-0 before:-z-10 before:origin-bottom before:rounded-t-lg before:bg-(--tab-color) before:[transform:perspective(12px)_rotateX(3.4deg)]"
       >
         <DomainIcon className="size-3.5 shrink-0" aria-hidden />
         <span className="truncate">{domain.label}</span>
