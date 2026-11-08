@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, FileText, Layers3 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Layers3 } from "lucide-react";
 import { useState } from "react";
 
 import { SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -36,9 +36,11 @@ function Excerpt({ text }: { text: string }) {
         <button
           type="button"
           onClick={() => setIsExpanded((value) => !value)}
-          className="mt-1.5 cursor-pointer rounded text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+          aria-expanded={isExpanded}
+          className="mt-2.5 inline-flex h-7 cursor-pointer items-center gap-1 rounded-lg border border-zinc-200 bg-white pl-2.5 pr-2 text-xs font-medium text-zinc-600 shadow-[0_1px_2px_rgba(24,24,27,0.04)] transition-[background-color,border-color,color] hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
         >
           {isExpanded ? "접기" : "더 보기"}
+          <ChevronDown className={`size-3.5 text-zinc-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} aria-hidden />
         </button>
       )}
     </div>
