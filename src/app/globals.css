@@ -189,3 +189,13 @@ body::-webkit-scrollbar-thumb:hover,
     @apply cursor-pointer;
   }
 }
+
+/* 챗봇 답변의 인라인 코드(`code`): 노션처럼 붉은 글자로 본문 문장과 확실히 구분한다. */
+[data-streamdown="inline-code"] {
+  color: #e03e3e;
+  background-color: rgb(135 131 120 / 0.15);
+  border-radius: 0.3rem;
+  padding: 0.15em 0.4em;
+  font-size: 0.86em;
+  font-weight: 500;
+}
