@@ -1,6 +1,6 @@
 "use client";
 
-import { AlignLeft, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
+import { AlignLeft, ArrowLeft, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, MessageSquareQuote, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { type ReactNode } from "react";
 
@@ -71,16 +71,90 @@ function RecordMetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: 
   );
 }
 
-export function KnowledgeCardDetailPanel({ card, onClose, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard | null; onClose: () => void; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { documentId: string; excerpt: string; location: string } }) {
+type DetailBodyProps = {
+  card: KnowledgeCard;
+  relatedCards?: KnowledgeCard[];
+  onSelectCard?: (card: KnowledgeCard) => void;
+  sourceContext?: { documentId: string; excerpt: string; location: string };
+  /** 챗봇이 이 카드를 답변 근거로 고른 이유. 챗봇에서 열었을 때만 있다. */
+  selectionReason?: string;
+};
+
+export function KnowledgeCardDetailPanel({ card, onClose, ...props }: Omit<DetailBodyProps, "card"> & { card: KnowledgeCard | null; onClose: () => void }) {
   return (
     <Sheet open={Boolean(card)} onOpenChange={(open) => !open && onClose()}>
-      {card && <DetailPanelContent card={card} relatedCards={relatedCards} onSelectCard={onSelectCard} sourceContext={sourceContext} />}
+      {card && (
+        <SidePanelContent heading="지식 상세" contentKey={card.id}>
+          <KnowledgeCardDetailBody card={card} {...props} />
+        </SidePanelContent>
+      )}
     </Sheet>
   );
 }
 
-function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }: { card: KnowledgeCard; relatedCards?: KnowledgeCard[]; onSelectCard?: (card: KnowledgeCard) => void; sourceContext?: { documentId: string; excerpt: string; location: string } }) {
+/** 오른쪽에서 열리는 상세 패널의 공통 틀. 안의 내용만 바뀔 때는 다시 미끄러져 들어오지 않는다. */
+export function SidePanelContent({
+  heading,
+  contentKey,
+  onBack,
+  backLabel = "뒤로",
+  children,
+}: {
+  heading: string;
+  /** 바뀌면 본문 스크롤을 맨 위로 되돌린다. */
+  contentKey: string;
+  onBack?: () => void;
+  backLabel?: string;
+  children: ReactNode;
+}) {
   const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <SheetContent
+      side="right"
+      overlayClassName="bg-zinc-950/25 backdrop-blur-[1px]"
+      className="inset-y-3 right-3 h-[calc(100dvh-1.5rem)] w-[min(44rem,calc(100vw-1.5rem))] max-w-none overflow-visible border-0 bg-transparent p-0 shadow-none data-[state=closed]:animate-none data-[state=open]:animate-none sm:inset-y-4 sm:right-4 sm:h-[calc(100dvh-2rem)] sm:w-[min(44rem,calc(100vw-2rem))] sm:max-w-none"
+    >
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, x: 80, scale: 0.975 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 280, damping: 28, mass: 0.82 }}
+        className="flex size-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-[-20px_28px_80px_-34px_rgba(35,33,30,0.26),0_1px_0_rgba(255,255,255,0.95)_inset]"
+      >
+        <header className="flex items-center justify-between gap-3 border-b border-zinc-200 px-5 py-3 sm:px-7">
+          <div className="flex min-w-0 items-center gap-1">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                aria-label={backLabel}
+                className="-ml-2 grid size-9 shrink-0 cursor-pointer place-items-center rounded-xl text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+              >
+                <ArrowLeft className="size-[18px]" aria-hidden />
+              </button>
+            )}
+            <p className="truncate text-sm font-semibold text-zinc-700">{heading}</p>
+          </div>
+          <SheetClose asChild>
+            <button
+              type="button"
+              aria-label="닫기"
+              className="grid size-10 cursor-pointer place-items-center rounded-xl text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+            >
+              <X className="size-5" aria-hidden />
+            </button>
+          </SheetClose>
+        </header>
+
+        <div key={contentKey} className="app-scrollbar min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-7 sm:px-9 sm:pt-9">
+          {children}
+        </div>
+      </motion.div>
+    </SheetContent>
+  );
+}
+
+export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sourceContext, selectionReason }: DetailBodyProps) {
   const evidence = card.evidences.find((item) => item.documentId === sourceContext?.documentId) ?? card.evidences[0];
   const sourceTitle = evidence?.documentTitle ?? "";
   const metadataRows = [
@@ -101,31 +175,7 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
   ].flatMap((row) => (row.description ? [{ ...row, description: row.description }] : []));
 
   return (
-    <SheetContent
-      side="right"
-      overlayClassName="bg-zinc-950/25 backdrop-blur-[1px]"
-      className="inset-y-3 right-3 h-[calc(100dvh-1.5rem)] w-[min(44rem,calc(100vw-1.5rem))] max-w-none overflow-visible border-0 bg-transparent p-0 shadow-none data-[state=closed]:animate-none data-[state=open]:animate-none sm:inset-y-4 sm:right-4 sm:h-[calc(100dvh-2rem)] sm:w-[min(44rem,calc(100vw-2rem))] sm:max-w-none"
-    >
-      <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0, x: 80, scale: 0.975 }}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 280, damping: 28, mass: 0.82 }}
-        className="flex size-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-[-20px_28px_80px_-34px_rgba(35,33,30,0.26),0_1px_0_rgba(255,255,255,0.95)_inset]"
-      >
-      <header className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 sm:px-7">
-        <p className="text-sm font-semibold text-zinc-700">지식 상세</p>
-        <SheetClose asChild>
-          <button
-            type="button"
-            aria-label="닫기"
-            className="grid size-10 cursor-pointer place-items-center rounded-xl text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
-          >
-            <X className="size-5" aria-hidden />
-          </button>
-        </SheetClose>
-      </header>
-
-      <div className="app-scrollbar min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-7 sm:px-9 sm:pt-9">
+    <>
         <SheetDescription className="sr-only">{card.title} 지식카드의 상세 정보입니다.</SheetDescription>
           <div className="flex items-start gap-3">
             <SheetTitle asChild>
@@ -153,6 +203,12 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
               <p className="text-[15px] font-medium leading-7 tracking-[-0.01em] text-zinc-800">{card.summary}</p>
             </aside>
           </DetailPanelSection>
+
+          {selectionReason && (
+            <DetailPanelSection title="이 답변에 쓰인 이유" icon={MessageSquareQuote} labelledBy="knowledge-card-reason-title">
+              <p className="mt-3 rounded-xl border border-brand/20 bg-brand-soft px-4 py-3 text-[15px] leading-7 text-zinc-800">{selectionReason}</p>
+            </DetailPanelSection>
+          )}
 
           <DetailPanelSection title="처리 기록" icon={ListChecks} labelledBy="knowledge-card-records-title" className="mt-9">
             <ol className="mt-5 space-y-6" aria-label="처리 기록">
@@ -184,8 +240,6 @@ function DetailPanelContent({ card, relatedCards, onSelectCard, sourceContext }:
               {metadataRows.map((row) => <RecordMetaRow key={row.label} {...row} />)}
             </dl>
           </DetailPanelSection>
-      </div>
-      </motion.div>
-    </SheetContent>
+    </>
   );
 }

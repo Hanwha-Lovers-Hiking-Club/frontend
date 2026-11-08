@@ -4,7 +4,9 @@ import type { ChatMessage, ChatReference, ChatSource } from "@/features/chat/typ
 
 type ReferencePanelState = {
   references: ChatReference[];
-  selectedReferenceId: string;
+  sources: ChatSource[];
+  /** null 이면 답변 근거 목록, 값이 있으면 그 지식카드 상세를 보여준다. */
+  selectedReferenceId: string | null;
 };
 
 type ChatStore = {
@@ -18,9 +20,9 @@ type ChatStore = {
   setAssistantReferences: (messageId: string, references: ChatReference[], sources: ChatSource[]) => void;
   finishAssistantMessage: (messageId?: string) => void;
   failAssistantMessage: (messageId?: string, error?: string) => void;
-  openReference: (reference: ChatReference, references: ChatReference[]) => void;
+  openReference: (message: ChatMessage, referenceId: string | null) => void;
   closeReferencePanel: () => void;
-  selectReference: (referenceId: string) => void;
+  selectReference: (referenceId: string | null) => void;
   resetConversation: () => void;
 };
 
@@ -93,8 +95,8 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       streamingMessageId: state.streamingMessageId === targetId ? null : state.streamingMessageId,
     }));
   },
-  openReference: (reference, references) => {
-    set({ referencePanel: { references, selectedReferenceId: reference.id } });
+  openReference: (message, selectedReferenceId) => {
+    set({ referencePanel: { references: message.references ?? [], sources: message.sources ?? [], selectedReferenceId } });
   },
   closeReferencePanel: () => set({ referencePanel: null }),
   selectReference: (selectedReferenceId) => {

@@ -102,7 +102,9 @@ export function ChatWorkspace() {
         onOpenReference={openReference}
       />
       <ChatReferencePanel
+        isOpen={referencePanel !== null}
         references={referencePanel?.references ?? []}
+        sources={referencePanel?.sources ?? []}
         selectedReferenceId={referencePanel?.selectedReferenceId ?? null}
         onClose={closeReferencePanel}
         onSelectReference={selectReference}

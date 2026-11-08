@@ -1,11 +1,11 @@
 "use client";
 
-import { Copy } from "lucide-react";
+import { BookOpenText, Copy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 
 import { ChatComposer } from "@/features/chat/components/chat-composer";
-import type { ChatMessage, ChatReference } from "@/features/chat/types";
+import type { ChatMessage } from "@/features/chat/types";
 import {
   Message,
   MessageAction,
@@ -37,7 +37,7 @@ export function ChatConversation({
   onSubmit: (text: string) => void;
   onStop: () => void;
   onReset: () => void;
-  onOpenReference: (reference: ChatReference, references: ChatReference[]) => void;
+  onOpenReference: (message: ChatMessage, referenceId: string | null) => void;
 }) {
   const latestMessageId = messages.at(-1)?.id;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -126,11 +126,21 @@ export function ChatConversation({
                       )}
                       {message.content && message.status !== "streaming" && (
                         <div className="mt-4 flex flex-wrap items-center gap-2">
+                          {(!!message.references?.length || !!message.sources?.length) && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenReference(message, null)}
+                              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-semibold text-zinc-700 transition-[background-color,border-color,color] hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+                            >
+                              <BookOpenText className="size-3.5 text-zinc-500" aria-hidden />
+                              답변 근거
+                            </button>
+                          )}
                           {message.references?.map((reference) => (
                             <button
                               key={reference.id}
                               type="button"
-                              onClick={() => onOpenReference(reference, message.references ?? [])}
+                              onClick={() => onOpenReference(message, reference.id)}
                               className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 text-xs font-medium text-zinc-600 transition-[background-color,border-color,color] hover:border-zinc-300 hover:bg-white hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
                             >
                               지식카드
@@ -154,22 +164,6 @@ export function ChatConversation({
                             </time>
                           </MessageActions>
                         </div>
-                      )}
-                      {message.status !== "streaming" && !!message.sources?.length && (
-                        <details className="mt-3 text-xs text-zinc-500">
-                          <summary className="w-fit cursor-pointer rounded font-medium hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45">
-                            근거 원문 {message.sources.length}개
-                          </summary>
-                          <ul className="mt-2 space-y-2">
-                            {message.sources.map((source) => (
-                              <li key={source.chunkId} className="rounded-lg border border-zinc-200 bg-white/70 px-3 py-2">
-                                <p className="font-medium text-zinc-700">{source.documentTitle}</p>
-                                {source.location && <p className="mt-0.5 text-zinc-400">{source.location}</p>}
-                                <p className="mt-1.5 max-h-32 overflow-y-auto whitespace-pre-wrap leading-5 text-zinc-600">{source.excerpt}</p>
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
                       )}
                     </div>
                   )}
