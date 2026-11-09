@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { ProjectDetail } from "@/features/projects/components/project-detail";
+
+export const metadata: Metadata = {
+  title: "프로젝트",
+  description: "프로젝트의 원본 문서와 지식카드를 확인합니다.",
+};
 
 export default async function ProjectPage({ params, searchParams }: {
   params: Promise<{ projectId: string }>;

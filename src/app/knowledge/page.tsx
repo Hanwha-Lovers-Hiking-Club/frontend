@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { FileUp, Folder, LibraryBig } from "lucide-react";
 import Link from "next/link";
 
 import { KnowledgeCardBrowser } from "@/features/knowledge/components/knowledge-card-browser";
 import { ProjectList } from "@/features/projects/components/project-list";
 import { cn } from "@/utils/cn";
+
+export const metadata: Metadata = {
+  title: "지식카드",
+  description: "프로젝트별 지식카드를 검색하고 살펴봅니다.",
+};
 
 export default async function KnowledgePage({
   searchParams,
