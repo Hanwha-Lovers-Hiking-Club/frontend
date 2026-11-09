@@ -105,7 +105,7 @@ export function ChatWorkspace() {
           // 가운데까지 빠르게 → 잠깐 멈춤 → 가속하며 왼쪽으로 퇴장
           initial={reducedMotion ? { opacity: 0 } : { x: "100vw" }}
           animate={reducedMotion ? { opacity: [0, 1, 1, 0] } : { x: ["100vw", "0vw", "0vw", "-100vw"] }}
-          transition={{ duration: 3, times: [0, 0.15, 0.8, 1], ease: [[0.16, 1, 0.3, 1], "linear", [0.7, 0, 0.84, 0]] }}
+          transition={{ duration: 2.56, times: [0, 0.176, 0.766, 1], ease: [[0.16, 1, 0.3, 1], "linear", [0.7, 0, 0.84, 0]] }}
           onAnimationComplete={() => setShowBanner(false)}
           className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
         >
