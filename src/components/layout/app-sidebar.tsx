@@ -13,6 +13,7 @@ import {
   FileUp,
   LibraryBig,
   Settings2,
+  UserRound,
 } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -208,8 +209,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           />
           <div className="mt-3 grid h-12 grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50">
             <span className="grid size-12 place-items-center">
-              <span className="grid size-7 place-items-center rounded-lg bg-primary text-[11px] font-semibold text-primary-foreground">
-                J
+              <span className="grid size-8 place-items-center rounded-full bg-brand-soft text-brand-strong">
+                <UserRound className="size-4" aria-hidden />
               </span>
             </span>
             <span
@@ -219,8 +220,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 "max-md:opacity-0",
               )}
             >
-              <span className="block text-xs font-medium text-zinc-800">Job지식</span>
-              <span className="block text-[11px] text-zinc-400">Workspace</span>
+              <span className="block text-xs font-medium text-zinc-800">김한화</span>
+              <span className="block text-[11px] text-zinc-400">플랫폼개발팀 · 매니저</span>
             </span>
           </div>
         </div>
