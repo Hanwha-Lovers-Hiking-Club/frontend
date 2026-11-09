@@ -149,7 +149,8 @@ function ProjectGreeting() {
       setVisible(true);
       // 클릭 없이 직접 진입하면 브라우저가 재생을 막는다. 그때는 이미지만 보여준다.
       audio.play().catch(() => {});
-      hideTimer = window.setTimeout(() => setVisible(false), 9000);
+      // 음원 길이(45초)에 맞춰 퇴장한다.
+      hideTimer = window.setTimeout(() => setVisible(false), 45000);
     }, 1000);
     return () => {
       window.clearTimeout(showTimer);
@@ -165,9 +166,9 @@ function ProjectGreeting() {
         <motion.div
           aria-hidden
           initial={hidden}
-          animate={reducedMotion ? { opacity: 1 } : { x: 0 }}
-          exit={hidden}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          // 등장은 아주 느리게(20초, 등속), 퇴장은 보통 속도
+          animate={{ ...(reducedMotion ? { opacity: 1 } : { x: 0 }), transition: { duration: reducedMotion ? 0.4 : 20, ease: "linear" } }}
+          exit={{ ...hidden, transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] } }}
           className="pointer-events-none fixed bottom-0 right-6 z-50"
         >
           <Image src="/project-greeting.webp" alt="" width={1024} height={1536} className="h-[min(50dvh,28rem)] w-auto drop-shadow-xl" />
