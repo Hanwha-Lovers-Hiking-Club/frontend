@@ -167,7 +167,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               "max-md:opacity-0",
             )}
           >
-            Knowledge
+            Job지식
           </span>
           {!collapsed && (
             <button
@@ -209,7 +209,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           <div className="mt-3 grid h-12 grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50">
             <span className="grid size-12 place-items-center">
               <span className="grid size-7 place-items-center rounded-lg bg-primary text-[11px] font-semibold text-primary-foreground">
-                K
+                J
               </span>
             </span>
             <span
@@ -219,7 +219,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 "max-md:opacity-0",
               )}
             >
-              <span className="block text-xs font-medium text-zinc-800">Knowledge</span>
+              <span className="block text-xs font-medium text-zinc-800">Job지식</span>
               <span className="block text-[11px] text-zinc-400">Workspace</span>
             </span>
           </div>
@@ -247,8 +247,8 @@ function SidebarBrand({
         type="button"
         onClick={collapsed ? onExpand : onHome}
         className="group relative inline-grid cursor-pointer place-items-center rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
-        aria-label={collapsed ? "사이드바 펼치기" : "Knowledge 홈"}
-        title={collapsed ? "사이드바 펼치기" : "Knowledge 홈"}
+        aria-label={collapsed ? "사이드바 펼치기" : "Job지식 홈"}
+        title={collapsed ? "사이드바 펼치기" : "Job지식 홈"}
       >
         <span
           aria-hidden
