@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ComponentType, type CSSProperties, useState } from "react";
@@ -12,7 +13,6 @@ import {
   FileUp,
   LibraryBig,
   Settings2,
-  Sparkles,
 } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -246,21 +246,26 @@ function SidebarBrand({
       <button
         type="button"
         onClick={collapsed ? onExpand : onHome}
-        className="group relative inline-grid cursor-pointer place-items-center rounded-2xl p-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
+        className="group relative inline-grid cursor-pointer place-items-center rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45"
         aria-label={collapsed ? "사이드바 펼치기" : "Knowledge 홈"}
         title={collapsed ? "사이드바 펼치기" : "Knowledge 홈"}
       >
         <span
           aria-hidden
           className={cn(
-            "absolute inset-0 rounded-2xl bg-primary",
+            "absolute inset-0 rounded-2xl",
             collapsed &&
               "transition-[background-color] duration-300 ease-in-out group-hover:bg-zinc-100 motion-reduce:transition-none",
           )}
         />
-        <Sparkles
+        <Image
+          src="/logo.svg"
+          alt=""
+          width={40}
+          height={40}
+          priority
           className={cn(
-            "relative z-10 size-5 pointer-events-none text-white",
+            "relative z-10 size-10 pointer-events-none",
             collapsed &&
               "transition-opacity duration-300 ease-in-out group-hover:opacity-0 motion-reduce:transition-none",
           )}
