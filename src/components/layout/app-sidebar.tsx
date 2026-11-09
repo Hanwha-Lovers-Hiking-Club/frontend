@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ComponentType, type CSSProperties, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { type ComponentType, type CSSProperties, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Bot,
   ChevronLeft,
@@ -118,6 +118,15 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const isChatRoute = pathname === "/";
   const usesAmbientGlow = pathname === "/";
   const [chatAmbientMode, setChatAmbientMode] = useState<ChatAmbientMode>("welcome");
+  const utilityTaps = useRef("");
+  const [showUtilityPanel, setShowUtilityPanel] = useState(false);
+  const tapUtility = (key: "h" | "s") => {
+    utilityTaps.current = (utilityTaps.current + key).slice(-6);
+    if (utilityTaps.current !== "hhsshh") return;
+    utilityTaps.current = "";
+    setShowUtilityPanel(true);
+    window.setTimeout(() => setShowUtilityPanel(false), 5000);
+  };
 
   return (
     <div
@@ -200,12 +209,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             label="도움말"
             collapsed={collapsed}
             cursorDefault
+            onClick={() => tapUtility("h")}
           />
           <SidebarUtility
             icon={Settings2}
             label="설정"
             collapsed={collapsed}
             cursorDefault
+            onClick={() => tapUtility("s")}
           />
           <div className="mt-3 grid h-12 grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50">
             <span className="grid size-12 place-items-center">
@@ -228,6 +239,21 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       </motion.aside>
 
       <div className={cn("relative z-10 min-w-0 flex-1", isChatRoute && "min-h-0")}>{children}</div>
+
+      <AnimatePresence>
+        {showUtilityPanel && (
+          <motion.div
+            aria-hidden
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: "60%", scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: "60%", scale: 0.85 }}
+            transition={{ duration: reducedMotion ? 0.2 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center"
+          >
+            <Image src="/sidebar-utility.webp" alt="" width={1254} height={1254} className="h-[80dvh] w-auto drop-shadow-2xl" />
+          </motion.div>
+        )}
+      </AnimatePresence>
       </ChatAmbientProvider>
     </div>
   );
@@ -291,15 +317,18 @@ function SidebarUtility({
   label,
   collapsed,
   cursorDefault = false,
+  onClick,
 }: {
   icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
   label: string;
   collapsed: boolean;
   cursorDefault?: boolean;
+  onClick?: () => void;
 }) {
   const button = (
     <button
       type="button"
+      onClick={onClick}
       className={cn(
         "flex h-10 w-full items-center gap-2.5 overflow-hidden rounded-xl py-0 pl-3.5 pr-3 text-sm font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
         cursorDefault ? "cursor-default" : "cursor-pointer",
