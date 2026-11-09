@@ -1,8 +1,10 @@
 "use client";
 
 import { ArrowLeft, ExternalLink, LoaderCircle } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { KnowledgeCardDetailPanel } from "@/features/knowledge/components/knowledge-card-detail-panel";
 import { openDocument } from "@/features/knowledge/components/knowledge-card-evidences";
@@ -131,6 +133,46 @@ export function ProjectDetail({ projectId, listHref }: { projectId: string; list
         )}
       </div>
       <KnowledgeCardDetailPanel card={selectedCard} onClose={closeDetailPanel} />
+      {project?.name.trim() === "조항지기" && <ProjectGreeting />}
     </main>
+  );
+}
+
+function ProjectGreeting() {
+  const [visible, setVisible] = useState(false);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const audio = new Audio("/project-greeting.mp3");
+    let hideTimer = 0;
+    const showTimer = window.setTimeout(() => {
+      setVisible(true);
+      // 클릭 없이 직접 진입하면 브라우저가 재생을 막는다. 그때는 이미지만 보여준다.
+      audio.play().catch(() => {});
+      hideTimer = window.setTimeout(() => setVisible(false), 9000);
+    }, 1000);
+    return () => {
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+      audio.pause();
+    };
+  }, []);
+
+  const hidden = reducedMotion ? { opacity: 0 } : { x: "120%" };
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          aria-hidden
+          initial={hidden}
+          animate={reducedMotion ? { opacity: 1 } : { x: 0 }}
+          exit={hidden}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none fixed bottom-0 right-6 z-50"
+        >
+          <Image src="/project-greeting.webp" alt="" width={1024} height={1536} className="h-[min(50dvh,28rem)] w-auto drop-shadow-xl" />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
