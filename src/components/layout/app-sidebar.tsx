@@ -162,7 +162,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
           />
           <span
             className={cn(
-              "min-w-0 truncate pl-2 text-sm font-semibold tracking-[-0.02em]",
+              "min-w-0 truncate pl-2.5 text-lg font-bold tracking-[-0.04em]",
               labelClassName,
               collapsed && "pointer-events-none opacity-0",
               "max-md:opacity-0",
