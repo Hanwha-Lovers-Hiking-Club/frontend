@@ -53,6 +53,9 @@ export function ChatWorkspace() {
     if (text === "등산") {
       setPrompt("");
       setShowBanner(true);
+      // 사진이 가운데 도착하는 시점(0.45초)에 맞춰 재생
+      const audio = new Audio("/chat-banner.mp3");
+      window.setTimeout(() => audio.play().catch(() => {}), 450);
       return;
     }
 
