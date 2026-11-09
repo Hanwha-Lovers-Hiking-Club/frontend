@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { ChatConversation } from "@/features/chat/components/chat-conversation";
 import { useChatAmbientMode } from "@/features/chat/components/chat-ambient-context";
@@ -27,6 +29,8 @@ export function ChatWorkspace() {
   const resetStoredConversation = useChatStore((state) => state.resetConversation);
   const streamController = useRef<AbortController | null>(null);
   const setAmbientMode = useChatAmbientMode();
+  const [showBanner, setShowBanner] = useState(false);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => () => {
     streamController.current?.abort();
@@ -46,6 +50,11 @@ export function ChatWorkspace() {
   async function submitPrompt(rawText: string) {
     const text = rawText.trim();
     if (!text || useChatStore.getState().isStreaming) return;
+    if (text === "등산") {
+      setPrompt("");
+      setShowBanner(true);
+      return;
+    }
 
     const history = useChatStore.getState().messages
       .filter((message) => message.status === "complete" && message.content)
@@ -85,12 +94,36 @@ export function ChatWorkspace() {
     resetStoredConversation();
   }
 
+  const banner = (
+    <AnimatePresence>
+      {showBanner && (
+        <motion.div
+          aria-hidden
+          // 가운데까지 빠르게 → 잠깐 멈춤 → 가속하며 왼쪽으로 퇴장
+          initial={reducedMotion ? { opacity: 0 } : { x: "100vw" }}
+          animate={reducedMotion ? { opacity: [0, 1, 1, 0] } : { x: ["100vw", "0vw", "0vw", "-100vw"] }}
+          transition={{ duration: 2.6, times: [0, 0.3, 0.62, 1], ease: ["easeOut", "linear", "easeIn"] }}
+          onAnimationComplete={() => setShowBanner(false)}
+          className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
+        >
+          <Image src="/chat-banner.webp" alt="" width={1672} height={941} priority className="w-[min(80vw,64rem)] h-auto drop-shadow-2xl" />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   if (messages.length === 0) {
-    return <ChatWelcome prompt={prompt} onPromptChange={setPrompt} onSubmit={submitPrompt} />;
+    return (
+      <>
+        <ChatWelcome prompt={prompt} onPromptChange={setPrompt} onSubmit={submitPrompt} />
+        {banner}
+      </>
+    );
   }
 
   return (
     <>
+      {banner}
       <ChatConversation
         messages={messages}
         prompt={prompt}
