@@ -276,7 +276,7 @@ function SidebarAccountLink({
       aria-current={active ? "page" : undefined}
       className={cn(
         "mt-3 grid h-12 cursor-pointer grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50 transition-[background-color,transform] duration-200 hover:bg-zinc-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
-        active && "bg-brand-soft hover:bg-brand-soft",
+        active && "bg-zinc-100 ring-1 ring-inset ring-brand/30",
       )}
     >
       {children}

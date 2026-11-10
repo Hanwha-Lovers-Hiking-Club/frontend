@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 
 import { DraftCardBrowser } from "@/features/knowledge/components/draft-card-browser";
+
+export const metadata: Metadata = {
+  title: "관리자",
+  description: "보류된 드래프트 지식카드를 조회합니다.",
+};
 
 export default function AdminPage() {
   return (
