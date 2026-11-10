@@ -66,7 +66,16 @@ function TagRow({ label, tags, variant }: { label: string; tags: string[]; varia
   );
 }
 
-export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpen: (card: KnowledgeCardData) => void }) {
+export function KnowledgeCard({
+  card,
+  onOpen,
+  dateField = "updatedAt",
+}: {
+  card: KnowledgeCardData;
+  onOpen: (card: KnowledgeCardData) => void;
+  /** 오른쪽 날짜 칸에 보여줄 값. 드래프트 목록은 생성일을 쓴다. */
+  dateField?: "updatedAt" | "createdAt";
+}) {
   const sourceTitle = card.projectName ?? card.evidences[0]?.documentTitle ?? "";
   const domain = getProjectDomainStyle(card.projectDomain);
   const DomainIcon = domain.icon;
@@ -109,8 +118,8 @@ export function KnowledgeCard({ card, onOpen }: { card: KnowledgeCardData; onOpe
         <TagRow label="기술스택" tags={card.technologies} variant="technology" />
       </div>
 
-      <time dateTime={card.updatedAt} className="col-start-2 row-start-3 shrink-0 self-start text-xs tabular-nums text-zinc-500 sm:col-start-4 sm:row-start-1 sm:self-center sm:text-right">
-        {formatKnowledgeDate(card.updatedAt)}
+      <time dateTime={card[dateField]} className="col-start-2 row-start-3 shrink-0 self-start text-xs tabular-nums text-zinc-500 sm:col-start-4 sm:row-start-1 sm:self-center sm:text-right">
+        {formatKnowledgeDate(card[dateField])}
       </time>
     </article>
   );

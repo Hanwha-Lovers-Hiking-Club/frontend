@@ -1,13 +1,15 @@
 "use client";
 
-import { AlignLeft, ArrowLeft, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, FileText, FolderKanban, HelpCircle, Lightbulb, ListChecks, Layers3, MessageSquareQuote, Scale, Search, Tag, type LucideIcon, Wrench, X } from "lucide-react";
+import { Activity, AlignLeft, ArrowLeft, Bot, Building2, CalendarDays, CalendarPlus, CheckCircle2, Clock3, Eye, FileText, FolderKanban, HelpCircle, History, Lightbulb, ListChecks, Layers3, MessageSquareQuote, Scale, Search, Tag, TriangleAlert, type LucideIcon, Wrench, X } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { type ReactNode } from "react";
+import { type ReactNode, useCallback } from "react";
 
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { type AnswerSource, KnowledgeCardEvidences } from "@/features/knowledge/components/knowledge-card-evidences";
-import { formatKnowledgeDate } from "@/features/knowledge/formatters";
+import { fetchKnowledgeCard } from "@/features/knowledge/api";
+import { formatKnowledgeCount, formatKnowledgeDate, formatKnowledgeDateTime } from "@/features/knowledge/formatters";
 import type { KnowledgeCard } from "@/features/knowledge/types";
+import { useRequest } from "@/features/projects/components/use-request";
 import { cn } from "@/utils/cn";
 
 function DetailRow({
@@ -78,17 +80,46 @@ type DetailBodyProps = {
   sourceContext?: AnswerSource;
   /** 챗봇이 이 카드를 답변 근거로 고른 이유. 챗봇에서 열었을 때만 있다. */
   selectionReason?: string;
+  /** draft 면 이용 통계 대신 보류 사유를 보여준다. */
+  variant?: "active" | "draft";
 };
 
-export function KnowledgeCardDetailPanel({ card, onClose, ...props }: Omit<DetailBodyProps, "card"> & { card: KnowledgeCard | null; onClose: () => void }) {
+type LoadCardDetail = (cardId: string, signal: AbortSignal) => Promise<KnowledgeCard>;
+
+/**
+ * 목록에서 고른 카드를 열면 상세 API 를 한 번 호출하고, 응답이 오면 그 값으로 바꿔 그린다.
+ * 응답 전이나 실패 시에는 목록에 있던 카드 값을 그대로 쓴다. 통계 수치는 보정하지 않는다.
+ */
+export function KnowledgeCardDetailPanel({
+  card,
+  onClose,
+  loadDetail = fetchKnowledgeCard,
+  ...props
+}: Omit<DetailBodyProps, "card"> & { card: KnowledgeCard | null; onClose: () => void; loadDetail?: LoadCardDetail }) {
   return (
     <Sheet open={Boolean(card)} onOpenChange={(open) => !open && onClose()}>
       {card && (
-        <SidePanelContent heading="지식 상세" contentKey={card.id}>
-          <KnowledgeCardDetailBody card={card} {...props} />
+        <SidePanelContent heading={props.variant === "draft" ? "드래프트 상세" : "지식 상세"} contentKey={card.id}>
+          <FetchedDetailBody key={card.id} card={card} loadDetail={loadDetail} {...props} />
         </SidePanelContent>
       )}
     </Sheet>
+  );
+}
+
+function FetchedDetailBody({ card, loadDetail, ...props }: DetailBodyProps & { loadDetail: LoadCardDetail }) {
+  const load = useCallback((signal: AbortSignal) => loadDetail(card.id, signal), [card.id, loadDetail]);
+  const { data, error, isLoading } = useRequest(card.id, load);
+
+  return (
+    <>
+      {error && (
+        <p role="status" className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-800">
+          최신 상세 정보를 불러오지 못해 목록의 정보로 표시합니다. ({error.message})
+        </p>
+      )}
+      <KnowledgeCardDetailBody card={data ?? card} isRefreshing={isLoading} {...props} />
+    </>
   );
 }
 
@@ -154,7 +185,15 @@ export function SidePanelContent({
   );
 }
 
-export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sourceContext, selectionReason }: DetailBodyProps) {
+export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sourceContext, selectionReason, variant = "active", isRefreshing = false }: DetailBodyProps & { isRefreshing?: boolean }) {
+  const isDraft = variant === "draft";
+  const usageRows = [
+    { icon: Eye, label: "열람 횟수", value: formatKnowledgeCount(card.viewCount) },
+    { icon: Bot, label: "챗봇 참조 횟수", value: formatKnowledgeCount(card.referenceCount) },
+    { icon: History, label: "마지막 열람", value: formatKnowledgeDateTime(card.lastViewedAt) },
+    { icon: MessageSquareQuote, label: "마지막 챗봇 참조", value: formatKnowledgeDateTime(card.lastReferencedAt) },
+  ];
+  const draftReasons = (card.draftReasons ?? []).filter((reason) => reason.trim().length > 0);
   const metadataRows = [
     { icon: Building2, label: "담당 부서", value: card.department ?? "미지정" },
     { icon: FolderKanban, label: "출처 프로젝트", value: card.projectName ?? "미지정" },
@@ -202,6 +241,20 @@ export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sour
             </aside>
           </DetailPanelSection>
 
+          {isDraft && (
+            <DetailPanelSection title="보류 사유" icon={TriangleAlert} labelledBy="knowledge-card-draft-reasons-title">
+              {draftReasons.length > 0 ? (
+                <ul className="mt-3 space-y-2">
+                  {draftReasons.map((reason, index) => (
+                    <li key={`${index}-${reason}`} className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[15px] leading-7 text-amber-900">{reason}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-3 rounded-xl border border-zinc-200 bg-zinc-50/70 px-4 py-3 text-sm text-zinc-500">사유 기록 없음</p>
+              )}
+            </DetailPanelSection>
+          )}
+
           {selectionReason && (
             <DetailPanelSection title="이 답변에 쓰인 이유" icon={MessageSquareQuote} labelledBy="knowledge-card-reason-title">
               <p className="mt-3 rounded-xl border border-brand/20 bg-brand-soft px-4 py-3 text-[15px] leading-7 text-zinc-800">{selectionReason}</p>
@@ -219,6 +272,14 @@ export function KnowledgeCardDetailBody({ card, relatedCards, onSelectCard, sour
           </DetailPanelSection>
 
           {relatedCards && relatedCards.length > 1 && onSelectCard && <DetailPanelSection title="이 문서에서 생성된 지식카드" icon={Layers3} labelledBy="knowledge-card-related-title" className="mt-9 border-t border-zinc-200 pt-6"><div className="mt-3 flex flex-col gap-1">{relatedCards.map((relatedCard) => { const selected = relatedCard.id === card.id; return <button key={relatedCard.id} type="button" onClick={() => onSelectCard(relatedCard)} aria-pressed={selected} className={cn("flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45", selected ? "bg-zinc-100 text-zinc-950" : "text-zinc-600 hover:bg-zinc-50")}><span className="min-w-0 truncate font-medium">{relatedCard.title}</span></button>; })}</div></DetailPanelSection>}
+
+          {!isDraft && (
+            <DetailPanelSection title="이용 통계" icon={Activity} labelledBy="knowledge-card-usage-title" className="mt-9 border-t border-zinc-200 pt-6">
+              <dl aria-busy={isRefreshing} className={cn("mt-3 grid grid-cols-1 gap-x-8 gap-y-5 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 transition-opacity sm:grid-cols-2 sm:p-5", isRefreshing && "opacity-60")}>
+                {usageRows.map((row) => <RecordMetaRow key={row.label} {...row} />)}
+              </dl>
+            </DetailPanelSection>
+          )}
 
           <DetailPanelSection title="카드 정보" icon={Layers3} labelledBy="knowledge-card-metadata-title" className="mt-9 border-t border-zinc-200 pt-6">
             <dl className="mt-3 grid grid-cols-1 gap-x-8 gap-y-5 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 sm:grid-cols-2 sm:p-5">

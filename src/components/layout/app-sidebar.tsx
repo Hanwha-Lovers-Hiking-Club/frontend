@@ -218,7 +218,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             cursorDefault
             onClick={() => tapUtility("s")}
           />
-          <div className="mt-3 grid h-12 grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50">
+          <SidebarAccountLink collapsed={collapsed} active={pathname === "/admin" || pathname.startsWith("/admin/")}>
             <span className="grid size-12 place-items-center">
               <span className="grid size-8 place-items-center rounded-full bg-brand-soft text-brand-strong">
                 <UserRound className="size-4" aria-hidden />
@@ -234,7 +234,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               <span className="block text-xs font-medium text-zinc-800">김한화</span>
               <span className="block text-[11px] text-zinc-400">플랫폼개발팀 · 매니저</span>
             </span>
-          </div>
+          </SidebarAccountLink>
         </div>
       </motion.aside>
 
@@ -256,6 +256,42 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
       </ChatAmbientProvider>
     </div>
+  );
+}
+
+/** 하단 회원 영역. 누르면 관리자(드래프트 조회) 화면으로 간다. */
+function SidebarAccountLink({
+  collapsed,
+  active,
+  children,
+}: {
+  collapsed: boolean;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  const link = (
+    <Link
+      href="/admin"
+      aria-label="관리자 페이지"
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "mt-3 grid h-12 cursor-pointer grid-cols-[3rem_minmax(0,1fr)] items-center overflow-hidden rounded-xl bg-zinc-50 transition-[background-color,transform] duration-200 hover:bg-zinc-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45",
+        active && "bg-brand-soft hover:bg-brand-soft",
+      )}
+    >
+      {children}
+    </Link>
+  );
+
+  if (!collapsed) return link;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right" sideOffset={10}>
+        관리자
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

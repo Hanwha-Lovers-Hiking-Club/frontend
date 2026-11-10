@@ -72,6 +72,20 @@ export type KnowledgeCard = {
   createdAt: string;
   updatedAt: string;
   evidences: EvidenceDocument[];
+  /*
+   * 이용 통계와 보류 사유. 집계는 백엔드가 하고 프론트는 받은 값을 그대로 보여준다.
+   * 구버전 응답에는 없을 수 있어 선택 필드로 두고, 화면에서는 0 / "기록 없음" 으로 채운다.
+   */
+  /** 카드 상세 API 호출 횟수 */
+  viewCount?: number | null;
+  /** 챗봇 참조 카드로 반환된 횟수 */
+  referenceCount?: number | null;
+  /** 마지막 상세 열람 시각 */
+  lastViewedAt?: string | null;
+  /** 마지막 챗봇 참조 시각 */
+  lastReferencedAt?: string | null;
+  /** 드래프트 보류 사유 */
+  draftReasons?: string[] | null;
 };
 
 export type KnowledgeCardQuery = {
@@ -85,4 +99,11 @@ export type KnowledgeCardPage = {
   items: KnowledgeCard[];
   /** 검색 조건 적용 후 전체 개수 (페이지네이션 계산용) */
   total: number;
+};
+
+export type DraftCardQuery = {
+  /** 1부터 시작 */
+  page: number;
+  /** 최대 100 */
+  pageSize: number;
 };

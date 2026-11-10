@@ -12,6 +12,7 @@ export function KnowledgeCardGrid({
   error,
   query,
   emptyMessage = "조건에 맞는 지식카드가 없습니다.",
+  dateField,
   onRetry,
   onOpenCard,
 }: {
@@ -20,6 +21,7 @@ export function KnowledgeCardGrid({
   error: Error | null;
   query: string;
   emptyMessage?: string;
+  dateField?: "updatedAt" | "createdAt";
   onRetry: () => void;
   onOpenCard: (card: KnowledgeCardData) => void;
 }) {
@@ -61,7 +63,7 @@ export function KnowledgeCardGrid({
   return (
     <div className={cn(gridClassName, "transition-opacity", isLoading && "opacity-60")} aria-busy={isLoading}>
       {cards.map((card) => (
-        <KnowledgeCard key={card.id} card={card} onOpen={onOpenCard} />
+        <KnowledgeCard key={card.id} card={card} onOpen={onOpenCard} dateField={dateField} />
       ))}
     </div>
   );
