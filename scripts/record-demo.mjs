@@ -1,10 +1,11 @@
 import { mkdir, readdir } from "node:fs/promises";
+import { homedir } from "node:os";
 import { basename, extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
 
 const baseUrl = process.env.DEMO_URL ?? "https://hanwha-job-knowledge.vercel.app";
 const documentDirectory = process.env.DEMO_DOCUMENT_DIR
-  ?? "C:\\Users\\gydud\\OneDrive\\Desktop\\시연 프로젝트\\inputs\\project_ai_agent_demo";
+  ?? join(homedir(), "Desktop", "시연 프로젝트", "inputs", "project_refund_agent");
 const outputDirectory = resolve("artifacts", "demo-video");
 const supportedExtensions = new Set([".pdf", ".docx", ".xlsx", ".txt", ".md"]);
 const firstQuestion = "정산 시스템을 새로 만들고 있어. 같은 돈이 두 번 지급되는 사고를 막고 싶은데, 이전 프로젝트에서 겪었던 문제와 해결 방법 중 참고할 만한 게 있을까?";
