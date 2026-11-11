@@ -15,6 +15,12 @@ function processingOrb(
   return { state, particleCount: DEFAULT_PARTICLE_COUNT, ...options };
 }
 
+const ringOrb = processingOrb("connecting", {
+  speed: 0.5,
+  ...PROCESSING_ORB_COLORS,
+  motion: { scale: 0.7, ringWidth: 0.2 },
+});
+
 export const processingSteps = [
   {
     label: "잠든 문서의 첫 장을 깨우는 중",
@@ -47,43 +53,27 @@ export const processingSteps = [
   {
     label: "지식의 맥락과 정확성을 살피는 중",
     progress: 79,
-    orb: processingOrb("thinking", { speed: 0.9, ...PROCESSING_ORB_COLORS }),
+    orb: ringOrb,
   },
   {
     label: "지식카드에 의미의 좌표를 새기는 중",
     progress: 86,
-    orb: processingOrb("connecting", {
-      speed: 0.5,
-      ...PROCESSING_ORB_COLORS,
-      motion: { scale: 0.7, ringWidth: 0.2 },
-    }),
+    orb: ringOrb,
   },
   {
     label: "완성된 지식카드를 안전하게 보관하는 중",
     progress: 91,
-    orb: processingOrb("connecting", {
-      speed: 0.5,
-      ...PROCESSING_ORB_COLORS,
-      motion: { scale: 0.7, ringWidth: 0.2 },
-    }),
+    orb: ringOrb,
   },
   {
     label: "문서의 모든 조각에 검색의 길을 내는 중",
     progress: 96,
-    orb: processingOrb("connecting", {
-      speed: 0.5,
-      ...PROCESSING_ORB_COLORS,
-      motion: { scale: 0.7, ringWidth: 0.2 },
-    }),
+    orb: ringOrb,
   },
   {
     label: "언제든 다시 찾을 수 있도록 연결하는 중",
     progress: 98,
-    orb: processingOrb("connecting", {
-      speed: 0.5,
-      ...PROCESSING_ORB_COLORS,
-      motion: { scale: 0.7, ringWidth: 0.2 },
-    }),
+    orb: ringOrb,
   },
 ] as const satisfies readonly ProcessingStep[];
 
